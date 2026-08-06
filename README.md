@@ -1,13 +1,22 @@
 # DigitaleLeute AI Software Engineer Bootcamp
 
-This repository gathers files created and used during the **DigitaleLeute AI Software Engineer Bootcamp**. It serves as a central workspace for product ideas, project specifications, and a personal daily log of the bootcamp journey.
+This repository gathers files created and used during the **DigitaleLeute AI Software Engineer Bootcamp**. It serves as a central workspace for product ideas, project specifications, Claude Skills, course tasks, and a personal daily log of the bootcamp journey.
 
 ## Repository Structure
 
 ```
-├── Ideas/          # Product outlines and project specifications
-└── Log/            # Daily learning log
+├── Claude-Skills/   # Custom Claude Skills (requirement writer, teach mode)
+├── Ideas/           # Product outlines and project specifications
+├── Log/             # Daily learning log
+└── Tasks/           # Bootcamp exercises and assignments
 ```
+
+## Claude Skills
+
+The `Claude-Skills/` folder contains custom Claude Skills developed during the bootcamp. Each skill lives in its own subfolder with a `SKILL.md` definition.
+
+- **[requirement-writer](Claude-Skills/requirement-writer/)** — Guides users through structured requirements gathering via interactive dialogue to generate Problem Framing, SRD, and PRD documents in a progressive chain: *Problem Framing (Why do this?) → SRD (What direction?) → PRD (How exactly?)*
+- **[teach](Claude-Skills/teach/)** — Activate a Socratic teaching loop that diagnoses the learner's understanding, explains via *Why → What → How → What-If*, verifies understanding through active recall, and confirms the learner can apply the concept to a new case.
 
 ## Ideas
 
@@ -26,6 +35,14 @@ A typical project folder contains documents such as:
 |---------|-------------|-----------|
 | [DoctorCrawler](Ideas/DoctorCrawler/) | Non-profit middleware platform to simplify finding and contacting specialist doctors (Fachärzte) in Germany | Problem Framing, PRD, SRD |
 | [TableTop-WorldBuilder](Ideas/TableTop-WorldBuilder/) | AI-powered world management & consistency tracker for tabletop RPGs — converts session notes into a persistent, DM-approved knowledge graph | Problem Framing, Name Ideas |
+
+## Tasks
+
+The `Tasks/` folder contains exercises and assignments completed during the bootcamp. Each topic lives in its own subfolder, containing the original code snippets, optimized versions, and detailed write-ups explaining the optimizations.
+
+Currently includes:
+
+- **Engineering Foundations I — Principles, Patterns & Practices** — code optimization exercises, including original and optimized code snippets, test files, and documentation of the optimization reasoning.
 
 ## Log
 
