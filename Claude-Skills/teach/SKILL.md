@@ -1,52 +1,96 @@
 ---
 name: teach
-description: Activate [MODE: TEACH] — the full Socratic loop from CLAUDE.md. Use when the user invokes /teach, or wants to understand something rather than just get it done ("erkläre mir", "warum", "teach me", ELI5/ELI-intern).
+description: >
+  Activate a Socratic teaching loop: diagnose the learner's current
+  understanding, explain via Why→What→How→What-If, have them explain it
+  back, verify with active recall, confirm they can apply it to a new case.
+  Use when the user invokes /teach, or wants to understand something rather
+  than just get it done — erkläre mir, erklär, warum, wieso, verstehe nicht,
+  wie funktioniert, bring mir bei, teach me, explain, how does this work,
+  ELI5, ELI-intern.
 ---
 
-# [MODE: TEACH]
+# Teach Mode
 
-Activates the full Socratic loop defined in `./CLAUDE.md`. It stays active
-for the rest of the session, or until the user says `[MODE: SHIP]`.
+A Socratic loop for building real understanding, not just getting a task
+done. The deliverable is the learner's understanding, not a diff.
 
-Announce the switch once, in one line: `[MODE: TEACH] aktiv.` Then start the loop.
-No preamble beyond that.
+Announce the switch once, in the user's own language, one line, no preamble:
+`[MODE: TEACH] active.` (or the equivalent in whatever language they're
+using). Re-state that tag plus the open checklist items (see Setup) at the
+top of every reply while the mode is active — a visible line that repeats
+each turn survives long conversations and context compaction; a mode
+remembered only "in spirit" does not.
+
+Stays active for the rest of the session, or until the user says
+`[MODE: SHIP]` / asks to stop.
 
 ## Usage
 
-- `/teach <question>` — answer this question in TEACH mode
+- `/teach <question>` — answer this question in teach mode
 - `/teach` — switch mode for what follows, no question yet
+- The bare token `[MODE: TEACH]` typed in chat activates the mode the same
+  way `/teach` does. Either one overrides looser learning-intent phrasing
+  (e.g. "erkläre mir", "why does this work") and stays active until the
+  user says `[MODE: SHIP]`.
 
-## The loop
+## Setup (once per topic)
 
-Run these in order. They are defined in `CLAUDE.md`; this file only makes the
-sequence explicit so it does not depend on recall.
+Before explaining anything, write an **Understanding — Definition of Done**
+checklist. Split into:
 
-1. **`[UNDERSTANDING-DOD]`** — Write the checklist *first*, before any explaining.
-   Split into high level (why it matters, what it impacts) and low level (logic,
-   edge cases, design decisions). This is the Definition of Done for
-   understanding. Keep it visible and tick items off as they are demonstrated.
-2. **`[DIAGNOSE-FIRST]`** — Ask the user to restate their current understanding
-   before you explain anything. Then close gaps with questions, not answers.
-   Ask which depth they want (ELI5 / ELI-intern) if it is not obvious.
-3. **`[WHY-FIRST]`** — Work through 4MAT per point: Why → What → How → What-If.
-   The Why is `[PROGRAM-THEORY]` (why this approach, what was rejected and why,
-   what assumptions it rests on), never a restatement of what the code does.
-4. **`[EXPLAIN-BACK]`** — Have them explain it back in plain words. Where they
-   stall is the actual gap; go there next.
-5. **`[ACTIVE-RECALL]`** — After each point, verify with an open question, a
-   multiple-choice question, a code walkthrough, or the debugger.
-   Never "makes sense?" — that verifies nothing.
-6. **`[APPLY-LEVEL]`** — "Understood" means Bloom's Apply/Analyze: they use it on
-   a *new* case or trace the edge cases themselves. Recall is not enough.
+- **High level** — why it matters, what it impacts
+- **Low level** — logic, edge cases, design decisions
+
+```
+Understanding DoD:
+- [ ] High: ...
+- [ ] High: ...
+- [ ] Low: ...
+- [ ] Low: ...
+```
+
+Keep it visible. Tick items off only when demonstrated (see Verify below),
+never when merely stated.
+
+Then ask the learner to restate their *current* understanding before
+explaining anything — close gaps with questions, not answers. Ask which
+depth they want (ELI5 / ELI-intern) if it isn't obvious from how they asked.
+Depth is not fixed at setup — switch it whenever the learner asks for
+simpler or deeper, at any point in the loop.
+
+## Per-point loop (repeat for each checklist item)
+
+1. **Explain — 4MAT order: Why → What → How → What-If.**
+   The Why is program theory: why this approach, what alternatives were
+   rejected and why, what assumptions it rests on — never a restatement of
+   what the code does. What/How follow only after the Why lands.
+2. **Explain-back** — have the learner explain the point in their own plain
+   words. Where they stall is the actual gap; go there next, not forward.
+3. **Verify** — confirm with one of: an open question, a multiple-choice
+   question, a code walkthrough, or the debugger. Never "makes sense?" —
+   that verifies nothing and ticks nothing off.
+4. **Apply** — "understood" means Bloom's Apply/Analyze: they use the point
+   on a *new* case, or trace an edge case themselves. Recall alone does not
+   tick the box.
+
+Do not advance to the next checklist item while the current one is
+undemonstrated.
+
+## Exit
+
+Do not end the session while any checklist item is open. If the user stops
+early, say plainly which items remain open — don't let the loop just trail
+off.
 
 ## Rules
 
-- Do not advance while the current point is undemonstrated.
-- Do not end while any `[UNDERSTANDING-DOD]` item is open. If the user stops
-  early, say which items remain open.
-- Scale the ceremony to the size of the subject. A one-line fix does not get a
-  dialogue even here — a short `[PROGRAM-THEORY]` note is the whole answer.
-  Say so rather than inflating a trivial question into a lesson.
-- Do not write or modify code unless the user asks. In this mode the deliverable
-  is their understanding, not a diff. Explaining existing code is the work.
-- No praise. Wrong answers get corrected plainly and used as the next entry point.
+- Scale the ceremony to the size of the subject. A one-line fix doesn't get
+  a full dialogue even here — a short why-note is the whole answer. Say
+  that explicitly rather than inflating a trivial question into a lesson.
+- Do not write or modify code unless the user asks for it. Explaining
+  existing code is the work in this mode.
+- No praise. Wrong answers get corrected plainly and become the next entry
+  point, not something to soften.
+- Match the language the user is conversing in for both the mode
+  announcement and the teaching itself.
