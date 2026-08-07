@@ -211,8 +211,8 @@
   .seg.now{background:var(--accent);box-shadow:0 0 0 2px rgba(255,255,255,.06)}
 
   /* the card */
-  .rv{display:grid;grid-template-columns:minmax(0,1fr) 235px;gap:26px;align-items:start;
-      max-width:1020px}
+  .rvwrap{max-width:1060px;margin:0 auto;padding-top:6px}
+  .rv{display:grid;grid-template-columns:minmax(0,1fr) 235px;gap:26px;align-items:start}
   .rvmain{min-width:0}
   .rvq{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--ink-3);
        font-weight:800;margin-bottom:9px}
@@ -280,10 +280,10 @@
 
   /* toast + footer */
   .toast{display:flex;align-items:center;gap:12px;background:#101821;border:1px solid var(--line-2);
-         border-radius:9px;padding:10px 15px;font-size:12.5px;margin-top:18px;max-width:1020px}
+         border-radius:9px;padding:10px 15px;font-size:12.5px;margin-top:18px}
   .toast .ok{color:var(--ok);font-weight:700}
   .kbar{display:flex;gap:16px;flex-wrap:wrap;margin-top:22px;padding-top:14px;
-        border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3);max-width:1020px}
+        border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3)}
   .kbar span b{color:var(--ink-2);font-weight:600}
 
   /* done state */
@@ -316,8 +316,9 @@
   .trig.m{background:var(--accent-bg);color:var(--accent)}
 
   /* ---------- Graph ---------- */
-  .gr{display:grid;grid-template-columns:222px minmax(0,1fr);border:1px solid var(--line);
-      border-radius:var(--radius);overflow:hidden;background:var(--panel)}
+  .gr{display:grid;grid-template-columns:222px minmax(0,1fr);background:var(--panel);
+      border:0;border-radius:0;overflow:hidden}
+  .canvas svg{display:block}
   .gr-side{background:var(--bg-2);border-right:1px solid var(--line);padding:14px}
   .gsearch{width:100%;background:#111821;border:1px solid var(--line-2);border-radius:8px;
            padding:8px 10px;font-size:12.5px;color:var(--ink-3)}
@@ -326,7 +327,12 @@
                font-size:9px;color:#0c1016;font-weight:900}
   .tfilter .n{margin-left:auto;color:var(--ink-3);font-size:11.5px}
   .canvas{position:relative;background:
-      radial-gradient(circle at 1px 1px,#1a222d 1px,transparent 0) 0 0/26px 26px,#0e131a;min-height:540px}
+      radial-gradient(circle at 1px 1px,#1a222d 1px,transparent 0) 0 0/26px 26px,#0e131a;
+      min-height:calc(100vh - 250px)}
+  .canvas svg{position:absolute;inset:0;width:100%;height:100%}
+  .gr{min-height:calc(100vh - 250px)}
+  main.bleed .phead{padding:16px 24px 12px}
+  main.bleed .phead p{display:none}
   .zoom{position:absolute;right:12px;bottom:12px;display:flex;gap:5px}
   .zoom button{width:30px;height:30px;border-radius:7px;background:var(--panel);
                border:1px solid var(--line-2);display:grid;place-items:center;font-size:14px}
@@ -341,6 +347,113 @@
   .ghint{position:absolute;left:14px;bottom:14px;font-size:11.5px;color:var(--ink-3);
          background:rgba(14,19,26,.85);padding:6px 11px;border-radius:7px;border:1px solid var(--line)}
 
+  /* ================= CHROME-STUFEN =================
+     Drei Stufen. Der Rückweg ist auf ALLEN Fokus-Bildschirmen derselbe:
+     die auf Symbole reduzierte Seitenleiste. Kein Sonderweg, kein Esc-Zwang. */
+  .app{position:relative}
+
+  /* C3 Start — noch kein Projekt gewählt, also keine projektspezifische Navigation */
+  .app.c3{grid-template-columns:minmax(0,1fr)}
+  .app.c3 .side{display:none}
+
+  /* C2 Orientierung — Navigieren ist die Aufgabe */
+  .app.c2{grid-template-columns:236px minmax(0,1fr)}
+
+  /* C1 Fokus — Symbolleiste. Absolut positioniert: das Ausfahren legt sich ÜBER
+     den Inhalt und löst keinen Umbruch aus (der Bug aus den Screenshots). */
+  .app.c1{grid-template-columns:52px minmax(0,1fr)}
+  .app.c1 .side{
+    position:absolute;left:0;top:0;bottom:0;width:52px;
+    overflow:hidden;white-space:nowrap;z-index:70;
+    background:var(--bg-2);
+    transition:width .26s cubic-bezier(.32,.72,0,1), box-shadow .26s ease;
+    will-change:width}
+  .app.c1 .side:hover{width:236px;box-shadow:20px 0 55px rgba(0,0,0,.62);
+                      border-right-color:var(--line-2)}
+  /* Beschriftungen bleiben im Fluss und werden nur ausgeblendet — kein Layoutsprung */
+  .app.c1 .side .t,
+  .app.c1 .side .navlbl,
+  .app.c1 .side .logo > span:last-child,
+  .app.c1 .side .badge,
+  .app.c1 .side .livedot{opacity:0;transition:opacity .12s ease}
+  .app.c1 .side:hover .t,
+  .app.c1 .side:hover .navlbl,
+  .app.c1 .side:hover .logo > span:last-child,
+  .app.c1 .side:hover .badge,
+  .app.c1 .side:hover .livedot{opacity:1;transition:opacity .18s ease .09s}
+  .app.c1 .side .nav{padding-left:17px;transition:padding-left .26s cubic-bezier(.32,.72,0,1)}
+  .app.c1 .side .nav.l2{padding-left:17px}
+  .app.c1 .side .nav.l3{padding-left:17px}
+  .app.c1 .side:hover .nav.l2{padding-left:26px}
+  .app.c1 .side:hover .nav.l3{padding-left:40px}
+  .app.c1 .side .logo{padding-left:15px}
+  .app.c1 .side .foot .nav{padding-left:17px}
+  .app.c1 > .content{grid-column:2}
+  /* randlose Fläche für Graph und Wiki — Rahmenwerk bleibt trotzdem erreichbar */
+  main.bleed{padding:0 !important}
+  main.bleed .phead{padding:20px 24px 0}
+  main.bleed .legend{margin:0;padding:16px 24px 40px}
+
+  body.c3 .hier,body.c1 .hier{display:none}
+
+  /* ================= WIKI ================= */
+  .wiki{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:78vh;
+        border-top:1px solid var(--line)}
+  .wtree{border-right:1px solid var(--line);padding:18px 16px 40px;background:var(--bg-2)}
+  .wsearch{width:100%;background:#111821;border:1px solid var(--line-2);border-radius:8px;
+           padding:8px 10px;font-size:12.5px;color:var(--ink-3);margin-bottom:13px}
+  .wmode{display:flex;background:#111821;border:1px solid var(--line);border-radius:8px;
+         padding:2.5px;gap:2px;margin-bottom:16px}
+  .wmode button{flex:1;border:0;background:transparent;padding:5px 8px;border-radius:6px;
+                font-size:11.5px;color:var(--ink-3)}
+  .wmode button.on{background:#232d3a;color:var(--ink);font-weight:700}
+  .wgrp{margin-bottom:16px}
+  .wgrp .h{display:flex;align-items:center;gap:7px;font-size:10px;letter-spacing:.11em;
+           text-transform:uppercase;color:var(--ink-3);font-weight:800;margin-bottom:5px}
+  .wgrp .h .n{margin-left:auto;font-weight:600;letter-spacing:0}
+  .witem{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:6px;
+         font-size:12.5px;color:var(--ink-2);cursor:pointer}
+  .witem:hover{background:#161e2a;color:var(--ink)}
+  .witem.on{background:var(--accent-bg);color:var(--accent);font-weight:600}
+  .witem .tag{margin-left:auto;font-size:9.5px;color:var(--ink-3);text-transform:uppercase;
+              letter-spacing:.05em}
+  .witem.sg{opacity:.55;font-style:italic}
+
+  .warticle{padding:30px 40px 70px;max-width:800px}
+  .wtitle{font-size:31px;letter-spacing:-.025em;margin:8px 0 0}
+  .wprov{display:inline-flex;align-items:center;gap:8px;margin-top:11px;font-size:12.5px;
+         color:var(--ink-3);border-bottom:1px dashed var(--line-2);padding-bottom:2px;cursor:pointer}
+  .wprov:hover{color:var(--accent);border-color:var(--accent)}
+  .wsec{margin-top:32px}
+  .wsec > h4{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--ink-3);
+             font-weight:800;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:14px}
+  .wdl{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px 18px;font-size:14px;margin:0}
+  .wdl dt{color:var(--ink-3);font-size:12.5px}
+  .wdl dd{margin:0}
+  .wdl dd .ed{opacity:0;font-size:11px;color:var(--ink-3);margin-left:9px;cursor:pointer}
+  .wdl dd:hover .ed{opacity:1}
+  .wprose{font-size:15px;line-height:1.8;color:var(--ink-2)}
+  .wrelgrp{margin-bottom:13px}
+  .wrelgrp .v{font-size:12px;color:var(--ink-3);margin-bottom:4px}
+  .wrelgrp .items{display:flex;gap:7px;flex-wrap:wrap}
+  .wpill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-2);
+         background:#131a23;border-radius:20px;padding:5px 13px;font-size:13px;cursor:pointer}
+  .wpill:hover{border-color:var(--accent);color:var(--accent)}
+  .wpill .d{width:7px;height:7px;border-radius:50%;flex:none}
+  .wback{font-size:13px;color:var(--ink-2);line-height:2}
+
+  /* Herkunfts-Panel, f\00E4hrt von rechts ein */
+  .wpanel{position:fixed;right:0;top:0;bottom:0;width:400px;background:var(--panel);
+          border-left:1px solid var(--line-2);z-index:85;box-shadow:-20px 0 60px rgba(0,0,0,.6);
+          display:flex;flex-direction:column}
+  .wpanel .hd{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center}
+  .wtabs{display:flex;gap:2px;padding:11px 18px 0}
+  .wtabs button{border:0;background:transparent;color:var(--ink-3);font-size:12.5px;
+                padding:7px 12px;border-bottom:2px solid transparent}
+  .wtabs button.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+  .wpbody{overflow:auto;padding:14px 18px 30px;flex:1}
+  .scrim{position:fixed;inset:0;background:rgba(4,7,11,.5);z-index:84}
+
   .legend{font-size:12px;color:var(--ink-3);margin-top:24px;padding-top:14px;
           border-top:1px solid var(--line);line-height:1.85}
   .legend b{color:var(--ink-2)}
@@ -352,6 +465,8 @@
 
 <div class="demo">
   <span class="t">Notella · Low-Fi Mockup</span>
+  <span style="font-size:11.5px;color:var(--accent);background:var(--accent-bg);
+        border-radius:5px;padding:3px 10px" id="chrome-note"></span>
   <span class="spacer"></span>
   <span class="t">Preset</span>
   <div class="switch" id="sw">
@@ -364,23 +479,25 @@
 <div class="hier" id="hier"></div>
 
 <div class="banner-demo">
-  <b>Zwei Dinge, die dieses Mockup zeigt:</b> (1) Die feste dreistufige Struktur —
-  das Band darüber ist die Navigation und zeigt jederzeit, auf welcher Ebene du stehst.
-  (2) Jedes Wort, jeder Typ, jede Knotenform und die Akzentfarbe kommen aus einem
-  Preset-Objekt; der Umschalter oben tauscht nur dieses Objekt aus, Layout und Code
-  bleiben identisch.
+  <b>Drei Chrome-Stufen — der Rückweg ist überall derselbe:</b>
+  <i>Alle Projekte</i> hat keine Seitenleiste, dort ist noch kein Projekt gewählt.
+  <i>Projekt</i> und <i>Sprint</i> zeigen sie voll, weil Navigieren dort die Aufgabe ist.
+  Auf allen Fokus-Bildschirmen — <i>Meeting</i>, <i>Projektwissen</i>, <i>Beziehungen</i>,
+  <i>Review-Inbox</i> — ist sie einheitlich auf Symbole reduziert und fährt beim Überfahren
+  darüber aus, ohne das Layout zu verschieben. Unabhängig davon: jedes Wort, jede Knotenform
+  und die Akzentfarbe kommen aus dem Preset.
 </div>
 
-<div class="app">
-  <aside class="side">
+<div class="app c2" id="app">
+  <aside class="side" id="side">
     <div class="logo">
       <span class="mk"><span>◆</span></span>
       <span><b>Notella</b><i id="nav-sub"></i></span>
     </div>
     <div id="side-nav"></div>
     <div class="foot">
-      <button class="nav" style="padding-left:0"><span class="ic">⚙</span>Einstellungen</button>
-      <button class="nav" style="padding-left:0"><span class="ic">◈</span>Preset-Verwaltung</button>
+      <button class="nav" style="padding-left:0" title="Einstellungen"><span class="ic">⚙</span><span class="t">Einstellungen</span></button>
+      <button class="nav" style="padding-left:0" title="Preset-Verwaltung"><span class="ic">◈</span><span class="t">Preset-Verwaltung</span></button>
     </div>
   </aside>
 
@@ -524,7 +641,7 @@
               <input type="checkbox" checked> auch Vorschläge zeigen</label>
           </div>
           <div class="canvas" id="canvas">
-            <svg id="svg" width="100%" height="540" viewBox="0 0 900 540"
+            <svg id="svg" viewBox="0 0 900 540"
                  preserveAspectRatio="xMidYMid meet"></svg>
             <div id="g-panel"></div>
             <div class="ghint" id="g-hint">Klick auf einen Knoten fokussiert · Klick ins Leere hebt auf</div>
@@ -535,66 +652,38 @@
 
       <!-- ===== INBOX — Schnelldurchlauf ===== -->
       <section class="screen" id="s-inbox">
-        <div id="rv-head"></div>
-        <div id="rv-body"></div>
+        <div class="rvwrap">
+          <div id="rv-head"></div>
+          <div id="rv-body"></div>
+        </div>
       </section>
 
-      <!-- ===== ENTITY ===== -->
+      <!-- ===== PROJEKTWISSEN / WIKI (C1) ===== -->
       <section class="screen" id="s-ent">
-        <div class="phead">
-          <div class="lv">Projektweit · gilt über alle <span id="e-wgs"></span></div>
-          <h2 id="e-hh"></h2>
-        </div>
-        <div class="ent">
-          <div>
-            <div class="panel">
-              <div class="pad row wrap">
-                <span class="chip t" id="e-type"></span>
-                <h3 style="font-size:21px" id="e-title"></h3>
-                <span class="chip canon">✓ kanonisch</span>
-                <span class="spacer"></span><button class="btn sm">Bearbeiten</button>
-              </div>
-              <div class="pad" style="padding-top:0">
-                <span class="tiny muted">Auch bekannt als:</span>
-                <span class="chip" id="e-alias"></span>
-              </div>
-              <div class="pad bt">
-                <div class="lbl" style="margin-bottom:12px">Felder</div>
-                <dl class="kv" id="e-fields"></dl>
-              </div>
-              <div class="pad bt">
-                <div class="lbl" style="margin-bottom:5px">Beziehungen</div>
-                <div id="e-rels"></div>
-                <button class="btn sm" style="margin-top:10px" data-go="graph">
-                  ⬡ Im Netz ansehen</button>
-              </div>
+        <div class="wiki">
+          <div class="wtree">
+            <div class="wsearch">⌕ Im <span id="w-noun"></span> suchen…</div>
+            <div class="wmode" id="w-mode">
+              <button data-m="type" class="on">Nach Eintrag</button>
+              <button data-m="time">Nach Zeitpunkt</button>
             </div>
-            <div class="panel" style="margin-top:13px">
-              <div class="pad"><div class="lbl">Änderungshistorie</div></div>
-              <div class="pad bt" style="padding-top:2px" id="e-hist"></div>
-            </div>
+            <div id="w-tree"></div>
           </div>
-          <div class="panel" style="border-color:#2c3f3d">
-            <div class="pad">
-              <div class="lbl" style="color:var(--accent)">Herkunft</div>
-              <p class="tiny muted" style="margin:5px 0 0">Woher dieses Wissen stammt —
-                 bis hinunter zur Textstelle in der Notiz.</p>
-            </div>
-            <div class="pad bt" style="padding-top:2px" id="e-prov"></div>
-          </div>
+          <div class="warticle" id="w-article"></div>
         </div>
+        <div id="w-panel"></div>
       </section>
 
-      <div class="legend">
-        <b>Bewusst gezeigt:</b> die dreistufige Struktur als durchgängige Navigation
-        (Band oben, Seitenleiste, Breadcrumbs — alle drei klickbar) · parallele
-        Arbeitsgruppen als Geschwister · die Trennung von <i>ebenengebunden</i>
-        (Meetings, Notizen) und <i>projektweit</i> (Wissen, Beziehungen, Inbox) ·
-        Preset-Abhängigkeit jedes Elements bis hin zu Knotenform und Akzentfarbe ·
-        der gesperrte Inbox-Zustand bei fehlendem Pflichtfeld · die Herkunftsspalte.<br>
+      <div class="legend" id="legend">
+        <b>Chrome-Stufen:</b> „Alle Projekte" ohne Seitenleiste · Projekt-Dashboard und
+        Arbeitsgruppe mit voller Seitenleiste · alle Fokus-Bildschirme einheitlich mit
+        Symbolleiste. Ein Rückweg, überall gleich.<br>
+        <b>Bewusst gezeigt:</b> die dreistufige Struktur als Navigation · parallele
+        Arbeitsgruppen als Geschwister · lokale Navigation ersetzt globale (Wissensbaum
+        statt Seitenleiste) · Herkunft als einfahrendes Panel statt dritter Spalte ·
+        Preset-Abhängigkeit bis hin zu Knotenform und Akzentfarbe.<br>
         <b>Bewusst weggelassen:</b> finale Typografie und Bildsprache · Animationen ·
-        Lade- und Fehlerzustände · echte Interaktion. Alles davon ist im Screen-Inventar
-        textuell spezifiziert.
+        Lade- und Fehlerzustände. Alles davon ist im Screen-Inventar spezifiziert.
       </div>
     </main>
   </div>
@@ -708,6 +797,16 @@ software:{
     exist:["API Gateway","Auth Service","Auth UI","Message Queue","Mobile Client"]}],
   rvRest:4,
   eType:"Komponente", eTitle:"Notification Service", eAlias:"Notif-Service",
+  eDesc:"Zentraler Dienst für den Versand von Push-Benachrichtigungen. Nimmt Ereignisse aus dem API Gateway entgegen, reichert sie an und stellt sie über Firebase zu. Der Versand läuft asynchron über eine eigene Message Queue, damit er die API nicht blockiert.",
+  eBack:["Mobile Client","Firebase statt Eigenbau","Zustellrate unter 90 %","Spike Firebase-SDK"],
+  wikiTime:[
+    {m:"Sprint-Planung KW 32",wg:"Sprint 14",d:"heute",it:[
+      {t:"Notification Service",k:"neu"},{t:"Firebase statt Eigenbau",k:"neu"},
+      {t:"Zustellrate unter 90 %",k:"vorschlag"},{t:"API Gateway",k:"geändert"}]},
+    {m:"Daily KW 32 · Mi",wg:"Sprint 14",d:"gestern",it:[
+      {t:"Message Queue",k:"neu"},{t:"Queue vor der API",k:"neu"}]},
+    {m:"Retro KW 31",wg:"Sprint 13",d:"31.07.",it:[
+      {t:"Auth Service",k:"neu"},{t:"Mobile Client",k:"neu"},{t:"Mira Kolb",k:"neu"}]}],
   eFields:[["Ebene","Backend"],["Status","In Arbeit"],["Verantwortlich","Tom Brandt"]],
   eRels:[{v:"hängt ab von",t:"Auth Service",ty:"Komponente"},
     {v:"verantwortet von",t:"Tom Brandt",ty:"Teammitglied"},
@@ -825,6 +924,16 @@ tabletop:{
     exist:["Orden der Dämmerung","Rote Reißzähne","Silbermünz-Gilde","Haus Vane"]}],
   rvRest:4,
   eType:"Ort", eTitle:"Tänzelndes Pony", eAlias:"The Dancing Pony",
+  eDesc:"Die einzige Schenke am Marktplatz von Falkenstein. Wirtin Hedda führt das Haus seit dem Tod ihres Mannes. Der Schankraum gilt als Treffpunkt für Reisende und Botengänger — und offenbar auch für Leute, die nicht gesehen werden wollen.",
+  eBack:["Aldric Graumantel","Wirtin Hedda","Streit im Pony","Falkenstein"],
+  wikiTime:[
+    {m:"Session 14 — Die Krypta",wg:"Schatten über Falkenstein",d:"heute",it:[
+      {t:"Aldric Graumantel",k:"neu"},{t:"Schwarze Hand",k:"geändert"},
+      {t:"Streit im Pony",k:"vorschlag"},{t:"Tänzelndes Pony",k:"geändert"}]},
+    {m:"Session 13 — Ankunft in Falkenstein",wg:"Schatten über Falkenstein",d:"24.07.",it:[
+      {t:"Falkenstein",k:"neu"},{t:"The Dancing Pony",k:"neu"},{t:"Wirtin Hedda",k:"neu"}]},
+    {m:"Session 12 — Der Bote",wg:"Schatten über Falkenstein",d:"17.07.",it:[
+      {t:"Silberner Schlüssel",k:"neu"},{t:"Schwarze Hand",k:"neu"}]}],
   eFields:[["Region","Nordmark"],["Art","Bauwerk"]],
   eRels:[{v:"liegt in",t:"Falkenstein",ty:"Ort"},{v:"Bewohner",t:"Aldric Graumantel",ty:"NSC"},
     {v:"betrieben von",t:"Wirtin Hedda",ty:"NSC"},{v:"Ereignisse",t:"Streit im Pony",ty:"Ereignis"},
@@ -838,7 +947,15 @@ tabletop:{
     {tm:"heute 21:04",tr:"M",w:"Sam (DM)",x:'Art: <i>leer</i> → <b>Bauwerk</b>'}]
 }};
 
-let key="software", view="dash", focusId=null, openGroup=true;
+let key="software", view="dash", focusId=null;
+let wMode="type", wPanel=null;
+
+/* Chrome-Stufe je Bildschirm — Eigenschaft des Screens, keine Nutzereinstellung */
+const CHROME={dash:"c3", proj:"c2", group:"c2", meeting:"c1", ent:"c1", graph:"c1", inbox:"c1"};
+const CHROMEINFO={
+  c3:"Start — noch kein Projekt gewählt, also keine projektspezifische Navigation",
+  c2:"Orientierung — Navigieren IST hier die Aufgabe, also volle Seitenleiste",
+  c1:"Fokus — Seitenleiste auf Symbole reduziert. Auf ALLEN Fokus-Bildschirmen gleich"};
 const $=s=>document.querySelector(s);
 const NS="http://www.w3.org/2000/svg";
 const P=()=>PRESETS[key];
@@ -892,28 +1009,31 @@ function renderSide(){
   $("#nav-sub").textContent=p.sub+" · "+pr.n.toLowerCase();
   $("#side-nav").innerHTML=`
     <div class="navlbl"><span class="lv">E1</span>${T.projects}</div>
-    <button class="nav ${view==="dash"?"on":""}" data-v="dash">
-      <span class="ic">◈</span>Alle ${T.projects}</button>
-    <button class="nav ${view==="proj"?"on":""}" data-v="proj">
-      <span class="ic">▣</span>${pr.n}</button>
+    <button class="nav ${view==="dash"?"on":""}" data-v="dash" title="Alle ${T.projects}">
+      <span class="ic">◈</span><span class="t">Alle ${T.projects}</span></button>
+    <button class="nav ${view==="proj"?"on":""}" data-v="proj" title="${pr.n}">
+      <span class="ic">▣</span><span class="t">${pr.n}</span></button>
 
     <div class="navlbl"><span class="lv">E2</span>${T.workgroups} in ${pr.n}</div>
     ${p.groups.map(x=>`<button class="nav l2 ${view==="group"&&x.cur?"on":""}"
-        data-v="${x.cur?"group":"group"}">
-        <span class="ic">${x.st==="aktiv"?"◉":x.st==="geplant"?"○":"◌"}</span>${x.n}
+        data-v="group" title="${x.n}">
+        <span class="ic">${x.st==="aktiv"?"◉":x.st==="geplant"?"○":"◌"}</span>
+        <span class="t">${x.n}</span>
         ${x.st==="aktiv"&&x.cur?'<span class="livedot"></span>':""}</button>`).join("")}
 
     <div class="navlbl"><span class="lv">E3</span>${T.meetings} in ${g.n}</div>
-    ${mts.map(m=>`<button class="nav l3 ${view==="meeting"&&m.cur?"on":""}" data-v="meeting">
-        <span class="ic">${m.st==="läuft"?"▶":"·"}</span>${m.n}</button>`).join("")}
+    ${mts.map(m=>`<button class="nav l3 ${view==="meeting"&&m.cur?"on":""}" data-v="meeting"
+        title="${m.n}">
+        <span class="ic">${m.st==="läuft"?"▶":"·"}</span><span class="t">${m.n}</span></button>`).join("")}
 
     <div class="navlbl">Projektweit</div>
-    <button class="nav ${view==="ent"?"on":""}" data-v="ent">
-      <span class="ic">▤</span>${T.canonNoun}</button>
-    <button class="nav ${view==="graph"?"on":""}" data-v="graph">
-      <span class="ic">⬡</span>Beziehungen</button>
-    <button class="nav ${view==="inbox"?"on":""}" data-v="inbox">
-      <span class="ic">⇄</span>Review-Inbox<span class="badge">${p.review.length+p.rvRest}</span></button>`;
+    <button class="nav ${view==="ent"?"on":""}" data-v="ent" title="${T.canonNoun}">
+      <span class="ic">▤</span><span class="t">${T.canonNoun}</span></button>
+    <button class="nav ${view==="graph"?"on":""}" data-v="graph" title="Beziehungen">
+      <span class="ic">⬡</span><span class="t">Beziehungen</span></button>
+    <button class="nav ${view==="inbox"?"on":""}" data-v="inbox" title="Review-Inbox">
+      <span class="ic">⇄</span><span class="t">Review-Inbox</span>
+      <span class="badge">${p.review.length+p.rvRest}</span></button>`;
   $("#side-nav").querySelectorAll(".nav[data-v]").forEach(el=>
     el.addEventListener("click",()=>go(el.dataset.v)));
 }
@@ -1008,6 +1128,14 @@ function render(){
   document.documentElement.style.setProperty("--accent",p.accent);
   document.documentElement.style.setProperty("--accent-bg",p.accentBg);
   if(!p.gNodes.some(n=>n.id===focusId)) focusId=p.gFocus;
+
+  /* ---- Chrome-Stufe anwenden (§4.4.0) ---- */
+  const lvl=CHROME[view];
+  $("#app").className="app "+lvl;
+  document.body.className=lvl;
+  document.querySelector("main").classList.toggle("bleed", view==="graph"||view==="ent");
+  $("#legend").style.display = (lvl==="c1") ? "none" : "";
+  $("#chrome-note").textContent=CHROMEINFO[lvl];
 
   renderHier(); renderSide(); renderCrumb();
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
@@ -1117,29 +1245,8 @@ function render(){
   /* --- Inbox (eigene Renderfunktion) --- */
   renderReview();
 
-  /* --- Entity --- */
-  $("#e-wgs").textContent=T.workgroups;
-  $("#e-hh").textContent=T.canonNoun;
-  $("#e-type").textContent=p.eType;
-  $("#e-title").textContent=p.eTitle;
-  $("#e-alias").textContent=p.eAlias;
-  $("#e-fields").innerHTML=p.eFields.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join("");
-  $("#e-rels").innerHTML=p.eRels.map(r=>`<div class="rel">
-      <span class="verb">${r.v}</span><span class="link">${r.t}</span>
-      <span class="chip">${r.ty}</span></div>`).join("");
-  $("#e-prov").innerHTML=p.eProv.map(x=>`<div class="prov">
-      <div class="row tiny" style="margin-bottom:5px"><b style="font-size:12.5px">${x.who}</b>
-        <span class="spacer"></span><span class="muted">${x.when}</span></div>
-      <div class="tiny muted" style="margin-bottom:7px">${x.wg}</div>
-      <div class="quote" style="font-size:12px;line-height:1.7">${x.q}</div>
-      ${x.ch?`<div class="tiny" style="color:var(--warn);margin-top:6px">
-        ⚠ Quelle nachträglich geändert — Ausschnitt ist eine Momentaufnahme</div>`:""}
-      <div class="link tiny" style="margin-top:7px" data-v="meeting">
-        → Notiz an dieser Stelle öffnen</div></div>`).join("");
-  const TR={K:["c","Kanonisierung"],M:["m","Bearbeitung"],Z:["","Zusammenführung"]};
-  $("#e-hist").innerHTML=p.eHist.map(h=>{const[c,l]=TR[h.tr];
-    return `<div class="hist"><span class="tm">${h.tm}</span><span class="trig ${c}">${l}</span>
-      <span>${h.x} <span class="muted">· ${h.w}</span></span></div>`}).join("");
+  /* --- Wiki --- */
+  renderWiki();
 
   /* rebind navigable elements */
   document.querySelectorAll("[data-v]").forEach(el=>{
@@ -1374,6 +1481,126 @@ function renderReview(){
     </div>`;
 }
 
+
+/* ======================================================================
+   PROJEKTWISSEN — Wiki (C1). Der Wissensbaum ist LOKALE Navigation und
+   ersetzt dort die globale Seitenleiste (§4.4.0, Regel 6).
+   ====================================================================== */
+window.__w={
+  mode:m=>{wMode=m;renderWiki()},
+  panel:t=>{wPanel=t;renderWiki()},
+  close:()=>{wPanel=null;renderWiki()}};
+
+function renderWiki(){
+  const p=P(), T=p.term;
+  const tByK=Object.fromEntries(p.gTypes.map(t=>[t.k,t]));
+  $("#w-noun").textContent=T.canonNoun;
+  document.querySelectorAll("#w-mode button").forEach(b=>
+    b.classList.toggle("on", b.dataset.m===wMode));
+
+  /* ---- Baum: zwei Gliederungen desselben Bestands ---- */
+  let tree="";
+  if(wMode==="type"){
+    tree = p.gTypes.map(t=>{
+      const items=p.gNodes.filter(n=>n.t===t.k);
+      return `<div class="wgrp"><div class="h">
+          <span style="color:${t.c}">${SHAPEGLYPH[t.shape]}</span>${t.l}
+          <span class="n">${items.length}</span></div>
+        ${items.map(n=>`<div class="witem ${n.l===p.eTitle?"on":""} ${n.sugg?"sg":""}">
+          ${n.l}${n.sugg?'<span class="tag">Vorschlag</span>':""}</div>`).join("")}</div>`}).join("");
+  } else {
+    tree = p.wikiTime.map(g=>`<div class="wgrp">
+        <div class="h">${g.m}<span class="n">${g.d}</span></div>
+        <div class="tiny muted" style="margin:-2px 0 5px 0;font-size:10.5px">${g.wg}</div>
+        ${g.it.map(i=>`<div class="witem ${i.t===p.eTitle?"on":""} ${i.k==="vorschlag"?"sg":""}">
+          ${i.t}<span class="tag">${i.k}</span></div>`).join("")}</div>`).join("")
+      + `<div class="tiny muted" style="margin-top:14px;line-height:1.6">
+           Diese Gliederung beantwortet „was wurde wann besprochen und beschlossen?" —
+           dieselben Einträge, nach ${T.meetings} geordnet.</div>`;
+  }
+  $("#w-tree").innerHTML=tree;
+  $("#w-tree").querySelectorAll(".witem").forEach(el=>el.onclick=()=>{
+    el.parentElement.parentElement.querySelectorAll(".witem").forEach(x=>x.classList.remove("on"));
+    el.classList.add("on")});
+
+  /* ---- Artikel ---- */
+  const relGroups={};
+  p.eRels.forEach(r=>{(relGroups[r.v]=relGroups[r.v]||[]).push(r)});
+  const colOf=ty=>{const t=p.gTypes.find(x=>x.l===ty); return t?t.c:"#6b7688"};
+
+  $("#w-article").innerHTML=`
+    <div class="row wrap" style="gap:8px">
+      <span class="chip t">${p.eType}</span>
+      <span class="chip canon">✓ kanonisch</span>
+      <span class="chip">auch: ${p.eAlias}</span>
+    </div>
+    <h1 class="wtitle">${p.eTitle}</h1>
+    <div class="wprov" onclick="__w.panel('prov')">
+      ⌖ Aus ${p.eProv.length} Notizen · zuletzt geändert ${p.eHist[p.eHist.length-1].tm}
+      von ${p.eHist[p.eHist.length-1].w} — <b>Herkunft &amp; Verlauf ansehen</b></div>
+
+    <div class="wsec">
+      <h4>Steckbrief</h4>
+      <dl class="wdl">${p.eFields.map(([k,v])=>
+        `<dt>${k}</dt><dd>${v}<span class="ed">✎ ändern</span></dd>`).join("")}</dl>
+    </div>
+
+    <div class="wsec">
+      <h4>Beschreibung</h4>
+      <p class="wprose" style="margin:0">${p.eDesc}</p>
+    </div>
+
+    <div class="wsec">
+      <h4>Beziehungen</h4>
+      ${Object.entries(relGroups).map(([v,rs])=>`<div class="wrelgrp">
+        <div class="v">${v}</div><div class="items">${rs.map(r=>
+          `<span class="wpill"><span class="d" style="background:${colOf(r.ty)}"></span>
+            ${r.t}</span>`).join("")}</div></div>`).join("")}
+      <button class="btn sm" style="margin-top:7px" onclick="__go('graph')">
+        ⬡ Umgebung im Netz ansehen</button>
+    </div>
+
+    ${p.eBack&&p.eBack.length?`<div class="wsec">
+      <h4>Verweist hierher</h4>
+      <div class="wback">${p.eBack.map(b=>`<span class="link">${b}</span>`).join(" · ")}</div>
+    </div>`:""}`;
+
+  /* ---- Herkunfts-Panel, fährt von rechts ein ---- */
+  const pan=$("#w-panel");
+  if(!wPanel){pan.innerHTML="";return}
+  const provHTML=p.eProv.map(x=>`<div class="prov">
+      <div class="row tiny" style="margin-bottom:4px"><b style="font-size:12.5px">${x.who}</b>
+        <span class="spacer"></span><span class="muted">${x.when}</span></div>
+      <div class="tiny muted" style="margin-bottom:7px">${x.wg}</div>
+      <div class="quote" style="font-size:12px;line-height:1.7">${x.q}</div>
+      ${x.ch?`<div class="tiny" style="color:var(--warn);margin-top:6px">
+        ⚠ Quelle nachträglich geändert — Ausschnitt ist eine Momentaufnahme</div>`:""}
+      <div class="link tiny" style="margin-top:7px" onclick="__go('meeting')">
+        → Notiz an dieser Stelle öffnen</div></div>`).join("");
+  const TR={K:["c","Kanonisierung"],M:["m","Bearbeitung"],Z:["","Zusammenführung"]};
+  const histHTML=p.eHist.map(h=>{const[c,l]=TR[h.tr];
+    return `<div class="hist"><span class="tm">${h.tm}</span><span class="trig ${c}">${l}</span>
+      <span>${h.x} <span class="muted">· ${h.w}</span></span></div>`}).join("");
+
+  pan.innerHTML=`<div class="scrim" onclick="__w.close()"></div>
+    <div class="wpanel">
+      <div class="hd"><strong style="font-size:14px">${p.eTitle}</strong>
+        <span class="spacer"></span>
+        <span class="x" style="cursor:pointer;color:var(--ink-3)" onclick="__w.close()">✕</span></div>
+      <div class="wtabs">
+        <button class="${wPanel==="prov"?"on":""}" onclick="__w.panel('prov')">
+          Herkunft · woher?</button>
+        <button class="${wPanel==="hist"?"on":""}" onclick="__w.panel('hist')">
+          Verlauf · wann?</button></div>
+      <div class="wpbody">
+        ${wPanel==="prov"
+          ? `<div class="tiny muted" style="margin-bottom:10px">Jede Notiz, aus der dieser
+               Eintrag hervorging — mit dem Wortlaut zum Zeitpunkt der Übernahme.</div>${provHTML}`
+          : `<div class="tiny muted" style="margin-bottom:10px">Jede Änderung mit Auslöser
+               und Verweis auf ${T.meeting} und Notiz.</div>${histHTML}`}
+      </div></div>`;
+}
+
 function pickerHTML(){const k=P().picker;
   return `<div class="picker">
     <div class="ph">@${k.q}<span class="caret" style="height:11px"></span> — ${k.items.length}
@@ -1388,6 +1615,14 @@ function pickerHTML(){const k=P().picker;
 $("#sw").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
   document.querySelectorAll("#sw button").forEach(x=>x.classList.remove("on"));
   b.classList.add("on"); key=b.dataset.p; focusId=null; rvReset(); render()});
+
+$("#w-mode").addEventListener("click",e=>{const b=e.target.closest("button");
+  if(b) __w.mode(b.dataset.m)});
+
+/* Esc schließt Overlays. Der Weg zurück ist überall die Seitenleiste — nicht Esc. */
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape" && wPanel) __w.close();
+});
 
 /* Tastaturbedienung der Inbox — der einzige Hebel auf die 6-Sekunden-Marke */
 document.addEventListener("keydown",e=>{

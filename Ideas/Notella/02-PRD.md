@@ -19,6 +19,8 @@
 | V0.2 | 2026-08-07 | Sam | O-01 geklärt (E-12: mehrere Teilnehmerprofile je Account und Projekt) · O-03 und O-06 geklärt und in §4.5 als Datenregeln aufgenommen · `participant_scope` aus beiden Presets entfernt |
 | V0.3 | 2026-08-07 | Sam | §4.4.5 Onboarding-Fluss ergänzt (Review-Lücke geschlossen) · nachfolgende Abschnitte umnummeriert |
 | V0.4 | 2026-08-07 | Sam | **Beziehungs-Graph** als §4.4.5 aufgenommen und aus dem V2-Backlog in eine eigene Phase **V1.2** gehoben · Preset um `graph.shape`/`graph.color`/`graph.style` erweitert (§4.1.2b) · responsives Verhalten und Screen-Liste ergänzt |
+| V0.7 | 2026-08-07 | Sam | **§4.4.0 auf drei Chrome-Stufen reduziert.** Die vierte Stufe („Immersion“ ohne Rahmenwerk) wurde verworfen — sie erzeugte je Bildschirm einen anderen Rückweg. Konsistenz vor Reduktion: alle Fokus-Bildschirme teilen dieselbe Symbolleiste. Neue Regeln zu Layoutstabilität und Übergangsverhalten beim Ausfahren |
+| V0.6 | 2026-08-07 | Sam | §4.4.0 Navigationsmodell mit Chrome-Stufen neu · **§4.4.3 zum Wiki umgebaut**: zweispaltig mit Wissensbaum, zwei Gliederungen (nach Eintrag / nach Zeitpunkt), Herkunft als einfahrendes Panel mit den Reitern Herkunft und Verlauf · Chrome-Stufe je Screen in §4.4.4 ergänzt |
 | V0.5 | 2026-08-07 | Sam | **§4.4.2 Review-Inbox vollständig neu geschrieben.** Schnelldurchlauf statt Liste+Detail · drei Kartenarten mit je einer binären Frage · Pflichtfelder als Chip-Reihe · Kontextanforderungen explizit · kein Stapelweg (bewusste Entscheidung) · Reihenfolge chronologisch nach Meeting · Tastaturbedienung als Kernanforderung mit Zielmarke < 6 s je Vorschlag |
 
 ---
@@ -435,6 +437,56 @@ gekennzeichnet und erzeugen neue Einträge in der Review-Inbox.
 
 ### 4.4 Frontend-Anforderungen
 
+#### 4.4.0 Navigationsmodell und Chrome-Stufen
+
+> **Zwei Leitsätze, in dieser Rangfolge:**
+> 1. **Der Weg zurück ist überall derselbe.** Konsistenz schlägt Reduktion. Ein Bildschirm,
+>    der einen eigenen Ausweg erfindet, kostet mehr Aufmerksamkeit, als das eingesparte
+>    Rahmenwerk zurückgibt.
+> 2. **Was der aktuelle Task nicht braucht, wird nicht gezeigt** — innerhalb von Regel 1.
+
+Daraus folgen **drei** Chrome-Stufen. Jeder Bildschirm gehört genau einer an.
+
+| Stufe | Rahmenwerk | Bildschirme | Begründung |
+|:-----:|-----------|-------------|------------|
+| **Start** | Nur Kopfzeile mit Logo und Konto. **Keine Seitenleiste** | Alle Projekte (Startseite), Login, Einladung, Preset-Verwaltung | Hier ist noch **kein** Projekt gewählt. Eine Leiste mit projektspezifischen Punkten wäre widersprüchlich |
+| **Orientierung** | Ebenenband + Breadcrumb + **ausgeklappte Seitenleiste** | Projekt-Dashboard, Arbeitsgruppen-Übersicht, Teilnehmerprofile | Wer hier steht, will fast immer *woandershin*. Navigation **ist** die Aufgabe |
+| **Fokus** | Breadcrumb + Seitenleiste als **Symbolleiste (52 px)**, fährt beim Überfahren aus | Meeting-Raum, Projektwissen, Beziehungs-Graph, Review-Inbox, Projekteinstellungen | Die Aufgabe ist Arbeiten oder Erkunden. Wege bleiben erreichbar, ziehen aber keine Aufmerksamkeit |
+
+> **Verworfene vierte Stufe.** Ein früherer Entwurf gab Graph und Review-Inbox eine
+> rahmenlose „Immersions"-Stufe mit schwebender Rückweg-Pille und `Esc` als Ausweg. Das
+> wurde verworfen: Es entstand für jeden Fokus-Bildschirm ein *anderer* Rückweg, und `Esc`
+> als einziger sichtbarer Ausweg ist nicht auffindbar. **Immersion ist eine Eigenschaft der
+> Inhaltsfläche, nicht der Navigation.** Graph und Inbox bekommen deshalb eine randlose,
+> vollflächige Inhaltsfläche — aber dieselbe Symbolleiste wie jeder andere Fokus-Bildschirm.
+
+**Regeln**
+
+1. **Die Stufe ist eine Eigenschaft des Bildschirms**, nicht eine Nutzereinstellung. Es gibt
+   keinen „Fokusmodus"-Schalter, den man finden muss.
+2. **Es gibt genau einen Rückweg**, und der ist auf allen Fokus-Bildschirmen identisch: die
+   Symbolleiste. `Esc` schließt Overlays, ist aber nie der einzige Weg irgendwohin.
+3. **Das Ausfahren der Symbolleiste darf das Layout nicht verschieben.** Sie liegt absolut
+   positioniert **über** dem Inhalt; die 52-px-Spur bleibt reserviert. Ein Umbruch des
+   Inhalts beim Überfahren ist ein Fehler, kein Verhalten.
+4. **Der Übergang ist weich:** rund 260 ms mit weicher Beschleunigung. Beschriftungen
+   blenden sich ein, statt zu erscheinen. Ein ruckartiger Sprung liest sich als Fehlfunktion.
+5. **Lokale Navigation ersetzt globale, sie ergänzt sie nicht.** Wo ein Bildschirm eine
+   eigene Navigation mitbringt (der Wissensbaum im Wiki), bleibt die globale reduziert.
+6. **`Strg`/`⌘ + K` öffnet die Befehlspalette** auf jeder Stufe — als Abkürzung für Geübte,
+   nie als einziger Weg.
+
+**Akzeptanzkriterien**
+
+- [ ] Alle Fokus-Bildschirme zeigen dasselbe Navigationselement an derselben Stelle — es gibt keinen bildschirmspezifischen Rückweg
+- [ ] Auf der Startseite „Alle Projekte" existiert keine Seitenleiste, weder ausgeklappt noch als Symbolleiste
+- [ ] Beim Ausfahren der Symbolleiste ändert sich **keine** Position eines Inhaltselements — prüfbar über gleichbleibende Bounding-Boxen vor und nach dem Überfahren
+- [ ] Der Übergang läuft über mindestens 200 ms mit weicher Beschleunigung; Beschriftungen wechseln über Deckkraft, nicht über Sichtbarkeit
+- [ ] Graph und Review-Inbox nutzen die volle Inhaltsfläche ohne Rahmen, behalten aber die Symbolleiste
+- [ ] Inhalt, der schmaler als die Fläche ist (Review-Inbox), wird zentriert und klebt nicht am Rand der Symbolleiste
+- [ ] `Esc` ist auf keinem Bildschirm der einzige sichtbare Weg zurück
+- [ ] Kein Bildschirm zeigt gleichzeitig eine globale und eine lokale Navigationsliste
+
 #### 4.4.1 Meeting-Raum (wichtigster Screen)
 
 **Aufbau (Desktop, dreispaltig):**
@@ -663,40 +715,77 @@ Filterung „nur meine Vorschläge".
 - [ ] Ein Member ohne Kuratorenrechte sieht keine Handlungsschaltflächen — weder aktiv noch ausgegraut
 - [ ] Der Endzustand zeigt eine Bilanz der Sitzung und verlinkt in den Beziehungs-Graph
 
-#### 4.4.3 Entitäten-Liste und -Detail
+#### 4.4.3 Projektwissen — das Wiki
 
-**Liste:** Tabellarisch, Spalten aus den Feldern mit `show_in_list: true` plus Titel und Typ.
-Filter je Typ und je `select`-Feld. Suche über Titel und Aliasse. Umschalter „nur kanonisch /
-auch Vorschläge".
+Chrome-Stufe **Fokus**: Die globale Seitenleiste ist auf die Symbolleiste reduziert, weil der
+Wissensbaum die Navigation übernimmt (Regel 6 aus §4.4.0).
 
-**Detail — einheitlicher Aufbau für alle Typen (Konsistenzprinzip aus dem PRS):**
+**Zweispaltiger Aufbau**
 
-1. Titel, Typ-Kennzeichnung, Aliasse
-2. Preset-Felder als Formular (schreibgeschützt für Member)
-3. Beziehungen, gruppiert nach Beziehungstyp, mit korrektem Label je Richtung
-   (`lebt in` vs. `Bewohner`)
-4. **Herkunft** — Liste aller Notizen, aus denen dieser Eintrag stammt, mit Meeting, Autor,
-   Datum und Sprung an die Textstelle
-5. Änderungshistorie (wer hat wann welches Feld geändert)
+| Spalte | Inhalt |
+|--------|--------|
+| **Links — Wissensbaum** (~250 px) | Suchfeld · darunter der Bestand, gegliedert nach Entitätstyp aus dem Preset, je Typ alphabetisch. Zähler je Typ. Vorschläge separat am Ende, gedämpft |
+| **Rechts — Artikel** (Lesebreite max. ~740 px) | Der Eintrag als **Dokument**, nicht als Formular |
 
-**Akzeptanzkriterien:**
+**Zwei Gliederungen desselben Bestands** — Umschalter über dem Baum:
 
-- [ ] Die Detailseite rendert für jeden Entitätstyp beider Presets korrekt, ohne typ-spezifischen Code
-- [ ] Ein `reference`-Feld zeigt nur Entitäten des in `target_type` erlaubten Typs zur Auswahl
-- [ ] Beim Anlegen einer Beziehung bietet die Auswahl nur `relation_types` an, deren `source`/`target` zu den beteiligten Typen passen (`any` erlaubt alle)
+- **Nach Eintrag** (Standard): nach Entitätstyp, alphabetisch. Beantwortet *„Was gibt es?"*
+- **Nach Zeitpunkt**: chronologisch nach Meeting gegliedert — je Meeting die Einträge, die
+  daraus entstanden oder dort geändert wurden. Beantwortet *„Was haben wir wann besprochen
+  und beschlossen?"* Damit wird die Herkunft zu einer **abfragbaren Dimension** statt zu
+  einer Fußnote im Artikel
+
+**Der Artikel — einheitlicher Aufbau für jeden Typ (Konsistenzprinzip)**
+
+1. **Kopf:** Titel, Typ-Kennzeichnung, Aliasse, Zustand (kanonisch / Vorschlag)
+2. **Herkunftszeile** direkt unter dem Titel, eine Zeile:
+   *„Aus 2 Notizen · zuletzt geändert heute von Sam"* — anklickbar, öffnet die Herkunftsansicht
+3. **Steckbrief:** die Preset-Felder als kompakte Definitionsliste. **Kein Formular** —
+   Bearbeiten öffnet sich erst auf Klick am jeweiligen Feld
+4. **Beschreibung:** das `longtext`-Feld als Fließtext, in Lesebreite
+5. **Beziehungen** als lesbare Abschnitte, nach Beziehungstyp gruppiert, mit
+   richtungsrichtigem Label (`lebt in` vs. `Bewohner`)
+6. **Verweist hierher:** Einträge, die auf diesen verweisen — der klassische Wiki-Rückverweis.
+   Erscheint nur, wenn es welche gibt
+
+**Herkunftsansicht — die Abfrage „woher und wann?"**
+
+Statt einer dauerhaften dritten Spalte (die den Artikel schmal machen würde) öffnet der
+Klick auf die Herkunftszeile ein **Panel, das von rechts einfährt** und den Artikel nicht
+verschiebt. Zwei Reiter:
+
+| Reiter | Inhalt |
+|--------|--------|
+| **Herkunft** | Jede Ursprungsnotiz mit Meeting, Arbeitsgruppe, Autor, Datum und dem Textausschnitt als Momentaufnahme. Sprung an die Textstelle. Nachträglich geänderte Quellen sind gekennzeichnet |
+| **Verlauf** | Jede Änderung mit Zeitpunkt, Person, Feld vorher/nachher, **Auslöser** (Kanonisierung / Bearbeitung / Zusammenführung) und dem Verweis auf Notiz und Meeting. Filterbar nach Auslöser |
+
+Damit sind beide Fragen beantwortbar, ohne den Lesefluss dauerhaft zu belasten:
+*„Woher wissen wir das?"* und *„Wann wurde das besprochen und beschlossen?"*
+
+**Akzeptanzkriterien**
+
+- [ ] Der Artikel rendert für jeden Entitätstyp beider Presets korrekt, ohne typ-spezifischen Code
+- [ ] Der Wissensbaum zeigt exakt die `entity_types` des Projekt-Presets mit Zählern
+- [ ] Die Umschaltung „Nach Eintrag / Nach Zeitpunkt" zeigt denselben Bestand in zwei Gliederungen, ohne Nachladen des Artikels
+- [ ] Die Gliederung „Nach Zeitpunkt" listet je Meeting alle Einträge, die daraus entstanden **oder** dort geändert wurden
+- [ ] Die Herkunftsansicht fährt über den Inhalt, ohne den Artikel umzubrechen
 - [ ] Ein Klick auf einen Herkunftseintrag öffnet die Notiz mit hervorgehobener Textstelle
+- [ ] Die Preset-Felder erscheinen als Definitionsliste; ein Eingabefeld entsteht erst nach Klick
+- [ ] „Verweist hierher" wird nicht gerendert, wenn es keine Rückverweise gibt
+- [ ] Ein `reference`-Feld bietet nur Einträge des in `target_type` erlaubten Typs an
+- [ ] Beim Anlegen einer Beziehung erscheinen nur `relation_types`, deren `source`/`target` passen (`any` erlaubt alle)
+- [ ] Neben dem Wissensbaum ist keine globale Navigationsliste sichtbar (§4.4.0, Regel 6)
 
 #### 4.4.4 Weitere Screens (V1)
 
-
-| Screen | Kerninhalt | Leerzustand |
-|--------|------------|-------------|
-| **Dashboard** | Projekte des Accounts, laufende Meetings (hervorgehoben), offene Vorschläge (nur Lead/Kurator), zuletzt geöffnet | „Noch kein Projekt — anlegen oder auf Einladung warten" |
-| **Projektübersicht** | Arbeitsgruppen als Karten mit Anzahl Meetings und letzter Aktivität; Kurzstatistik des Projektwissens | „Noch keine \<Sprints\> — die erste anlegen" |
-| **Arbeitsgruppen-Übersicht** | Meetings chronologisch, Zustandskennzeichnung, Teilnehmerprofile der Gruppe | „Noch kein \<Meeting\> geplant" |
-| **Teilnehmerprofil** | Participant-Entität mit Preset-Feldern, verknüpfter Account, eigene Beziehungen | — |
-| **Projekteinstellungen** | Name, Beschreibung, Mitglieder + Rollen, Einladungslinks, Preset-Ansicht und additive Erweiterung, Verhaltens-Flags (schreibgeschützt aus dem Preset) | — |
-| **Preset-Verwaltung** | Liste importierter Presets, Import per Datei-Upload mit Validierungsausgabe, Vorschau der Typen und Beziehungen | „Nur die mitgelieferten Presets vorhanden" |
+| Screen | Chrome | Kerninhalt | Leerzustand |
+|--------|:------:|------------|-------------|
+| **Alle Projekte** (Startseite) | Start | Projekte des Accounts als Karten, laufende Meetings hervorgehoben, zuletzt geöffnet. **Keine Seitenleiste** — hier ist noch kein Projekt gewählt, projektspezifische Navigationspunkte wären widersprüchlich | „Noch kein Projekt — anlegen oder auf Einladung warten" |
+| **Projekt-Dashboard** | Orientierung | Arbeitsgruppen als Karten mit Anzahl Meetings und letzter Aktivität; Kurzstatistik des Projektwissens; offene Vorschläge (nur Lead/Kurator) | „Noch keine \<Sprints\> — die erste anlegen" |
+| **Arbeitsgruppen-Übersicht** | Orientierung | Meetings chronologisch, Zustandskennzeichnung, Teilnehmerprofile der Gruppe | „Noch kein \<Meeting\> geplant" |
+| **Teilnehmerprofil** | Orientierung | Participant-Entität mit Preset-Feldern, verknüpfter Account, eigene Beziehungen | — |
+| **Projekteinstellungen** | Fokus | Name, Beschreibung, Mitglieder + Rollen, Einladungslinks, Preset-Ansicht und additive Erweiterung, Verhaltens-Flags (schreibgeschützt aus dem Preset) | — |
+| **Preset-Verwaltung** | Start | Liste importierter Presets, Import per Datei-Upload mit Validierungsausgabe, Vorschau der Typen und Beziehungen | „Nur die mitgelieferten Presets vorhanden" |
 
 **Verpflichtende Zustände für jeden Screen:** Ladezustand (Skeleton, kein Spinner-Vollbild),
 Leerzustand mit Handlungsaufforderung, Fehlerzustand mit Wiederholen-Möglichkeit,

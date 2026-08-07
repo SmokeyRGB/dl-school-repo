@@ -34,44 +34,58 @@ Sie sind nur dort einzeln ausgeführt, wo sie inhaltlich vom Standard abweichen.
 
 ## Übersicht
 
-| # | Bildschirm | Rollen | Phase | Preset |
-|---|-----------|:------:|:-----:|:------:|
+**Chrome-Stufen** (PRD §4.4.0) — *Rahmenwerk dient dem Wechseln; wer nicht wechseln will,
+braucht es nicht:*
+
+| Stufe | Rahmenwerk |
+|:-----:|-----------|
+| **Start** | Nur Kopfzeile. Keine Seitenleiste — es ist noch kein Projekt gewählt |
+| **Orient.** | Ebenenband + Breadcrumb + ausgeklappte Seitenleiste. Navigieren **ist** hier die Aufgabe |
+| **Fokus** | Breadcrumb + Seitenleiste als Symbolleiste (52 px), fährt beim Überfahren **über** den Inhalt — ohne ihn zu verschieben |
+
+> **Ein Rückweg für alle Fokus-Bildschirme.** Meeting-Raum, Wiki, Graph und Review-Inbox
+> teilen dieselbe Symbolleiste an derselben Stelle. Immersion entsteht durch eine randlose
+> **Inhaltsfläche**, nicht durch das Entfernen der Navigation.
+
+| # | Bildschirm | Rollen | Phase | Chrome | Preset |
+|---|-----------|:------:|:-----:|:------:|:------:|
 | **A — Zugang** |
-| A1 | Registrierung | alle | V1.0 | — |
-| A2 | Login | alle | V1.0 | — |
-| A3 | Passwort zurücksetzen | alle | V1.0 | — |
-| A4 | Einladung annehmen | alle | V1.0 | 🎨 |
-| A5 | Teilnehmerprofil anlegen | alle | V1.0 | 🎨 |
+| A1 | Registrierung | alle | V1.0 | Start | — |
+| A2 | Login | alle | V1.0 | Start | — |
+| A3 | Passwort zurücksetzen | alle | V1.0 | Start | — |
+| A4 | Einladung annehmen | alle | V1.0 | Start | 🎨 |
+| A5 | Teilnehmerprofil anlegen | alle | V1.0 | Start | 🎨 |
 | **B — Navigation** |
-| B1 | Dashboard | alle | V1.0 | 🎨 |
-| B2 | Projekt anlegen (Preset-Auswahl) | L | V1.0 | 🎨 |
-| B3 | Projektübersicht | alle | V1.0 | 🎨 |
-| B4 | Arbeitsgruppen-Übersicht | alle | V1.0 | 🎨 |
-| B5 | Arbeitsgruppe anlegen / bearbeiten | L, K | V1.0 | 🎨 |
-| B6 | Meeting anlegen / planen | L, K | V1.0 | 🎨 |
+| B1 | **Alle Projekte** (Startseite) | alle | V1.0 | **Start** | 🎨 |
+| B2 | Projekt anlegen (Preset-Auswahl) | L | V1.0 | Start | 🎨 |
+| B3 | **Projekt-Dashboard** | alle | V1.0 | **Orient.** | 🎨 |
+| B4 | Arbeitsgruppen-Übersicht | alle | V1.0 | **Orient.** | 🎨 |
+| B5 | Arbeitsgruppe anlegen / bearbeiten | L, K | V1.0 | Orient. | 🎨 |
+| B6 | Meeting anlegen / planen | L, K | V1.0 | Orient. | 🎨 |
 | **C — Kern** |
-| C1 | ⚡ Meeting-Raum | alle | V1.0 | 🎨 |
-| C2 | ⚡ Erwähnungs-Auswahl (Overlay) | alle | V1.1 | 🎨 |
-| C3 | Entität schnell anlegen (Overlay) | alle | V1.1 | 🎨 |
+| Fokus | ⚡ Meeting-Raum | alle | V1.0 | **Fokus** | 🎨 |
+| Orient. | ⚡ Erwähnungs-Auswahl (Overlay) | alle | V1.1 | — | 🎨 |
+| Start | Entität schnell anlegen (Overlay) | alle | V1.1 | — | 🎨 |
 | **D — Wissen** |
-| D1 | Entitäten-Liste | alle | V1.1 | 🎨 |
-| D2 | ⚡ Entitäten-Detail | alle | V1.1 | 🎨 |
-| D3 | Beziehung hinzufügen (Overlay) | L, K | V1.1 | 🎨 |
-| D4 | Teilnehmerprofil-Detail | alle | V1.0 | 🎨 |
-| D5 | ⚡ Beziehungs-Graph | alle | V1.2 | 🎨 |
+| D1 | **Projektwissen — Wiki** (Baum + Artikel) | alle | V1.1 | **Fokus** | 🎨 |
+| D2 | ⚡ Wiki-Artikel + Herkunfts-Panel | alle | V1.1 | Fokus | 🎨 |
+| D3 | Beziehung hinzufügen (Overlay) | L, K | V1.1 | — | 🎨 |
+| D4 | Teilnehmerprofil-Detail | alle | V1.0 | Orient. | 🎨 |
+| D5 | ⚡ Beziehungs-Graph | alle | V1.2 | **Fokus** | 🎨 |
 | **E — Kuration** |
-| E1 | ⚡ Review-Inbox | L, K (M lesend) | V1.1 | 🎨 |
-| E2 | Zusammenführen | L, K | V1.1 | 🎨 |
-| E3 | Änderungshistorie (Overlay) | alle | V1.1 | 🎨 |
+| E1 | ⚡ Review-Inbox (Schnelldurchlauf) | L, K (M lesend) | V1.1 | **Fokus** | 🎨 |
+| E2 | Zusammenführen | L, K | V1.1 | Fokus | 🎨 |
+| E3 | Herkunft & Verlauf (Panel) | alle | V1.1 | — | 🎨 |
 | **F — Verwaltung** |
-| F1 | Projekteinstellungen — Allgemein | L | V1.0 | 🎨 |
-| F2 | Projekteinstellungen — Mitglieder & Rollen | L | V1.0 | — |
-| F3 | Projekteinstellungen — Preset-Ansicht | L | V1.0 | 🎨 |
-| F4 | Preset erweitern (additiv) | L | V1.1 | 🎨 |
-| F5 | Preset-Verwaltung / Import | L | V1.0 | 🎨 |
-| F6 | Kontoeinstellungen | alle | V1.0 | — |
+| F1 | Projekteinstellungen — Allgemein | L | V1.0 | Fokus | 🎨 |
+| F2 | Projekteinstellungen — Mitglieder & Rollen | L | V1.0 | Fokus | — |
+| F3 | Projekteinstellungen — Preset-Ansicht | L | V1.0 | Fokus | 🎨 |
+| F4 | Preset erweitern (additiv) | L | V1.1 | Fokus | 🎨 |
+| F5 | Preset-Verwaltung / Import | L | V1.0 | Start | 🎨 |
+| F6 | Kontoeinstellungen | alle | V1.0 | Start | — |
 
 **27 Bildschirme, davon 18 preset-abhängig und 5 Kernbildschirme.**
+Verteilung nach Chrome-Stufe: 10 × Start · 7 × Orientierung · 9 × Fokus · 4 Overlays ohne eigene Stufe.
 V1.0 umfasst 17, V1.1 weitere 9, V1.2 einen.
 
 ---
@@ -310,55 +324,56 @@ V1.0 umfasst 17, V1.1 weitere 9, V1.2 einen.
 
 ## D — Wissen
 
-### D1 · Entitäten-Liste 🎨
+### D1/D2 · Projektwissen — das Wiki ⚡ 🎨
 
 | | |
 |---|---|
-| **Zweck** | Das Projektwissen durchsuchen und filtern |
+| **Zweck** | Das gesammelte Wissen lesen, durchsuchen und nachvollziehen. Beantwortet „Was ist das?" — der Graph (D5) beantwortet „Wie hängt alles zusammen?" |
+| **Chrome** | **Fokus** — die globale Seitenleiste ist auf Symbole reduziert, weil der **Wissensbaum die Navigation übernimmt**. Zwei Navigationslisten nebeneinander sind der Normalfall von Unübersichtlichkeit (§4.4.0, Regel 6) |
 | **Phase** | V1.1 |
 
-**Kernelemente**
+**Zweispaltig**
 
-- Typ-Reiter aus dem Preset (`Alle` · `Komponenten` · `Entscheidungen` · …)
-- Tabelle mit **dynamischen Spalten**: Titel, Typ, plus alle Felder mit `show_in_list: true`
-- Filter je `select`-Feld als Chip-Leiste
-- Suche über Titel und Aliasse mit Tippfehlertoleranz
-- Umschalter „nur kanonisch" / „auch Vorschläge" — Vorschläge visuell abgesetzt
-- Sortierung nach jeder Spalte
+| Spalte | Inhalt |
+|--------|--------|
+| **Links — Wissensbaum** (~250 px) | Suchfeld · Bestand nach Entitätstyp aus dem Preset gegliedert, je Typ alphabetisch, mit Zähler. Vorschläge gedämpft und gekennzeichnet |
+| **Rechts — Artikel** (Lesebreite ~740 px) | Der Eintrag als **Dokument**, nicht als Formular |
+
+**Zwei Gliederungen desselben Bestands** — Umschalter über dem Baum:
+
+| Modus | Gliederung | Beantwortet |
+|-------|-----------|-------------|
+| **Nach Eintrag** (Standard) | nach Entitätstyp, alphabetisch | *„Was gibt es?"* |
+| **Nach Zeitpunkt** | chronologisch nach Meeting; je Meeting die Einträge, die daraus **entstanden oder dort geändert** wurden, mit Kennzeichnung `neu` / `geändert` / `Vorschlag` | *„Was haben wir wann besprochen und beschlossen?"* — Herkunft wird damit zur **abfragbaren Dimension** statt zur Fußnote |
+
+**Artikelaufbau — für jeden Typ identisch**
+
+1. Typ-Kennzeichnung, Zustand, Aliasse
+2. Titel
+3. **Herkunftszeile**: *„Aus 2 Notizen · zuletzt geändert heute von Sam"* — öffnet das Panel
+4. **Steckbrief**: Preset-Felder als Definitionsliste. Kein Formular — Bearbeiten erst auf Klick am Feld
+5. **Beschreibung**: `longtext`-Feld als Fließtext in Lesebreite
+6. **Beziehungen**: nach Beziehungstyp gruppiert, als Pillen mit Typfarbe. Darunter „Umgebung im Netz ansehen" → D5
+7. **Verweist hierher**: Rückverweise. Wird **nicht gerendert**, wenn es keine gibt
+
+**Herkunfts-Panel** — statt einer dritten Spalte, die den Artikel schmal machen würde,
+fährt es **von rechts über den Inhalt** und bricht den Artikel nicht um. Zwei Reiter:
+
+| Reiter | Inhalt |
+|--------|--------|
+| **Herkunft · woher?** | Jede Ursprungsnotiz mit Meeting, Arbeitsgruppe, Autor, Datum und dem Wortlaut als Momentaufnahme. Sprung an die Textstelle. Nachträglich geänderte Quellen gekennzeichnet |
+| **Verlauf · wann?** | Jede Änderung mit Zeitpunkt, Person, Feld vorher/nachher, **Auslöser** (Kanonisierung / Bearbeitung / Zusammenführung) und Verweis auf Notiz und Meeting |
+
+`Esc` schließt das Panel, bevor es die Chrome-Stufe wechselt.
 
 **Abweichende Zustände**
 
 | Zustand | Verhalten |
 |---------|-----------|
 | Leer (Projekt neu) | „Hier entsteht euer **Projektwissen** — aus dem, was ihr in **Meetings** schreibt." mit Verweis ins nächste Meeting |
-| Leer (Filter) | „Kein Treffer mit diesen Filtern" plus „Filter zurücksetzen" |
-
----
-
-### D2 · Entitäten-Detail ⚡ 🎨
-
-| | |
-|---|---|
-| **Zweck** | Beantwortet „Was ist das?" **und** „Woher wissen wir das?" — der zweite Teil ist das Alleinstellungsmerkmal |
-| **Phase** | V1.1 |
-
-**Aufbau — für jeden Typ identisch (Konsistenzprinzip)**
-
-| # | Abschnitt | Inhalt |
-|---|-----------|--------|
-| 1 | Kopf | Titel, Typ-Kennzeichnung, Zustand (kanonisch / Vorschlag), Aliasse als Chips |
-| 2 | Felder | Preset-Felder über den `SchemaForm`-Baustein. Für Member schreibgeschützt, für Lead/Kurator direkt bearbeitbar |
-| 3 | Beziehungen | Nach Beziehungstyp gruppiert, mit richtungsrichtigem Label (`lebt in` vs. `Bewohner`). Je Beziehung ein Sprung zur Gegenseite |
-| 4 | **Herkunft** | Liste aller Notizen, aus denen dieser Eintrag stammt: Meeting, Arbeitsgruppe, Autor, Datum und der Textausschnitt als Momentaufnahme. Klick öffnet die Notiz an der markierten Stelle. Bei nachträglich geänderten Quellen die Kennzeichnung „Quelle nachträglich geändert" |
-| 5 | Historie | Zusammengeklappt. Je Eintrag: Zeit, Person, Feld vorher/nachher, **Auslöser** (Kanonisierung / manuelle Bearbeitung / Zusammenführung) und der Verweis auf Notiz und Meeting |
-
-**Abweichende Zustände**
-
-| Zustand | Verhalten |
-|---------|-----------|
-| Leer (Beziehungen) | „Noch keine Verbindungen" — für Lead/Kurator mit „Beziehung hinzufügen" |
-| Leer (Herkunft) | Nur bei direkt angelegten Entitäten: „Direkt angelegt, nicht aus einer Notiz" |
-| Keine Berechtigung (Bearbeiten) | Felder schreibgeschützt mit einmaligem Hinweis: „Nur die Projektleitung kann das **Projektwissen** ändern" |
+| Leer (Suche) | „Kein Treffer" plus Zurücksetzen |
+| Leer (Beziehungen) | Abschnitt wird nicht gerendert |
+| Keine Berechtigung | Felder schreibgeschützt, einmaliger Hinweis: „Nur die Projektleitung kann das **Projektwissen** ändern" |
 
 ---
 
@@ -390,8 +405,9 @@ V1.0 umfasst 17, V1.1 weitere 9, V1.2 einen.
 
 | | |
 |---|---|
-| **Zweck** | Die Liste beantwortet „Was ist das?", der Graph „Wie hängt alles zusammen?" — zweite Projektion derselben Daten, keine eigene Datenhaltung |
-| **Zugang** | Aus der Projektübersicht und aus der Entitäten-Liste per Umschalter `Liste / Karte` |
+| **Zweck** | Das Wiki beantwortet „Was ist das?", der Graph „Wie hängt alles zusammen?" — zweite Projektion derselben Daten, keine eigene Datenhaltung |
+| **Zugang** | Aus dem Projekt-Dashboard und aus jedem Wiki-Artikel („Umgebung im Netz ansehen") |
+| **Chrome** | **Fokus.** Die Inhaltsfläche ist randlos und füllt den Bildschirm — ein erforschbares Universum. Filterleiste und Zoom schweben über der Leinwand. Der Rückweg ist dieselbe Symbolleiste wie auf jedem anderen Fokus-Bildschirm |
 | **Phase** | V1.2 |
 
 **Aufbau**
