@@ -192,24 +192,107 @@
   .banner{border-radius:8px;padding:9px 12px;font-size:12.5px;display:flex;gap:8px;align-items:flex-start}
   .banner.i{background:var(--priv-bg);color:#c3b0f7;border:1px solid #2e2749}
 
-  /* ---------- Inbox ---------- */
-  .ib{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:13px;align-items:start}
-  .q{padding:10px 13px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;gap:9px}
-  .q:last-child{border-bottom:0}
-  .q.on{background:var(--accent-bg);box-shadow:inset 3px 0 0 var(--accent)}
-  .q .ic{width:26px;height:26px;border-radius:7px;background:#1d2632;display:grid;place-items:center;
-         font-size:12px;flex:none}
+  /* ---------- Inbox: Schnelldurchlauf ---------- */
   .quote{background:#111821;border-left:2px solid var(--accent);padding:10px 13px;border-radius:0 7px 7px 0;
          font:12.5px/1.75 var(--mono);color:var(--ink-2)}
   .quote mark{background:transparent;color:var(--accent);font-weight:700}
-  .fld{margin-bottom:11px}
-  .fld label{display:block;font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:4px}
-  .fld .req{color:var(--danger);font-weight:800}
   .inp{width:100%;border:1px solid var(--line-2);border-radius:7px;padding:7px 10px;font-size:13px;
        background:#111821;display:flex;align-items:center}
-  .inp.err{border-color:#5a3330;background:var(--danger-bg)}
-  .errtxt{font-size:11.5px;color:var(--danger);margin-top:4px}
-  .dup{background:var(--warn-bg);border:1px solid #453516;border-radius:8px;padding:11px 13px}
+
+  /* progress */
+  .rvbar{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
+  .seggrp{display:flex;flex-direction:column;gap:5px}
+  .seggrp .cap{font-size:10px;letter-spacing:.05em;color:var(--ink-3);text-transform:uppercase;
+               font-weight:700}
+  .seggrp .cap.now{color:var(--accent)}
+  .segs{display:flex;gap:3px}
+  .seg{width:26px;height:5px;border-radius:3px;background:#1d2632}
+  .seg.done{background:var(--ok)}
+  .seg.now{background:var(--accent);box-shadow:0 0 0 2px rgba(255,255,255,.06)}
+
+  /* the card */
+  .rv{display:grid;grid-template-columns:minmax(0,1fr) 235px;gap:26px;align-items:start;
+      max-width:1020px}
+  .rvmain{min-width:0}
+  .rvq{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--ink-3);
+       font-weight:800;margin-bottom:9px}
+  .freq{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:var(--accent);
+        background:var(--accent-bg);border-radius:5px;padding:3px 9px;margin-bottom:9px;cursor:pointer}
+  .evid{background:#0f151d;border:1px solid var(--line);border-left:3px solid var(--accent);
+        border-radius:0 10px 10px 0;padding:16px 19px;font-size:14.5px;line-height:1.85;
+        color:var(--ink-2)}
+  .evid mark{background:rgba(255,255,255,.06);color:var(--ink);font-weight:700;
+             border-bottom:2px solid var(--accent);padding:1px 3px;border-radius:3px}
+  .evid .meta{margin-top:11px;padding-top:10px;border-top:1px solid var(--line);
+              font-size:11.5px;color:var(--ink-3)}
+  .evmore{margin-top:8px;font-size:11.5px;color:var(--ink-3);border-left:3px solid var(--line-2);
+          padding:7px 0 7px 14px;line-height:1.7}
+  .arrowdown{text-align:center;color:var(--line-2);font-size:19px;margin:14px 0 12px}
+  .prop{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+  .prop h3{font-size:25px;letter-spacing:-.02em}
+  .prop .edit{font-size:11px;color:var(--ink-3);cursor:pointer;border-bottom:1px dotted var(--line-2)}
+
+  .chiprow{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+  .fchip{border:1px solid var(--line-2);background:#131a23;border-radius:7px;padding:7px 13px;
+         font-size:13px;display:flex;align-items:center;gap:8px;color:var(--ink-2)}
+  .fchip:hover{border-color:var(--accent);color:var(--ink)}
+  .fchip .num{font:9.5px var(--mono);color:var(--ink-3);background:#1d2632;border-radius:3px;
+              padding:1px 4px}
+  .fchip.on{background:var(--accent);border-color:var(--accent);color:#0c1016;font-weight:700}
+  .fchip.on .num{background:rgba(0,0,0,.2);color:inherit}
+  .fchip.ai{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent-bg)}
+
+  .actions{display:flex;align-items:center;gap:18px;margin-top:22px;padding-top:18px;
+           border-top:1px solid var(--line);flex-wrap:wrap}
+  .bigbtn{background:var(--accent);color:#0c1016;border:0;border-radius:9px;
+          padding:13px 26px;font-size:15px;font-weight:800;letter-spacing:-.01em;
+          display:flex;align-items:center;gap:10px}
+  .bigbtn:hover{filter:brightness(1.1)}
+  .bigbtn[disabled]{background:#1d2632;color:var(--ink-3);cursor:not-allowed;filter:none}
+  .bigbtn .k{font:10px var(--mono);background:rgba(0,0,0,.22);border-radius:4px;padding:2px 5px}
+  .bigbtn[disabled] .k{background:#151c26}
+  .why{font-size:12px;color:var(--warn)}
+  .txtbtn{background:none;border:0;color:var(--ink-3);font-size:13px;padding:0;
+          display:flex;align-items:center;gap:7px}
+  .txtbtn:hover{color:var(--ink-2)}
+  .txtbtn .k{font:10px var(--mono);background:#1d2632;border-radius:4px;padding:2px 5px}
+  .txtbtn.mini{font-size:11.5px}
+
+  /* quiet context rail */
+  .rail{font-size:12px;color:var(--ink-3);line-height:1.65}
+  .rail h5{font-size:9.5px;text-transform:uppercase;letter-spacing:.13em;color:var(--ink-3);
+           font-weight:800;margin:0 0 7px}
+  .rail .blk{margin-bottom:20px}
+  .rail .who{display:flex;align-items:center;gap:8px;color:var(--ink-2);font-size:12.5px}
+  .rail ul{margin:0;padding-left:15px}
+  .rail li{margin:3px 0}
+
+  /* card art B — duplicate */
+  .cmp{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;margin-top:4px}
+  .cmpcol{background:#0f151d;border:1px solid var(--line);border-radius:10px;padding:14px}
+  .cmpcol.exist{border-color:var(--line-2)}
+  .cmpvs{display:grid;place-items:center;color:var(--ink-3);font-size:12px;font-weight:800}
+  .cmpcol .t{font-size:16px;font-weight:700;margin-bottom:3px}
+  .cmpcol .kvs{margin-top:11px;font-size:12px;color:var(--ink-3);line-height:1.9}
+  .cmpcol .kvs b{color:var(--ink-2);font-weight:600}
+  .simbar{height:5px;border-radius:3px;background:#1d2632;overflow:hidden;margin:12px 0 6px}
+  .simbar i{display:block;height:100%;background:var(--warn)}
+
+  /* toast + footer */
+  .toast{display:flex;align-items:center;gap:12px;background:#101821;border:1px solid var(--line-2);
+         border-radius:9px;padding:10px 15px;font-size:12.5px;margin-top:18px;max-width:1020px}
+  .toast .ok{color:var(--ok);font-weight:700}
+  .kbar{display:flex;gap:16px;flex-wrap:wrap;margin-top:22px;padding-top:14px;
+        border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3);max-width:1020px}
+  .kbar span b{color:var(--ink-2);font-weight:600}
+
+  /* done state */
+  .done{max-width:520px;text-align:center;margin:60px auto;padding:34px;border:1px solid var(--line);
+        border-radius:14px;background:var(--panel)}
+  .done .big{font-size:40px;margin-bottom:10px}
+  .done .nums{display:flex;gap:26px;justify-content:center;margin:22px 0}
+  .done .nums b{display:block;font-size:25px;color:var(--accent)}
+  .done .nums span{font-size:11.5px;color:var(--ink-3)}
 
   /* ---------- Entity ---------- */
   .ent{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:13px;align-items:start}
@@ -450,55 +533,10 @@
         </div>
       </section>
 
-      <!-- ===== INBOX ===== -->
+      <!-- ===== INBOX — Schnelldurchlauf ===== -->
       <section class="screen" id="s-inbox">
-        <div class="phead">
-          <div class="lv">Projektweit · Vorschläge aus allen <span id="ib-wgs"></span></div>
-          <h2>Review-Inbox <span class="chip sugg" id="ib-count"></span></h2>
-          <p>Eine Entscheidung nach der anderen. Euer Projekt, euer verbindlicher Stand.</p>
-        </div>
-        <div class="ib">
-          <div class="panel">
-            <div class="pad row wrap">
-              <span class="chip t" id="ib-type"></span>
-              <strong style="font-size:19px" id="ib-title"></strong>
-              <span class="spacer"></span><span class="tiny muted" id="ib-pos"></span>
-            </div>
-            <div class="pad" style="padding-top:0" id="ib-desc"></div>
-            <div class="pad bt">
-              <div class="lbl" style="margin-bottom:8px">Belegstelle · aus der Notiz</div>
-              <div class="quote" id="ib-quote"></div>
-              <div class="tiny muted" style="margin-top:8px" id="ib-src"></div>
-            </div>
-            <div class="pad bt" id="ib-dup"></div>
-            <div class="pad bt">
-              <div class="lbl" style="margin-bottom:11px">Felder aus dem Preset</div>
-              <div id="ib-fields"></div>
-            </div>
-            <div class="pad bt">
-              <div class="lbl" style="margin-bottom:9px">Mitvorgeschlagene Beziehungen</div>
-              <div id="ib-rels"></div>
-            </div>
-            <div class="pad bt row wrap">
-              <button class="btn ok" disabled>✓ Übernehmen</button>
-              <button class="btn">⇄ Zusammenführen</button>
-              <button class="btn dz">✕ Ablehnen</button>
-              <button class="btn">⏭ Später</button>
-              <span class="spacer"></span>
-              <span class="tiny muted"><span class="kbd">J</span><span class="kbd">K</span>
-                navigieren · <span class="kbd">A</span> übernehmen</span>
-            </div>
-            <div class="pad bt tiny" style="color:var(--danger);background:var(--danger-bg);
-                 border-radius:0 0 var(--radius) var(--radius)" id="ib-block"></div>
-          </div>
-          <div class="panel">
-            <div class="pad row">
-              <strong style="font-size:13px">Als nächstes</strong>
-              <span class="spacer"></span><span class="tiny muted" id="ib-rest"></span>
-            </div>
-            <div class="bt" id="queue"></div>
-          </div>
-        </div>
+        <div id="rv-head"></div>
+        <div id="rv-body"></div>
       </section>
 
       <!-- ===== ENTITY ===== -->
@@ -638,22 +676,37 @@ software:{
     {a:"d2",b:"api",l:"betrifft"},{a:"r1",b:"ns",l:"gefährdet",st:"dashed"},
     {a:"t1",b:"ns",l:"setzt um"},{a:"api",b:"as",l:"hängt ab von"},{a:"la",b:"t1",l:"verantwortet"}],
   gFocus:"ns",
-  queue:[{ic:"⚖",t:"Firebase statt Eigenbau",s:"Entscheidung",m:"Sprint 14 · Planung KW 32"},
-    {ic:"⬡",t:"Notification Service",s:"Komponente",m:"Sprint 14 · Planung KW 32",on:1},
-    {ic:"⚠",t:"Zustellrate unter 90 %",s:"Risiko",m:"Sprint 14 · Planung KW 32"},
-    {ic:"◷",t:"Spike Firebase-SDK",s:"Aufgabe",m:"Sprint 14 · Refinement"},
-    {ic:"⬡",t:"Token-Store",s:"Komponente",m:"Design-System · Jour fixe"},
-    {ic:"👤",t:"Mira Kolb",s:"Teammitglied",m:"Design-System · Kickoff"},
-    {ic:"⚖",t:"Queue vor der API",s:"Entscheidung",m:"Sprint 14 · Daily Mi"}],
-  ibType:"Komponente", ibTitle:"Notification Service",
-  ibDesc:"3-mal erwähnt über zwei Meetings in Sprint 14. Übernimmt den Versand von Push-Benachrichtigungen. Tom Brandt ist als verantwortlich genannt.",
-  ibQuote:'…Push-Benachrichtigungen sollen bis Sprintende stehen. <mark>Notification Service</mark> übernimmt den Versand, Tom Brandt ist verantwortlich.',
-  ibSrc:"Tom Brandt · Produktteam Nord / Sprint 14 / Sprint-Planung KW 32 · heute, 10:24",
-  ibDup:null,
-  ibFields:[{l:"Ebene",req:1,v:"Backend"},{l:"Status",req:1,v:"",err:"Pflichtfeld — bitte auswählen"},
-            {l:"Verantwortlich",req:0,v:"Tom Brandt"}],
-  ibRels:[{v:"hängt ab von",t:"Auth Service"},{v:"verantwortet von",t:"Tom Brandt"}],
-  ibBlock:'Übernahme gesperrt: Pflichtfeld <b>Status</b> ist leer.',
+  review:[
+   {kind:"new",type:"Komponente",icon:"⬡",title:"Notification Service",
+    wg:"Sprint 14",mt:"Sprint-Planung KW 32",dt:"heute, 10:24",who:{n:"Tom Brandt",i:"TB"},
+    freq:{n:3,m:2,more:[
+      {w:"Sprint 14 · Daily KW 32 Mi",t:'…der <mark>Notification Service</mark> braucht eine eigene Queue, sonst blockiert der Versand die API…'},
+      {w:"Sprint 13 · Retro KW 31",t:'…die Benachrichtigungen fehlen komplett, wir brauchen einen eigenen <mark>Service</mark> dafür…'}]},
+    ev:'Push-Benachrichtigungen sollen bis Sprintende stehen. <mark>Notification Service</mark> übernimmt den Versand, Tom Brandt ist verantwortlich. Die Zustellrate muss dabei über 90 % liegen.',
+    fields:[{l:"Ebene",opts:["UI/UX","Frontend","Backend","Logic","Database"],sel:2},
+            {l:"Status",opts:["Idee","In Arbeit","Fertig","Verworfen"],sel:null}],
+    rels:[{v:"hängt ab von",t:"Auth Service"},{v:"verantwortet von",t:"Tom Brandt"}],
+    exist:["API Gateway","Auth Service","Auth UI","Message Queue","Mobile Client"]},
+
+   {kind:"dup",type:"Komponente",icon:"⬡",title:"API-Gateway",sim:91,
+    wg:"Sprint 14",mt:"Sprint-Planung KW 32",dt:"heute, 10:38",who:{n:"Lena Ahmadi",i:"LA"},
+    freq:{n:1,m:1,more:[]},
+    ev:'Der <mark>API-Gateway</mark> muss die neue Route durchreichen, sonst kommt beim Client nichts an.',
+    other:{title:"API Gateway",sub:"seit Sprint 13 im Projektwissen",
+           kv:[["Ebene","Backend"],["Status","Fertig"],["Verantwortlich","Mira Kolb"]],
+           from:"Angelegt aus Retro KW 31 · 3 Herkünfte"},
+    mine:{kv:[["Ebene","Backend"],["Status","—"],["Verantwortlich","—"]]},
+    exist:["API Gateway","Auth Service","Auth UI","Message Queue","Mobile Client"]},
+
+   {kind:"append",type:"Komponente",icon:"⬡",title:"Auth Service",
+    wg:"Sprint 14",mt:"Sprint-Planung KW 32",dt:"heute, 10:41",who:{n:"Sam Ritter",i:"SR"},
+    freq:{n:2,m:2,more:[
+      {w:"Sprint 13 · Retro KW 31",t:'…der <mark>Auth Service</mark> läuft stabil, Tokens halten 24 h…'}]},
+    ev:'Abhängigkeit auf <mark>Auth Service</mark> ist noch ungeklärt — ohne gültiges Token kann der Versand nicht laufen.',
+    change:[{k:"Neue Beziehung",v:"Notification Service <b>hängt ab von</b> Auth Service"},
+            {k:"Neue Herkunft",v:"Sprint-Planung KW 32 · Sam Ritter"}],
+    exist:["API Gateway","Auth Service","Auth UI","Message Queue","Mobile Client"]}],
+  rvRest:4,
   eType:"Komponente", eTitle:"Notification Service", eAlias:"Notif-Service",
   eFields:[["Ebene","Backend"],["Status","In Arbeit"],["Verantwortlich","Tom Brandt"]],
   eRels:[{v:"hängt ab von",t:"Auth Service",ty:"Komponente"},
@@ -738,21 +791,39 @@ tabletop:{
     {a:"streit",b:"aldric",l:"beteiligt"},{a:"schl",b:"krypta",l:"öffnet"},
     {a:"elara",b:"orden",l:"Mitglied von"}],
   gFocus:"pony",
-  queue:[{ic:"☻",t:"Aldric Graumantel",s:"NSC",m:"Falkenstein · Session 14"},
-    {ic:"⌂",t:"Tänzelndes Pony",s:"Ort",m:"Falkenstein · Session 14",on:1},
-    {ic:"⚑",t:"Schwarze Hand",s:"Fraktion",m:"Falkenstein · Session 14"},
-    {ic:"✦",t:"Streit im Pony",s:"Ereignis",m:"Falkenstein · Session 14"},
-    {ic:"◈",t:"Silberner Schlüssel",s:"Gegenstand",m:"Falkenstein · Session 13"},
-    {ic:"⌂",t:"Nordmark-Pass",s:"Ort",m:"Nordmark-Chronik · Session 6"},
-    {ic:"☻",t:"Späher Ivar",s:"NSC",m:"Nordmark-Chronik · Session 5"}],
-  ibType:"Ort", ibTitle:"Tänzelndes Pony",
-  ibDesc:"4-mal erwähnt über zwei Sessions. Schenke in Falkenstein. Aldric Graumantel und Wirtin Hedda sind dort verortet.",
-  ibQuote:'…wir erreichen Falkenstein bei Einbruch der Dunkelheit. Im <mark>Tänzelnden Pony</mark> wartet Aldric Graumantel auf uns.',
-  ibSrc:"Lyra Nachtwind · Eldoria / Schatten über Falkenstein / Session 14 · heute, 20:41",
-  ibDup:{t:"The Dancing Pony",s:"Ort · Bauwerk · Nordmark",sim:"87 %"},
-  ibFields:[{l:"Region",req:0,v:"Nordmark"},{l:"Art",req:1,v:"",err:"Pflichtfeld — bitte auswählen"}],
-  ibRels:[{v:"liegt in",t:"Falkenstein"},{v:"Bewohner",t:"Aldric Graumantel"}],
-  ibBlock:'Übernahme gesperrt: Pflichtfeld <b>Art</b> ist leer.',
+  review:[
+   {kind:"new",type:"NSC",icon:"☻",title:"Aldric Graumantel",
+    wg:"Schatten über Falkenstein",mt:"Session 14 — Die Krypta",dt:"heute, 20:41",
+    who:{n:"Lyra Nachtwind",i:"LN"},
+    freq:{n:4,m:2,more:[
+      {w:"Session 14 — Die Krypta",t:'…ich habe mir <mark>Aldrics</mark> Ring gemerkt — Wappen der Schwarzen Hand?…'},
+      {w:"Session 13 — Ankunft in Falkenstein",t:'…ein Mann namens <mark>Graumantel</mark> soll die Karte haben, hieß es im Hafen…'}]},
+    ev:'Wir erreichen Falkenstein bei Einbruch der Dunkelheit. Im Tänzelnden Pony wartet <mark>Aldric Graumantel</mark> auf uns. Er will 200 Goldstücke für die Karte und trägt einen Ring mit fremdem Wappen.',
+    fields:[{l:"Status",opts:["Lebendig","Verstorben","Verschollen"],sel:null}],
+    rels:[{v:"gesehen in",t:"Tänzelndes Pony"},{v:"Mitglied von",t:"Schwarze Hand"}],
+    exist:["Bürgermeisterin von Falkenstein","Schwester Elara","Späher Ivar","Wirtin Hedda"]},
+
+   {kind:"dup",type:"Ort",icon:"⌂",title:"Tänzelndes Pony",sim:87,
+    wg:"Schatten über Falkenstein",mt:"Session 14 — Die Krypta",dt:"heute, 20:44",
+    who:{n:"Gorm Eisenfaust",i:"GE"},
+    freq:{n:2,m:1,more:[]},
+    ev:'Wir erreichen Falkenstein bei Einbruch der Dunkelheit. Im <mark>Tänzelnden Pony</mark> wartet Aldric Graumantel auf uns.',
+    other:{title:"The Dancing Pony",sub:"seit Session 13 im Weltwissen",
+           kv:[["Region","Nordmark"],["Art","Bauwerk"]],
+           from:"Angelegt aus Session 13 · 2 Herkünfte"},
+    mine:{kv:[["Region","Nordmark"],["Art","—"]]},
+    exist:["Die Docks","Falkenstein","Falkensteiner Krypta","Tempel der Dämmerung"]},
+
+   {kind:"append",type:"Fraktion",icon:"⚑",title:"Schwarze Hand",
+    wg:"Schatten über Falkenstein",mt:"Session 14 — Die Krypta",dt:"heute, 20:52",
+    who:{n:"Sam (DM)",i:"SM"},
+    freq:{n:3,m:2,more:[
+      {w:"Session 12 — Der Bote",t:'…der Bote trug das Zeichen der <mark>Schwarzen Hand</mark> unter dem Mantel…'}]},
+    ev:'Die <mark>Schwarze Hand</mark> kontrolliert seit dem Frühjahr die Docks. Wer dort Waren umschlägt, zahlt an sie.',
+    change:[{k:"Neue Beziehung",v:"Schwarze Hand <b>kontrolliert</b> Die Docks"},
+            {k:"Neue Herkunft",v:"Session 14 — Die Krypta · Sam (DM)"}],
+    exist:["Orden der Dämmerung","Rote Reißzähne","Silbermünz-Gilde","Haus Vane"]}],
+  rvRest:4,
   eType:"Ort", eTitle:"Tänzelndes Pony", eAlias:"The Dancing Pony",
   eFields:[["Region","Nordmark"],["Art","Bauwerk"]],
   eRels:[{v:"liegt in",t:"Falkenstein",ty:"Ort"},{v:"Bewohner",t:"Aldric Graumantel",ty:"NSC"},
@@ -842,7 +913,7 @@ function renderSide(){
     <button class="nav ${view==="graph"?"on":""}" data-v="graph">
       <span class="ic">⬡</span>Beziehungen</button>
     <button class="nav ${view==="inbox"?"on":""}" data-v="inbox">
-      <span class="ic">⇄</span>Review-Inbox<span class="badge">${p.queue.length}</span></button>`;
+      <span class="ic">⇄</span>Review-Inbox<span class="badge">${p.review.length+p.rvRest}</span></button>`;
   $("#side-nav").querySelectorAll(".nav[data-v]").forEach(el=>
     el.addEventListener("click",()=>go(el.dataset.v)));
 }
@@ -1043,36 +1114,8 @@ function render(){
   $("#g-scope").innerHTML=`${p.gScope}<span class="spacer"></span><span class="muted">▾</span>`;
   renderGraph(); renderGPanel();
 
-  /* --- Inbox --- */
-  $("#ib-wgs").textContent=T.workgroups;
-  $("#ib-count").textContent=p.queue.length+" offen";
-  $("#ib-type").textContent=p.ibType;
-  $("#ib-title").textContent=p.ibTitle;
-  $("#ib-pos").textContent="2 von "+p.queue.length;
-  $("#ib-rest").textContent=(p.queue.length-1)+" verbleibend";
-  $("#ib-desc").innerHTML=`<p class="tiny muted" style="margin:0;max-width:64ch">${p.ibDesc}</p>`;
-  $("#ib-quote").innerHTML=p.ibQuote;
-  $("#ib-src").textContent=p.ibSrc;
-  $("#ib-block").innerHTML="🔒 "+p.ibBlock;
-  $("#ib-dup").innerHTML=p.ibDup?`<div class="dup">
-      <div style="font-weight:800;font-size:12.5px;margin-bottom:6px">
-        ⚠ Möglicher Doppeleintrag · ${p.ibDup.sim} Ähnlichkeit</div>
-      <div class="row wrap" style="gap:8px"><span style="font-size:13px"><b>${p.ibDup.t}</b>
-        <span class="muted">— ${p.ibDup.s}</span></span><span class="spacer"></span>
-        <button class="btn sm">Vergleichen</button><button class="btn sm">Zusammenführen</button>
-      </div></div>`:`<div class="tiny muted">✓ Duplikatprüfung — kein ähnlicher Eintrag gefunden.</div>`;
-  $("#ib-fields").innerHTML=p.ibFields.map(f=>`<div class="fld">
-      <label>${f.l} ${f.req?'<span class="req">*</span>':'<span class="muted tiny">optional</span>'}</label>
-      <div class="inp ${f.err?"err":""}">${f.v?f.v:'<span class="muted">— bitte auswählen —</span>'}
-        <span class="spacer"></span><span class="muted tiny">▾</span></div>
-      ${f.err?`<div class="errtxt">⚠ ${f.err}</div>`:""}</div>`).join("");
-  $("#ib-rels").innerHTML=p.ibRels.map(r=>`<label class="row tiny" style="margin-bottom:7px">
-      <input type="checkbox" checked><span class="muted" style="min-width:112px">${r.v}</span>
-      <b style="font-size:12.5px">${r.t}</b></label>`).join("");
-  $("#queue").innerHTML=p.queue.map(q=>`<div class="q ${q.on?"on":""}">
-      <span class="ic">${q.ic}</span>
-      <div style="min-width:0"><div style="font-size:13px;font-weight:500">${q.t}</div>
-        <div class="tiny muted">${q.s} · ${q.m}</div></div></div>`).join("");
+  /* --- Inbox (eigene Renderfunktion) --- */
+  renderReview();
 
   /* --- Entity --- */
   $("#e-wgs").textContent=T.workgroups;
@@ -1105,6 +1148,232 @@ function render(){
   document.querySelectorAll("[data-go]").forEach(el=>el.onclick=()=>go(el.dataset.go));
 }
 
+/* ======================================================================
+   REVIEW-INBOX — Schnelldurchlauf
+   P-1 eine Frage pro Karte · P-2 entscheiden ≠ ausfüllen ·
+   P-3 genau ein gefüllter Knopf · P-4 nichts zeigen, was keine Frage ist ·
+   P-5 Kontext ist der Entscheidungsgrund
+   ====================================================================== */
+let rvIdx=0, rvLog=[], rvToast=null, rvExpand=false;
+
+function rvReset(){rvIdx=0;rvLog=[];rvToast=null;rvExpand=false;
+  P().review.forEach(it=>(it.fields||[]).forEach(f=>{if(f.sel===undefined)f.sel=null}))}
+
+function rvAct(label,advance=true){
+  const it=P().review[rvIdx];
+  rvLog.push({t:it.title,a:label});
+  rvToast={t:it.title,a:label};
+  rvExpand=false;
+  if(advance) rvIdx++;
+  renderReview();
+}
+
+function rvPick(fi,oi){ P().review[rvIdx].fields[fi].sel=oi; renderReview(); }
+window.__rv={act:rvAct,pick:rvPick,
+  toggle:()=>{rvExpand=!rvExpand;renderReview()},
+  back:()=>{if(rvIdx>0){rvIdx--;rvLog.pop();rvToast=null;renderReview()}},
+  restart:()=>{rvReset();renderReview()}};
+
+function renderReview(){
+  const p=P(), T=p.term, all=p.review;
+  const head=$("#rv-head"), body=$("#rv-body");
+
+  /* ---- Endzustand: Bilanz statt kahler Fläche ---- */
+  if(rvIdx>=all.length){
+    const acc=rvLog.filter(x=>x.a==="übernommen").length;
+    const mer=rvLog.filter(x=>x.a==="zusammengeführt").length;
+    const rej=rvLog.filter(x=>x.a==="abgelehnt").length;
+    head.innerHTML="";
+    body.innerHTML=`<div class="done">
+      <div class="big">✓</div>
+      <h2 style="font-size:19px">${T.meeting} abgearbeitet</h2>
+      <p class="tiny muted" style="margin-top:7px">${all[all.length-1].mt}</p>
+      <div class="nums">
+        <div><b>${rvLog.length}</b><span>bearbeitet</span></div>
+        <div><b>${acc}</b><span>neue Einträge</span></div>
+        <div><b>${mer}</b><span>zusammengeführt</span></div>
+        <div><b>${rej}</b><span>abgelehnt</span></div></div>
+      <div class="row" style="justify-content:center;gap:9px">
+        <button class="btn p" onclick="__go('graph')">⬡ Im Netz ansehen</button>
+        <button class="btn" onclick="__rv.restart()">Noch einmal durchgehen</button></div>
+      <p class="tiny muted" style="margin-top:18px">Noch ${p.rvRest} Vorschläge aus
+        weiteren ${T.meetings} — oder für heute Schluss machen.</p></div>`;
+    return;
+  }
+
+  const it=all[rvIdx];
+  const openField=(it.fields||[]).findIndex(f=>f.sel===null);
+  const blocked=openField>-1;
+
+  /* ---- Kopfleiste: wo bin ich + segmentierter Fortschritt ---- */
+  const grp={}; all.forEach((x,i)=>{(grp[x.mt]=grp[x.mt]||[]).push(i)});
+  head.innerHTML=`
+    <div class="phead" style="margin-bottom:14px">
+      <div class="lv">${it.wg} › ${it.mt} · ${it.dt.split(",")[0]}</div>
+      <h2>Review-Inbox</h2>
+    </div>
+    <div class="rvbar">
+      ${Object.entries(grp).map(([m,idxs])=>`
+        <div class="seggrp">
+          <div class="cap ${idxs.includes(rvIdx)?"now":""}">${m}</div>
+          <div class="segs">${idxs.map(i=>
+            `<span class="seg ${i<rvIdx?"done":i===rvIdx?"now":""}"></span>`).join("")}</div>
+        </div>`).join("")}
+      <div class="seggrp" style="opacity:.45">
+        <div class="cap">weitere ${T.meetings}</div>
+        <div class="segs">${"<span class='seg'></span>".repeat(p.rvRest)}</div></div>
+      <span class="spacer"></span>
+      <div class="tiny muted" style="align-self:center">
+        ${rvIdx+1} von ${all.length} in diesem ${T.meeting}</div>
+    </div>`;
+
+  /* ---- die Karte ---- */
+  const Q={new:"Gehört das ins "+T.canonNoun+"?",
+           dup:"Ist das derselbe Eintrag?",
+           append:"Soll das zum vorhandenen Eintrag hinzukommen?"}[it.kind];
+
+  const freqHTML = it.freq.n>1
+    ? `<div class="freq" onclick="__rv.toggle()">
+         <b>${it.freq.n} Erwähnungen</b> · ${it.freq.m} ${it.freq.m>1?T.meetings:T.meeting}
+         <span style="opacity:.6">${rvExpand?"▲":"▾"}</span></div>`
+    : `<div class="freq" style="background:var(--warn-bg);color:var(--warn);cursor:default">
+         <b>Nur 1 Erwähnung</b> · beiläufig genannt</div>`;
+
+  const moreHTML = rvExpand && it.freq.more.length
+    ? it.freq.more.map(m=>`<div class="evmore"><b style="color:var(--ink-2)">${m.w}</b><br>${m.t}</div>`).join("")
+    : "";
+
+  /* Hauptteil je Kartenart — P-1 */
+  let core="", actions="";
+  if(it.kind==="new"){
+    core=`
+      <div class="arrowdown">↓</div>
+      <div class="prop">
+        <span class="chip t">${it.icon} ${it.type}</span>
+        <h3>${it.title}</h3>
+        <span class="edit" title="Titel ändern">✎ ändern <span class="kbd">E</span></span>
+      </div>
+      ${(it.fields||[]).map((f,fi)=>`
+        <div style="margin-top:17px">
+          <div class="lbl">${f.l} <span style="color:var(--danger)">*</span></div>
+          <div class="chiprow">${f.opts.map((o,oi)=>
+            `<button class="fchip ${f.sel===oi?"on":""}" onclick="__rv.pick(${fi},${oi})">
+               <span class="num">${oi+1}</span>${o}</button>`).join("")}</div>
+        </div>`).join("")}
+      ${it.rels&&it.rels.length?`
+        <div style="margin-top:17px">
+          <div class="lbl">Beziehungen aus derselben Notiz</div>
+          <div class="chiprow">${it.rels.map(r=>
+            `<button class="fchip on" style="font-weight:500">✓ ${r.v} <b>${r.t}</b></button>`).join("")}</div>
+        </div>`:""}`;
+    actions=`
+      <button class="bigbtn" ${blocked?"disabled":""} onclick="__rv.act('übernommen')">
+        ✓ Übernehmen <span class="k">A</span></button>
+      ${blocked?`<span class="why">← erst <b>${it.fields[openField].l}</b> wählen</span>`:""}
+      <button class="txtbtn" onclick="__rv.act('abgelehnt')">Ablehnen <span class="k">X</span></button>
+      <span class="spacer"></span>
+      <button class="txtbtn mini" onclick="__rv.act('zurückgestellt')">Später <span class="k">S</span></button>`;
+  }
+
+  if(it.kind==="dup"){
+    core=`
+      <div class="arrowdown">↓</div>
+      <div class="row" style="margin-bottom:11px">
+        <span class="chip t">${it.icon} ${it.type}</span>
+        <span class="chip sugg">⚠ ${it.sim} % Ähnlichkeit</span>
+      </div>
+      <div class="simbar"><i style="width:${it.sim}%"></i></div>
+      <div class="cmp">
+        <div class="cmpcol">
+          <div class="tiny muted" style="margin-bottom:5px">Neu vorgeschlagen</div>
+          <div class="t">${it.title}</div>
+          <div class="tiny muted">aus ${it.mt}</div>
+          <div class="kvs">${it.mine.kv.map(([k,v])=>`${k}: <b>${v}</b>`).join("<br>")}</div>
+        </div>
+        <div class="cmpvs">≟</div>
+        <div class="cmpcol exist">
+          <div class="tiny muted" style="margin-bottom:5px">Bereits vorhanden</div>
+          <div class="t">${it.other.title}</div>
+          <div class="tiny muted">${it.other.sub}</div>
+          <div class="kvs">${it.other.kv.map(([k,v])=>`${k}: <b>${v}</b>`).join("<br>")}</div>
+          <div class="tiny muted" style="margin-top:9px">${it.other.from}</div>
+        </div>
+      </div>`;
+    actions=`
+      <button class="bigbtn" onclick="__rv.act('zusammengeführt')">
+        ⇄ Ist dasselbe — zusammenführen <span class="k">A</span></button>
+      <button class="txtbtn" style="color:var(--ink-2)" onclick="__rv.act('übernommen')">
+        Ist etwas anderes — neu anlegen <span class="k">N</span></button>
+      <span class="spacer"></span>
+      <button class="txtbtn mini" onclick="__rv.act('abgelehnt')">Ablehnen <span class="k">X</span></button>`;
+  }
+
+  if(it.kind==="append"){
+    core=`
+      <div class="arrowdown">↓</div>
+      <div class="prop">
+        <span class="chip t">${it.icon} ${it.type}</span>
+        <h3>${it.title}</h3>
+        <span class="chip canon">✓ bereits im ${T.canonNoun}</span>
+      </div>
+      <div style="margin-top:15px">
+        <div class="lbl" style="margin-bottom:8px">Was sich ändern würde</div>
+        ${it.change.map(c=>`<div class="rel" style="padding:7px 0">
+          <span class="verb" style="min-width:118px">${c.k}</span>
+          <span style="font-size:13.5px">${c.v}</span></div>`).join("")}
+      </div>`;
+    actions=`
+      <button class="bigbtn" onclick="__rv.act('übernommen')">
+        ✓ Übernehmen <span class="k">A</span></button>
+      <button class="txtbtn" onclick="__rv.act('abgelehnt')">Verwerfen <span class="k">X</span></button>
+      <span class="spacer"></span>
+      <button class="txtbtn mini" onclick="__rv.act('zurückgestellt')">Später <span class="k">S</span></button>`;
+  }
+
+  body.innerHTML=`
+    <div class="rv">
+      <div class="rvmain">
+        <div class="rvq">${Q}</div>
+        ${freqHTML}
+        <div class="evid">${it.ev}${moreHTML}
+          <div class="meta">${it.who.n} · ${it.wg} › ${it.mt} · ${it.dt}
+            <span style="margin-left:8px;color:var(--accent);cursor:pointer">
+              ganze Notiz öffnen <span class="kbd">C</span></span></div>
+        </div>
+        ${core}
+        <div class="actions">${actions}</div>
+      </div>
+
+      <!-- Kontextspalte: bewusst rahmenlos und gedämpft -->
+      <div class="rail">
+        <div class="blk"><h5>Vorgeschlagen von</h5>
+          <div class="who"><span class="avatar" style="width:22px;height:22px;font-size:9px">
+            ${it.who.i}</span>${it.who.n}</div></div>
+        <div class="blk"><h5>Herkunft</h5>
+          ${it.wg}<br>${it.mt}<br>${it.dt}</div>
+        <div class="blk"><h5>${it.type} im ${T.canonNoun}</h5>
+          <ul>${it.exist.map(e=>`<li>${e}</li>`).join("")}</ul></div>
+        ${rvIdx>0?`<button class="txtbtn mini" onclick="__rv.back()">
+          ← ein Vorschlag zurück</button>`:""}
+      </div>
+    </div>
+
+    ${rvToast?`<div class="toast"><span class="ok">✓</span>
+      <span><b>${rvToast.t}</b> ${rvToast.a}</span><span class="spacer"></span>
+      <button class="txtbtn mini" onclick="__rv.back()">Rückgängig <span class="k">Z</span></button>
+      </div>`:""}
+
+    <div class="kbar">
+      <span><b>A</b> übernehmen</span><span><b>X</b> ablehnen</span>
+      ${it.kind==="dup"?"<span><b>N</b> neu anlegen</span>":""}
+      <span><b>S</b> später</span><span><b>1–9</b> Feld wählen</span>
+      <span><b>C</b> ganze Notiz</span><span><b>Z</b> rückgängig</span>
+      <span><b>←</b> zurück</span>
+      <span class="spacer"></span>
+      <span style="color:var(--accent)">Ziel: unter 6 s je Vorschlag</span>
+    </div>`;
+}
+
 function pickerHTML(){const k=P().picker;
   return `<div class="picker">
     <div class="ph">@${k.q}<span class="caret" style="height:11px"></span> — ${k.items.length}
@@ -1118,7 +1387,29 @@ function pickerHTML(){const k=P().picker;
 
 $("#sw").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
   document.querySelectorAll("#sw button").forEach(x=>x.classList.remove("on"));
-  b.classList.add("on"); key=b.dataset.p; focusId=null; render()});
+  b.classList.add("on"); key=b.dataset.p; focusId=null; rvReset(); render()});
+
+/* Tastaturbedienung der Inbox — der einzige Hebel auf die 6-Sekunden-Marke */
+document.addEventListener("keydown",e=>{
+  if(view!=="inbox") return;
+  const p=P(), all=p.review;
+  if(e.key==="z"||e.key==="Z"||e.key==="ArrowLeft"){__rv.back();return}
+  if(rvIdx>=all.length) return;
+  const it=all[rvIdx], open=(it.fields||[]).findIndex(f=>f.sel===null);
+  const k=e.key.toLowerCase();
+  if(/^[1-9]$/.test(k)&&open>-1){
+    const oi=parseInt(k)-1;
+    if(oi<it.fields[open].opts.length) rvPick(open,oi);
+    return}
+  if(k==="a"||e.key==="Enter"){
+    if(it.kind==="dup") rvAct("zusammengeführt");
+    else if(open===-1) rvAct("übernommen");
+    return}
+  if(k==="n"&&it.kind==="dup"){rvAct("übernommen");return}
+  if(k==="x") rvAct(it.kind==="dup"?"abgelehnt":"abgelehnt");
+  if(k==="s"&&it.kind!=="dup") rvAct("zurückgestellt");
+  if(k==="c") rvExpand=!rvExpand, renderReview();
+});
 $("#vis").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
   document.querySelectorAll("#vis button").forEach(x=>x.classList.remove("on"));b.classList.add("on")});
 $("#canvas").addEventListener("click",()=>{focusId=null;renderGraph();renderGPanel()});

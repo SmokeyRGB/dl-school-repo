@@ -19,6 +19,7 @@
 | V0.2 | 2026-08-07 | Sam | O-01 geklärt (E-12: mehrere Teilnehmerprofile je Account und Projekt) · O-03 und O-06 geklärt und in §4.5 als Datenregeln aufgenommen · `participant_scope` aus beiden Presets entfernt |
 | V0.3 | 2026-08-07 | Sam | §4.4.5 Onboarding-Fluss ergänzt (Review-Lücke geschlossen) · nachfolgende Abschnitte umnummeriert |
 | V0.4 | 2026-08-07 | Sam | **Beziehungs-Graph** als §4.4.5 aufgenommen und aus dem V2-Backlog in eine eigene Phase **V1.2** gehoben · Preset um `graph.shape`/`graph.color`/`graph.style` erweitert (§4.1.2b) · responsives Verhalten und Screen-Liste ergänzt |
+| V0.5 | 2026-08-07 | Sam | **§4.4.2 Review-Inbox vollständig neu geschrieben.** Schnelldurchlauf statt Liste+Detail · drei Kartenarten mit je einer binären Frage · Pflichtfelder als Chip-Reihe · Kontextanforderungen explizit · kein Stapelweg (bewusste Entscheidung) · Reihenfolge chronologisch nach Meeting · Tastaturbedienung als Kernanforderung mit Zielmarke < 6 s je Vorschlag |
 
 ---
 
@@ -491,37 +492,176 @@ Andockstelle der AI-Extraktion (E-09).
 
 #### 4.4.2 Review-Inbox
 
-Kein CRUD-Bildschirm, sondern ein Abarbeitungs-Fluss nach dem Vorbild von Pull Requests.
+> **Der anstrengendste Bildschirm der gesamten Kette — und damit der, der am stärksten
+> optimiert gehört.** Alles davor (schreiben, markieren) passiert im Fluss eines Treffens.
+> Die Kanonisierung passiert danach, allein, ohne Gesprächsdruck — und genau deshalb wird
+> sie übersprungen, wenn sie sich nach Arbeit anfühlt. Risiko R-03.
 
-**Aufbau:** Links die Warteschlange (gruppierbar nach Meeting, Entitätstyp, Autor), rechts
-die Detailkarte des aktuellen Vorschlags:
+##### 4.4.2.1 Entwurfsprinzipien
 
-- Vorgeschlagener Titel und Typ (beides vor der Übernahme editierbar)
-- Der Ursprungssatz mit hervorgehobener Textstelle, plus zwei Zeilen Kontext davor/danach
-- Autor, Meeting, Zeitpunkt
-- Duplikatkandidaten mit Ähnlichkeitswert
-- Pflichtfelder des Typs, falls im Preset `required` gesetzt — **Übernahme ist gesperrt,
-  solange Pflichtfelder leer sind**
-- Vorgeschlagene Beziehungen (aus derselben Notiz mit-erwähnte Entitäten)
+Fünf Regeln, aus denen sich alles Weitere ableitet. Sie sind bewusst als Verbote
+formuliert, weil die erste Fassung dieses Bildschirms an genau diesen Punkten scheiterte.
 
-**Aktionen:** `✅ Übernehmen` · `🔗 Zusammenführen mit …` · `❌ Ablehnen` (mit optionalem
-Grund) · `⏭ Später`
+| # | Prinzip | Was daraus folgt |
+|---|---------|------------------|
+| **P-1** | **Eine Frage pro Karte — wörtlich.** | Es gibt nicht *eine* Karte mit vier Knöpfen, sondern **drei Kartenarten** mit je einer binären Frage (4.4.2.3). Welche erscheint, entscheidet die Datenlage, nicht der Nutzer. |
+| **P-2** | **Entscheiden und Ausfüllen sind getrennte Handlungen.** | Ein Formular mitten in einer Entscheidung ist der Hauptgrund für Überforderung. Pflichtfelder werden zu **antippbaren Chips** — eine zweite Mikro-Entscheidung, kein Eingabefeld (4.4.2.5). |
+| **P-3** | **Genau ein gefüllter Knopf auf dem Bildschirm.** | Die Primärhandlung ist farbig und groß. Alles Weitere ist Text ohne Rahmen. Wer nichts liest, klickt trotzdem richtig. |
+| **P-4** | **Nichts anbieten, was gerade keine Frage ist.** | „Zusammenführen" erscheint **ausschließlich**, wenn ein Duplikatverdacht besteht — dann aber als eigene Kartenart. Beziehungsvorschläge erscheinen nur, wenn es welche gibt. Leere Abschnitte werden nicht gezeigt, auch nicht ausgegraut. |
+| **P-5** | **Kontext ist nicht Beiwerk, sondern der Entscheidungsgrund.** | Der Reviewer kann nur zustimmen, was er nachvollziehen kann. Die Belegstelle ist deshalb **das größte Element der Karte** — nicht ein Zitatkästchen am Rand. Dazu die Frage „wie oft und wo kam das vor?" (4.4.2.4). |
 
-**Gegen den Flaschenhals (R-03):**
+**Zielmarke:** Median **unter 6 Sekunden** je Vorschlag bei reiner Tastaturbedienung.
+Das ist die eigentliche Anforderung — alles Übrige ist Mittel zum Zweck.
 
-- Stapelaktionen: mehrere Vorschläge markieren und gemeinsam übernehmen/ablehnen —
-  aber nur, wenn keiner davon offene Pflichtfelder hat
-- Gruppierung nach Typ, damit gleichartige Vorschläge in Serie abgearbeitet werden
-- Kuratoren-Delegation (4.2.1)
-- Zähler in der Kopfzeile jedes Projekts mit Anzahl offener Vorschläge
+##### 4.4.2.2 Grundmodus: Schnelldurchlauf
 
-**Akzeptanzkriterien:**
+Kein Listen-plus-Detail-Bildschirm. **Ein Vorschlag füllt die Fläche**, nach der
+Entscheidung rückt automatisch der nächste nach.
 
-- [ ] Ein Vorschlag mit unausgefülltem Pflichtfeld kann nicht übernommen werden; das fehlende Feld wird benannt
-- [ ] „Zusammenführen" überträgt den Titel als Alias auf die Zielentität und verknüpft die Ursprungsnotiz als zusätzliche Herkunft
-- [ ] Nach jeder Entscheidung springt die Ansicht automatisch zum nächsten Vorschlag
-- [ ] Abgelehnte Vorschläge bleiben in der Notiz sichtbar markiert, erzeugen aber keine Entität und tauchen nicht erneut in der Inbox auf
-- [ ] Ein Member ohne Kuratorenrechte sieht die Inbox schreibgeschützt (Transparenz), ohne Aktionsschaltflächen
+| Bereich | Inhalt |
+|---------|--------|
+| **Kopfleiste** | Wo stehe ich: Arbeitsgruppe › Meeting › Datum. Daneben ein **segmentierter Fortschrittsbalken** — ein Segment je Vorschlag, gruppiert je Meeting, erledigte gefüllt. Ersetzt die Warteschlangenliste vollständig |
+| **Hauptspalte** (max. ~720 px) | Belegstelle → Vorschlag → offene Frage → Handlung. In dieser Reihenfolge, immer |
+| **Kontextspalte rechts** (~240 px, rahmenlos) | Herkunft, Häufigkeit, verwandte vorhandene Einträge. Bewusst **visuell leise**: kleine, gedämpfte Schrift ohne Panelrahmen, damit sie nicht mit der Entscheidung konkurriert |
+| **Fußleiste** | Tastaturkürzel, dauerhaft sichtbar |
+
+**Reihenfolge der Vorschläge:** chronologisch **nach Meeting** gruppiert. Alles aus einem
+Treffen am Stück — der Reviewer durchlebt den Ablauf noch einmal und erkennt Zusammenhänge,
+die bei einer Sortierung nach Typ verlorengingen. Zwischen zwei Meetings erscheint eine
+schmale Trennkarte („Sprint-Planung KW 32 — fertig · Als Nächstes: Daily Mi, 3 Vorschläge"),
+die zugleich ein natürlicher Ausstiegspunkt ist.
+
+> **Kein Stapelweg.** Bewusste Entscheidung: Jede Übernahme bleibt eine Einzelentscheidung,
+> damit sich durch Gewöhnung nichts ins Projektwissen schleicht. Der Preis ist, dass die
+> Last je Vorschlag nicht durch Bündelung sinken darf, sondern durch Geschwindigkeit —
+> siehe Zielmarke oben und 4.4.2.7.
+
+##### 4.4.2.3 Die drei Kartenarten
+
+Welche Karte erscheint, ergibt sich aus der Datenlage. Der Reviewer wählt sie nie aus.
+
+**Art A — „Neuer Eintrag?"** (Regelfall)
+
+> Frage: *Gehört das ins Projektwissen?*
+> **Übernehmen** (primär, gefüllt) · Ablehnen (Text) · Später (klein)
+
+**Art B — „Ist das dasselbe?"** (bei Duplikatverdacht ≥ Schwellwert)
+
+> Frage: *Ist das derselbe Eintrag wie ein bereits vorhandener?*
+> Zwei Spalten nebeneinander, Feld für Feld vergleichbar, Belegstellen beider Seiten.
+> **Ist dasselbe → zusammenführen** (primär) · **Ist etwas anderes → neu anlegen** (sekundär,
+> aber deutlich sichtbar — hier sind beide Antworten gleich legitim) · Ablehnen (Text)
+>
+> Diese Karte ersetzt Art A vollständig. Ein Duplikatverdacht ist eine **andere Frage**,
+> keine Zusatzoption an derselben Frage.
+
+**Art C — „Ergänzung zu Vorhandenem?"** (Erwähnung zeigt auf eine bereits kanonische Entität
+und bringt neue Information mit)
+
+> Frage: *Soll diese Information zum vorhandenen Eintrag hinzukommen?*
+> Zeigt den betroffenen Eintrag, die neue Aussage und was sich konkret ändern würde
+> (neues Feld gefüllt, neue Beziehung, neue Herkunft).
+> **Übernehmen** (primär) · Verwerfen (Text)
+
+##### 4.4.2.4 Kontext — was der Reviewer zum Verifizieren braucht
+
+Die Belegstelle allein genügt nicht. Vier Angaben, alle **ohne Klick sichtbar**:
+
+| Angabe | Warum sie über die Entscheidung entscheidet | Darstellung |
+|--------|---------------------------------------------|-------------|
+| **Der Absatz, nicht der Satz** | Ein einzelner Satz ist oft mehrdeutig. Der umgebende Absatz macht klar, ob es sich um eine Festlegung oder eine beiläufige Erwähnung handelt | Hauptelement der Karte, größte Schrift nach dem Titel, markierte Stelle hervorgehoben |
+| **Häufigkeit und Streuung** | „3-mal über 2 Meetings" ist fast sicher relevant, „1-mal beiläufig" oft nicht. Das stärkste Einzelsignal überhaupt | Zeile über der Belegstelle: *3 Erwähnungen · 2 Meetings*, aufklappbar zu den anderen Fundstellen im Wortlaut |
+| **Wer und wo** | Eine Aussage der Projektleitung wiegt anders als eine Randnotiz | Kontextspalte: Autor mit Avatar, Arbeitsgruppe › Meeting, Zeitpunkt |
+| **Was es schon gibt** | Verhindert Doppelanlagen, die unterhalb des Duplikat-Schwellwerts liegen | Kontextspalte: bis zu 5 vorhandene Einträge desselben Typs, alphabetisch, als reine Liste |
+
+Zusätzlich **auf Klick**: die vollständige Ursprungsnotiz im Overlay, mit der Stelle
+hervorgehoben — für den seltenen Fall, dass der Absatz nicht reicht.
+
+##### 4.4.2.5 Pflichtfelder als Chips
+
+Der größte Reibungspunkt der ersten Fassung. Ein `select`-Pflichtfeld erscheint **nicht**
+als Auswahlliste mit „— bitte auswählen —", sondern als Reihe antippbarer Chips:
+
+```text
+Status *   [ Idee ]  [ In Arbeit ]  [ Fertig ]  [ Verworfen ]
+             1          2             3           4
+```
+
+- Ein Klick genügt, alternativ die Zifferntaste
+- Der Primärknopf ist inaktiv, solange ein Pflichtfeld offen ist — die Begründung steht
+  **direkt am Knopf**, nicht am Fuß der Karte: *„Status wählen, dann übernehmen"*
+- Optionale Felder erscheinen in der Review-Karte **überhaupt nicht** (P-4). Sie werden
+  auf der Detailseite gepflegt, wo sie hingehören
+- `text`-Pflichtfelder erscheinen als einzeiliges Feld mit Fokus; `date`-Pflichtfelder mit
+  drei Schnellwerten (heute · Meeting-Datum · anderes)
+- **AI-Vorbereitung:** Ist die AI aktiv, ist der wahrscheinliche Chip bereits ausgewählt und
+  mit einem dezenten Punkt markiert. Der Reviewer bestätigt oder korrigiert mit einem Klick.
+  Das Layout bleibt identisch — der Übergang zur AI-Unterstützung ändert nichts am Bildschirm,
+  nur die Menge der offenen Fragen sinkt
+
+##### 4.4.2.6 Nach der Entscheidung
+
+- **Keine Bestätigungsdialoge.** Jede Handlung wird sofort ausgeführt
+- **Rückgängig statt Nachfragen:** ein schmaler Hinweis am unteren Rand,
+  *„Notification Service übernommen · Rückgängig (Z)"*, für 8 Sekunden
+- **Automatisch weiter** zum nächsten Vorschlag, ohne Ladeunterbrechung
+- **Ablehnen** verlangt keinen Grund. Ein optionales Feld erscheint erst, wenn der Reviewer
+  auf den eingeblendeten Hinweis „Grund angeben?" klickt
+- **Endzustand** ist bewusst als Belohnung gestaltet: was in dieser Sitzung entstanden ist
+  (*„7 Vorschläge bearbeitet · 5 neue Einträge · 2 zusammengeführt"*), mit einem Sprung in
+  den Beziehungs-Graph — dorthin, wo das Ergebnis der Mühe sichtbar wird
+
+##### 4.4.2.7 Tastaturbedienung
+
+Da es keinen Stapelweg gibt, ist die Tastatur der einzige Hebel auf die Zielmarke.
+Die Kürzel stehen dauerhaft in der Fußleiste, nicht in einer Hilfe.
+
+| Taste | Handlung |
+|-------|----------|
+| `A` / `Enter` | Übernehmen (bzw. Zusammenführen bei Art B) |
+| `X` | Ablehnen |
+| `N` | Bei Art B: „Ist etwas anderes → neu anlegen" |
+| `S` | Später |
+| `1`–`9` | Chip des ersten offenen Pflichtfelds wählen |
+| `E` | Titel bearbeiten |
+| `C` | Vollständige Ursprungsnotiz öffnen |
+| `Z` | Letzte Handlung rückgängig |
+| `←` | Einen Vorschlag zurück |
+
+##### 4.4.2.8 Weitere Maßnahmen gegen R-03
+
+- **Kuratoren-Delegation** (4.2.1) — mehrere Schultern statt einer
+- **Zähler im Projektkopf** mit offenen Vorschlägen, aber **ohne rote Warnfarbe**: eine
+  volle Inbox ist kein Fehler, und ein Alarmzeichen erzeugt Vermeidungsverhalten
+- **Natürliche Ausstiegspunkte** an den Meeting-Grenzen, damit „ich mache nur das eine
+  Meeting fertig" eine legitime Sitzung ist
+- **Messung** über `suggestion_resolved` inklusive Bearbeitungsdauer je Vorschlag —
+  reißt die Zielmarke von 6 Sekunden, ist das ein Gestaltungsproblem, kein Nutzerproblem
+
+##### 4.4.2.9 Member-Sicht
+
+Ein Member ohne Kuratorenrechte sieht denselben Schnelldurchlauf **ohne jede
+Handlungsschaltfläche** — nicht ausgegraut, sondern schlicht nicht vorhanden. Zweck ist
+Transparenz: nachvollziehen können, was aus den eigenen Notizen wird. Zusätzlich eine
+Filterung „nur meine Vorschläge".
+
+##### 4.4.2.10 Akzeptanzkriterien
+
+- [ ] Auf der Karte ist zu jedem Zeitpunkt **genau ein** gefüllter, farbiger Knopf sichtbar
+- [ ] „Zusammenführen" erscheint ausschließlich auf Kartenart B; ohne Duplikatverdacht existiert die Schaltfläche nicht
+- [ ] Ein Abschnitt ohne Inhalt (keine Beziehungsvorschläge, keine weiteren Erwähnungen) wird nicht gerendert — auch nicht leer oder ausgegraut
+- [ ] Optionale Preset-Felder erscheinen nicht in der Review-Karte
+- [ ] Ein `select`-Pflichtfeld erscheint als Chip-Reihe und ist mit den Zifferntasten 1–9 bedienbar
+- [ ] Ist ein Pflichtfeld offen, steht die Begründung unmittelbar am Primärknopf, nicht an anderer Stelle der Karte
+- [ ] Die Belegstelle zeigt den umgebenden Absatz, nicht nur den Satz mit der Markierung
+- [ ] Häufigkeit und Streuung („3 Erwähnungen · 2 Meetings") sind ohne Klick sichtbar
+- [ ] Eine vollständige Entscheidung ist ohne Maus möglich; der Median über 20 aufeinanderfolgende Vorschläge liegt unter 6 Sekunden
+- [ ] Nach jeder Handlung erscheint 8 Sekunden lang ein Rückgängig-Hinweis; es gibt keinen Bestätigungsdialog
+- [ ] Die Reihenfolge ist chronologisch nach Meeting gruppiert; zwischen Meetings erscheint eine Trennkarte
+- [ ] Der Fortschrittsbalken zeigt ein Segment je Vorschlag, gruppiert nach Meeting
+- [ ] Abgelehnte Vorschläge bleiben in der Notiz markiert, erzeugen keine Entität und erscheinen nicht erneut
+- [ ] Ein Member ohne Kuratorenrechte sieht keine Handlungsschaltflächen — weder aktiv noch ausgegraut
+- [ ] Der Endzustand zeigt eine Bilanz der Sitzung und verlinkt in den Beziehungs-Graph
 
 #### 4.4.3 Entitäten-Liste und -Detail
 

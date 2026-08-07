@@ -444,43 +444,55 @@ gleichwertige Alternative für alle Inhalte des Graphen.
 
 ## E — Kuration
 
-### E1 · Review-Inbox ⚡ 🎨
+### E1 · Review-Inbox (Schnelldurchlauf) ⚡ 🎨
 
 | | |
 |---|---|
-| **Zweck** | Vorschläge in Projektwissen überführen — als Abarbeitung, nicht als Datenpflege |
+| **Zweck** | Vorschläge in Projektwissen überführen — als Abarbeitung, nicht als Datenpflege. **Der anstrengendste Bildschirm der Kette und damit der am stärksten optimierte** |
 | **Zugang** | Lead und Kurator mit Aktionen · Member schreibgeschützt (Transparenz) |
 | **Phase** | V1.1 |
+| **Zielmarke** | Median **unter 6 Sekunden** je Vorschlag bei Tastaturbedienung |
 
-**Aufbau — zwei Spalten**
+**Aufbau — kein Liste-plus-Detail, sondern Vollflächen-Durchlauf**
 
-| Spalte | Inhalt |
-|--------|--------|
-| **Links** — Warteschlange | Vorschläge, gruppierbar nach Meeting / Typ / Autor. Je Eintrag: Titel, Typ-Symbol, Autor, Herkunfts-Meeting. Mehrfachauswahl für Stapelaktionen |
-| **Rechts** — Entscheidungskarte | **Eine Entscheidung, ein Bildschirm** |
+| Bereich | Inhalt |
+|---------|--------|
+| **Kopfleiste** | Arbeitsgruppe › Meeting › Datum · **segmentierter Fortschrittsbalken** (ein Segment je Vorschlag, gruppiert nach Meeting). Ersetzt die Warteschlangenliste vollständig |
+| **Hauptspalte** (max. ~720 px) | Immer dieselbe Reihenfolge: Belegstelle → Vorschlag → offene Frage → Handlung |
+| **Kontextspalte** (~240 px, **rahmenlos und gedämpft**) | Herkunft, Häufigkeit, vorhandene Einträge desselben Typs. Bewusst visuell leise, damit sie nicht mit der Entscheidung konkurriert |
+| **Fußleiste** | Tastenkürzel, dauerhaft sichtbar |
 
-**Inhalt der Entscheidungskarte**
+**Drei Kartenarten — je eine binäre Frage.** Welche erscheint, ergibt die Datenlage;
+der Reviewer wählt nie aus.
 
-1. Vorgeschlagener Titel und Typ — beide vor der Übernahme änderbar
-2. **Belegstelle**: der Ursprungssatz mit hervorgehobener Textstelle, zwei Zeilen Kontext davor und danach
-3. Herkunft: Autor, Meeting, Arbeitsgruppe, Zeitpunkt
-4. **Duplikatkandidaten** mit Ähnlichkeitswert und Direktvergleich
-5. Pflichtfelder des Typs — **Übernahme bleibt gesperrt, solange eines leer ist**, mit Benennung des fehlenden Feldes
-6. Vorgeschlagene Beziehungen aus derselben Notiz, einzeln abwählbar
+| Art | Frage | Primär | Sekundär |
+|-----|-------|--------|----------|
+| **A · Neu** | Gehört das ins Projektwissen? | Übernehmen | Ablehnen (Text) · Später (klein) |
+| **B · Duplikat** | Ist das derselbe Eintrag? | Ist dasselbe → zusammenführen | Ist etwas anderes → neu anlegen (gleichwertig sichtbar) |
+| **C · Ergänzung** | Soll das zum vorhandenen Eintrag hinzukommen? | Übernehmen | Verwerfen (Text) |
 
-**Aktionen:** `✅ Übernehmen` · `🔗 Zusammenführen mit …` → E2 · `❌ Ablehnen` (mit optionalem Grund) · `⏭ Später`
+**Kontext ohne Klick sichtbar** (PRD §4.4.2.4): der umgebende **Absatz** statt nur des
+Satzes · **Häufigkeit und Streuung** („3 Erwähnungen · 2 Meetings", aufklappbar) · Autor,
+Arbeitsgruppe, Meeting, Zeitpunkt · bis zu 5 vorhandene Einträge desselben Typs.
 
-**Gegen den Flaschenhals (R-03):** Stapelaktionen für Vorschläge ohne offene Pflichtfelder ·
-Gruppierung nach Typ für Serienbearbeitung · Zähler im Projektkopf · Tastenkürzel
-(`J`/`K` navigieren, `A` übernehmen, `X` ablehnen)
+**Pflichtfelder als Chip-Reihe** statt Auswahlliste — ein Klick oder eine Zifferntaste.
+Optionale Felder erscheinen hier **gar nicht**. Die Begründung für einen inaktiven
+Primärknopf steht unmittelbar am Knopf.
+
+**Nach der Entscheidung:** keine Bestätigungsdialoge · Rückgängig-Hinweis für 8 s ·
+automatisch weiter · Trennkarte an jeder Meeting-Grenze als natürlicher Ausstiegspunkt.
+
+**Bewusst nicht enthalten:** Stapelaktionen. Jede Übernahme bleibt eine Einzelentscheidung
+(PRD §4.4.2.2) — die Entlastung kommt aus Geschwindigkeit, nicht aus Bündelung.
 
 **Abweichende Zustände**
 
 | Zustand | Verhalten |
 |---------|-----------|
-| Leer | „Alles abgearbeitet." Bewusst als Belohnung gestaltet, nicht als kahler Bildschirm |
-| Leer (Member) | „Hier arbeitet die Projektleitung Vorschläge ab. Deine Vorschläge aus **Meeting 12** stehen in der Warteschlange." |
-| Keine Berechtigung | Für Member: Liste sichtbar, Aktionen fehlen (nicht ausgegraut — gar nicht vorhanden) |
+| Leer | **Bilanz statt kahler Fläche:** „7 Vorschläge bearbeitet · 5 neue Einträge · 2 zusammengeführt", mit Sprung in den Beziehungs-Graph — dorthin, wo das Ergebnis der Mühe sichtbar wird |
+| Leer (Member) | „Hier arbeitet die Projektleitung Vorschläge ab. Deine Vorschläge aus **Meeting 12** stehen noch an." |
+| Keine Berechtigung | Für Member: Karten sichtbar, Handlungsschaltflächen **nicht vorhanden** — nicht ausgegraut |
+| Meeting-Grenze | Schmale Trennkarte: „Sprint-Planung KW 32 — fertig · Als Nächstes: Daily Mi, 3 Vorschläge" |
 
 ---
 
