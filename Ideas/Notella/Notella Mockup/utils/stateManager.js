@@ -138,6 +138,7 @@ export class NavBuilder {
           {
             label: d.projectName,
             screen: 'B3',
+            iconName: 'home',
             on: state.screen === 'B3',
           },
         ],
@@ -152,6 +153,7 @@ export class NavBuilder {
           {
             label: 'Einträge',
             screen: 'D2',
+            iconName: 'book',
             badge: String(
               preset.types.reduce((a, x) => a + x.count, 0)
             ),
@@ -160,6 +162,7 @@ export class NavBuilder {
           {
             label: 'Beziehungs-Netz',
             screen: 'D5',
+            iconName: 'graph',
             on: state.screen === 'D5',
           },
         ],
@@ -173,6 +176,7 @@ export class NavBuilder {
           {
             label: 'Review-Inbox',
             screen: 'E1',
+            iconName: 'inbox',
             badge: String(
               Math.max(0, d.open - state.log.length)
             ),
@@ -186,6 +190,7 @@ export class NavBuilder {
           {
             label: 'Preset & Einstellungen',
             screen: 'F3',
+            iconName: 'gear',
             on: state.screen === 'F3',
           },
         ],
@@ -196,6 +201,8 @@ export class NavBuilder {
         items: [
           {
             label: t.part + ': ' + d.me.split(' ')[0],
+            screen: 'B3',
+            iconName: 'user',
             small: true,
           },
         ],

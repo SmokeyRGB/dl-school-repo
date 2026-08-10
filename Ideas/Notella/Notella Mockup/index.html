@@ -72,6 +72,9 @@
     .app-nav .nav-badge {
       opacity: 0;
       transition: opacity 240ms ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     .app-nav:hover .nav-label,
@@ -79,6 +82,32 @@
     .app-nav.open .nav-label,
     .app-nav.open .nav-badge {
       opacity: 1;
+    }
+
+    /* Hide group labels when collapsed; show when open/hovered */
+    .app-nav .nav-group-label {
+      opacity: 0;
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      overflow: hidden;
+      transition: opacity 200ms ease, max-height 200ms ease, padding 200ms ease;
+    }
+    .app-nav:hover .nav-group-label,
+    .app-nav.open .nav-group-label {
+      opacity: 1;
+      max-height: 40px;
+      padding-bottom: 6px;
+    }
+
+    /* Center icons in collapsed state, align left when open */
+    .app-nav:not(.open):not(:hover) .nav-item {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .app-nav:not(.open):not(:hover) .nav-item-nested {
+      padding-left: 0;
     }
     
     /* Nav items */
@@ -108,7 +137,7 @@
       font-weight: 400;
       border-radius: 9px;
       cursor: pointer;
-      transition: all 120ms ease;
+      transition: background 120ms ease, color 120ms ease, padding 200ms ease, justify-content 200ms ease;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -125,45 +154,27 @@
       color: #16161a;
       font-weight: 600;
     }
-    
-    .nav-item > span:first-child {
+
+    /* Nav icon wrapper */
+    .nav-icon {
       flex: none;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: currentColor;
-      opacity: 0.3;
-    }
-    
-    .nav-item.active > span:first-child {
-      opacity: 1;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
     /* Nested items (meetings under work groups) */
     .nav-item-nested {
-      padding-left: 40px;
+      padding-left: 38px;
       font-size: 12px;
       color: #7a7f8c;
-    }
-    
-    .nav-item-nested .state-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex: none;
     }
     
     .nav-item-nested.active {
       background: #f2f0fc;
       color: #16161a;
-    }
-    
-    /* Collapsible expand arrow */
-    .nav-item.collapsible .expand-arrow {
-      display: inline-flex;
-      font-size: 10px;
-      transition: transform 200ms ease;
-      flex: none;
     }
     
     .app-content {
@@ -586,6 +597,31 @@
       go(screen) {
         this.setState({ screen, mention: null, drawer: false });
       }
+
+      navIconSvg(name, opts = {}) {
+        const { color = 'currentColor', rotate = 0, dotColor = '#8b8d97' } = opts;
+        const svg = (inner) => `<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="${color}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;${rotate ? `transform:rotate(${rotate}deg);transition:transform 180ms ease;` : ''}">${inner}</svg>`;
+        switch (name) {
+          case 'home':
+            return svg('<path d="M3 9.5L10 3l7 6.5V17a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M7 18V12h6v6"/>');
+          case 'book':
+            return svg('<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H15v14H5.5A1.5 1.5 0 0 1 4 15.5z"/><path d="M15 10H5.5"/>');
+          case 'graph':
+            return svg('<circle cx="5" cy="10" r="2"/><circle cx="15" cy="5" r="2"/><circle cx="15" cy="15" r="2"/><path d="M7 9.2L13 5.8M7 10.8L13 14.2"/>');
+          case 'inbox':
+            return svg('<path d="M3 12h4l1 2h4l1-2h4"/><path d="M3 12l2-7h10l2 7v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>');
+          case 'gear':
+            return svg('<circle cx="10" cy="10" r="2.8"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.2 4.2l1.4 1.4M14.4 14.4l1.4 1.4M14.4 5.6l-1.4 1.4M5.6 14.4l-1.4 1.4"/>');
+          case 'user':
+            return svg('<circle cx="10" cy="7" r="3.5"/><path d="M3 18.5c.6-3 3.3-5 7-5s6.4 2 7 5"/>');
+          case 'chev':
+            return `<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="${color}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transform:rotate(${rotate}deg);transition:transform 180ms ease;"><path d="M8 5l5 5-5 5"/></svg>`;
+          case 'stateDot':
+            return `<span style="width:7px;height:7px;border-radius:50%;background:${dotColor};flex:none;display:inline-block"></span>`;
+          default:
+            return `<span style="width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.35;flex:none;display:inline-block"></span>`;
+        }
+      }
       
       render() {
         this.renderHeader();
@@ -631,40 +667,36 @@
         
         let html = '';
         navGroups.forEach((group) => {
+          const iconColor = (item) => item.on ? '#5340c4' : '#7a7c86';
           html += `
             <div class="nav-group">
               <div class="nav-group-label">${group.label}</div>
-              ${group.items.map((item, idx) => {
+              ${group.items.map((item) => {
                 if (item.isCollapsible) {
+                  const chevIcon = this.navIconSvg('chev', { color: '#8b8d97', rotate: item.open ? 90 : 0 });
                   return `
-                    <button class="nav-item ${item.on ? 'active' : ''} collapsible" onclick="app.toggleCollapsible('${item.label}', event)" title="${item.label}">
-                      <span class="expand-arrow" style="transform: ${item.open ? 'rotate(0deg)' : 'rotate(-90deg)'};">▼</span>
-                      <span class="nav-label">${item.label}</span>
-                      ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
-                    </button>
-                  `;
-                } else if (item.depth === 0 && !item.isCollapsible) {
-                  return `
-                    <button class="nav-item ${item.on ? 'active' : ''}" onclick="app.go('${item.screen}')" title="${item.label}">
-                      <span></span>
-                      <span class="nav-label">${item.label}</span>
-                      ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
+                    <button class="nav-item ${item.on ? 'active' : ''}" onclick="app.toggleCollapsible('${item.label}', event)" title="${item.label}" style="font-size:12.5px">
+                      <span class="nav-icon">${chevIcon}</span>
+                      <span class="nav-label" style="flex:1">${item.label}</span>
+                      ${item.badge ? `<span class="nav-badge" style="font-size:10.5px;color:#8b8d97">${item.badge}</span>` : ''}
                     </button>
                   `;
                 } else if (item.depth === 1) {
+                  const dotColor = item.state === 'läuft' ? '#5340c4' : item.state === 'geplant' ? '#c9a227' : '#c4c3bd';
+                  const dotIcon = this.navIconSvg('stateDot', { dotColor });
                   return `
-                    <button class="nav-item nav-item-nested ${item.on ? 'active' : ''}" onclick="app.go('${item.screen}')" title="${item.label}">
-                      <span class="state-dot" style="background: ${item.state === 'beendet' ? '#d1d0ca' : item.state === 'läuft' ? '#2fb8a0' : '#a3a3ab'}; opacity: 0.6;"></span>
+                    <button class="nav-item nav-item-nested ${item.on ? 'active' : ''}" onclick="app.go('${item.screen}')" title="${item.label}" style="font-size:12.5px;color:${item.muted ? '#8b8d97' : (item.on ? '#16161a' : '#5a5c66')}">
+                      <span class="nav-icon">${dotIcon}</span>
                       <span class="nav-label">${item.label}</span>
-                      ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
                     </button>
                   `;
                 } else {
+                  const icon = this.navIconSvg(item.iconName || 'default', { color: iconColor(item) });
                   return `
-                    <button class="nav-item ${item.on ? 'active' : ''}" onclick="app.go('${item.screen}')" title="${item.label}">
-                      <span></span>
+                    <button class="nav-item ${item.on ? 'active' : ''}" onclick="app.go('${item.screen || 'B3'}')" title="${item.label}">
+                      <span class="nav-icon">${icon}</span>
                       <span class="nav-label">${item.label}</span>
-                      ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
+                      ${item.badge ? `<span class="nav-badge" style="font-size:10.5px;color:#8b8d97">${item.badge}</span>` : ''}
                     </button>
                   `;
                 }
