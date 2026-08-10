@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notella Mockup — Phase 2</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="./styles/global.css">
+  
+  <!-- Component Styles -->
+  <style>
+    /* Layout */
+    body {
+      margin: 0;
+      background: #f4f4f2;
+    }
+    
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .app-header {
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 53px;
+      padding: 0 18px;
+      background: #fff;
+      border-bottom: 1px solid #e4e4e0;
+      z-index: 60;
+    }
+    
+    .app-main {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      position: relative;
+    }
+    
+    .app-nav {
+      position: relative;
+      flex: none;
+      width: 52px;
+      transition: width 260ms cubic-bezier(.22,.7,.25,1);
+      background: #fff;
+      border-right: 1px solid #e6e5e0;
+      overflow: hidden;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .app-nav:hover {
+      width: 236px;
+    }
+    
+    .app-nav.open {
+      width: 236px;
+    }
+    
+    /* Nav content - hide text and badges when collapsed */
+    .app-nav .nav-label,
+    .app-nav .nav-badge {
+      opacity: 0;
+      transition: opacity 240ms ease;
+    }
+    
+    .app-nav:hover .nav-label,
+    .app-nav:hover .nav-badge,
+    .app-nav.open .nav-label,
+    .app-nav.open .nav-badge {
+      opacity: 1;
+    }
+    
+    /* Nav items */
+    .nav-group {
+      padding: 10px 0 0 0;
+      display: grid;
+      gap: 0;
+    }
+    
+    .nav-group-label {
+      padding: 0 12px 6px 12px;
+      font-size: 10px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #a3a3ab;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    
+    .nav-item {
+      padding: 9px 12px 6px 12px;
+      font-size: 13px;
+      text-align: left;
+      border: none;
+      background: transparent;
+      color: #5a5c66;
+      font-weight: 400;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 120ms ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      margin: 0 6px;
+    }
+    
+    .nav-item:hover {
+      background: #f9f8f6;
+    }
+    
+    .nav-item.active {
+      background: #f2f0fc;
+      color: #16161a;
+      font-weight: 600;
+    }
+    
+    .nav-item > span:first-child {
+      flex: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.3;
+    }
+    
+    .nav-item.active > span:first-child {
+      opacity: 1;
+    }
+    
+    /* Nested items (meetings under work groups) */
+    .nav-item-nested {
+      padding-left: 40px;
+      font-size: 12px;
+      color: #7a7f8c;
+    }
+    
+    .nav-item-nested .state-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex: none;
+    }
+    
+    .nav-item-nested.active {
+      background: #f2f0fc;
+      color: #16161a;
+    }
+    
+    /* Collapsible expand arrow */
+    .nav-item.collapsible .expand-arrow {
+      display: inline-flex;
+      font-size: 10px;
+      transition: transform 200ms ease;
+      flex: none;
+    }
+    
+    .app-content {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      overflow: auto;
+      background: #f4f4f2;
+    }
+    
+    .app-screen {
+      display: none;
+      animation: nfade 200ms ease both;
+    }
+    
+    .app-screen.active {
+      display: block;
+    }
+    
+    /* Dev Bar */
+    .dev-bar {
+      flex: none;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 8px 16px;
+      background: #16161a;
+      color: #f4f4f2;
+      font-size: 11.5px;
+      letter-spacing: 0.01em;
+      flex-wrap: wrap;
+    }
+    
+    .dev-bar span {
+      white-space: nowrap;
+    }
+    
+    .dev-bar .label {
+      color: #8b8d97;
+    }
+    
+    .dev-bar .spacer {
+      flex: 1;
+    }
+    
+    .dev-controls {
+      display: flex;
+      gap: 3px;
+      padding: 3px;
+      background: #26262c;
+      border-radius: 7px;
+    }
+    
+    .dev-controls button {
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      white-space: nowrap;
+      color: #a3a3ab;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    
+    .dev-controls button.active {
+      background: #f4f4f2;
+      color: #16161a;
+      font-weight: 600;
+    }
+    
+    .dev-controls button:hover {
+      color: #e4e4e0;
+    }
+    
+    /* Popovers */
+    .popover {
+      position: fixed;
+      background: #fff;
+      border: 1px solid #e2e1dc;
+      border-radius: 11px;
+      box-shadow: 0 16px 40px -18px rgba(22,22,26,0.34);
+      animation: nfade 140ms ease both;
+      z-index: 90;
+      display: none;
+    }
+    
+    .popover.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Dev Bar -->
+    <div class="dev-bar">
+      <span style="font-weight: 600;">Notella — Phase 2</span>
+      <span class="label">Screen <span id="screen-id">B1</span></span>
+      <span class="label">Mode: <span id="mode-id">normal</span></span>
+      <span class="spacer"></span>
+      
+      <span class="label">PRESET</span>
+      <div class="dev-controls">
+        <button class="preset-btn active" data-preset="software">Software</button>
+        <button class="preset-btn" data-preset="tabletop">TableTop</button>
+      </div>
+      
+      <span class="label">MODE</span>
+      <div class="dev-controls">
+        <button class="mode-btn active" data-mode="normal">normal</button>
+        <button class="mode-btn" data-mode="loading">laden</button>
+        <button class="mode-btn" data-mode="empty">leer</button>
+        <button class="mode-btn" data-mode="error">Fehler</button>
+      </div>
+      
+      <span class="label">ROLE</span>
+      <div class="dev-controls">
+        <button class="role-btn active" data-role="lead">Lead</button>
+        <button class="role-btn" data-role="member">Member</button>
+      </div>
+    </div>
+    
+    <!-- Header -->
+    <div class="app-header">
+      <button onclick="app.go('B1')" style="display: flex; align-items: center; gap: 9px; background: none; border: none; cursor: pointer; color: inherit;">
+        <span style="width: 23px; height: 23px; border-radius: 7px; background: #5340c4; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 600; line-height: 1;">n</span>
+        <span style="font-size: 15px; font-weight: 600; letter-spacing: -0.015em;">Notella</span>
+      </button>
+      <div id="breadcrumbs" style="flex: 1; display: flex; align-items: center; gap: 2px; padding-left: 6px; border-left: 1px solid #e4e4e0; margin-left: 2px;"></div>
+      <div style="display: flex; align-items: center; gap: 8px; padding-left: 4px;">
+        <span style="font-size: 12.5px; color: #5a5c66;" id="user-label">Sam Ritter · Lead</span>
+        <span style="width: 27px; height: 27px; border-radius: 50%; background: #dedbf6; color: #4a3aad; font-size: 11.5px; font-weight: 600; display: flex; align-items: center; justify-content: center;" id="user-initials">SR</span>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="app-main">
+      <!-- Navigation -->
+      <div class="app-nav" id="nav-sidebar">
+        <!-- Nav groups will be inserted here -->
+      </div>
+      
+      <!-- Content Area -->
+      <div class="app-content" id="content-area">
+        <!-- Screens will be inserted here -->
+        <div id="screen-B1" class="app-screen active"></div>
+        <div id="screen-B2" class="app-screen"></div>
+        <div id="screen-B3" class="app-screen"></div>
+        <div id="screen-C1" class="app-screen"></div>
+        <div id="screen-D2" class="app-screen"></div>
+        <div id="screen-D5" class="app-screen"></div>
+        <div id="screen-E1" class="app-screen"></div>
+        <div id="screen-F3" class="app-screen"></div>
+      </div>
+    </div>
+    
+    <!-- Popovers -->
+    <div id="mention-popup" class="popover"></div>
+    <div id="ai-popup" class="popover"></div>
+  </div>
+  
+  <!-- App Script -->
+  <script type="module">
+    (async () => {
+      try {
+        // Import all dependencies
+        const [utils, b1, b3, c1, d2, e1] = await Promise.all([
+          import('./utils/index.js'),
+          import('./components/screenB1.js'),
+          import('./components/screenB3.js'),
+          import('./components/screenC1.js'),
+          import('./components/screenD2.js'),
+          import('./components/screenE1.js')
+        ]);
+        
+        const {
+          tint, chipSt, markSt, avSt, segSt, createIcon, shapePath,
+          checkMention, analyzeAi, insertMention, acceptAi,
+          ReviewManager, NavBuilder, ScreenManager,
+          screensConfig
+        } = utils;
+        
+        const {
+          renderScreenB1, renderScreenB3, renderScreenC1,
+          renderScreenD2, renderScreenE1
+        } = { 
+          renderScreenB1: b1.renderScreenB1,
+          renderScreenB3: b3.renderScreenB3,
+          renderScreenC1: c1.renderScreenC1,
+          renderScreenD2: d2.renderScreenD2,
+          renderScreenE1: e1.renderScreenE1
+        };
+    
+    // Main App
+    class NotellaMockupApp {
+      constructor() {
+        this.state = {
+          screen: 'B1',
+          presetId: 'software',
+          role: 'lead',
+          mode: 'normal',
+          navOpen: false,
+          railOpen: false,
+          vis: null,
+          drawer: false,
+          mention: null,
+          mentionIdx: 0,
+          aiSug: null,
+          reviewIdx: 0,
+          rf: {},
+          log: [],
+          undo: null,
+          hintOpen: true,
+          zoom: 1,
+          focus: null,
+          hidden: [],
+          navExp: {}
+        };
+        
+        this.presets = this.loadPresets();
+        this.screens = screensConfig.SCREENS;
+        this.reviewMgr = new ReviewManager(this.presets);
+        
+        this.init();
+      }
+      
+      loadPresets() {
+        // Load preset data from original mockup
+        return {
+          software: {
+            id: 'software-project',
+            name: 'Software-Projekt',
+            version: '1.2',
+            t: {
+              project: 'Projekt',
+              projects: 'Projekte',
+              wg: 'Sprint',
+              wgs: 'Sprints',
+              meeting: 'Meeting',
+              meetings: 'Meetings',
+              part: 'Teammitglied',
+              parts: 'Team',
+              canonVerb: 'übernehmen',
+              canonNoun: 'Projektwissen'
+            },
+            d: {
+              projectName: 'Produktteam Nord',
+              projectDesc: 'Discovery und Umsetzung, wöchentlich',
+              wgName: 'Sprint 14',
+              meetingTitle: 'Sprint-Planung KW 32',
+              meetingDate: 'Mi, 5. August 2026 · 10:00',
+              minutes: 24,
+              leadName: 'Sam',
+              leadFull: 'Sam Ritter',
+              me: 'Mira Kant',
+              open: 5
+            },
+            types: [
+              { key: 'component', label: 'Komponente', color: '#2fb8a0', shape: 'roundrect', count: 7 },
+              { key: 'decision', label: 'Entscheidung', color: '#5340c4', shape: 'diamond', count: 4 },
+              { key: 'risk', label: 'Risiko', color: '#c8553d', shape: 'star', count: 3 },
+              { key: 'task', label: 'Aufgabe', color: '#3f7fd0', shape: 'pentagon', count: 6 },
+              { key: 'teammember', label: 'Teammitglied', color: '#7a7f8c', shape: 'circle', count: 5 }
+            ],
+            wgs: [
+              {
+                name: 'Sprint 12',
+                live: false,
+                meetings: [
+                  ['Sprint Review KW 30', 'beendet'],
+                  ['Retro & Planning', 'beendet']
+                ]
+              },
+              {
+                name: 'Sprint 14',
+                live: true,
+                meetings: [
+                  ['Sprint-Planung KW 32', 'läuft'],
+                  ['Daily Standup', 'läuft'],
+                  ['Sprint Review', 'geplant']
+                ]
+              },
+              {
+                name: 'Sprint 15',
+                live: false,
+                meetings: [
+                  ['Planning Session', 'geplant']
+                ]
+              }
+            ],
+            review: []
+          },
+          tabletop: {
+            id: 'tabletop-project',
+            name: 'TableTop-Projekt',
+            version: '1.0',
+            t: {
+              project: 'Kampagne',
+              projects: 'Kampagnen',
+              wg: 'Spieltag',
+              wgs: 'Spieltage',
+              meeting: 'Session',
+              meetings: 'Sessions',
+              part: 'Spieler',
+              parts: 'Spieler',
+              canonVerb: 'kanonisieren',
+              canonNoun: 'Weltwissen'
+            },
+            d: {
+              projectName: 'Aethermoor',
+              projectDesc: 'D&D 5e Kampagne',
+              wgName: 'Staffel 1',
+              meetingTitle: 'Session 12',
+              meetingDate: 'So, 10. August 2026 · 20:00',
+              minutes: 156,
+              leadName: 'Nils',
+              leadFull: 'Nils Vogt',
+              me: 'Timo Beck',
+              open: 8
+            },
+            types: [
+              { key: 'npc', label: 'NSC', color: '#ff6b6b', shape: 'circle', count: 12 },
+              { key: 'poi', label: 'Ort', color: '#4ecdc4', shape: 'roundrect', count: 8 },
+              { key: 'faction', label: 'Fraktion', color: '#ffd93d', shape: 'hexagon', count: 5 },
+              { key: 'item', label: 'Gegenstand', color: '#a8e6cf', shape: 'diamond', count: 15 },
+              { key: 'event', label: 'Ereignis', color: '#ff8c94', shape: 'star', count: 6 }
+            ],
+            wgs: [
+              {
+                name: 'Staffel 1',
+                live: true,
+                meetings: [
+                  ['Session 12', 'läuft'],
+                  ['Session 13', 'geplant'],
+                  ['Session 14', 'geplant']
+                ]
+              },
+              {
+                name: 'Staffel 2',
+                live: false,
+                meetings: [
+                  ['Session 1', 'geplant']
+                ]
+              }
+            ],
+            review: []
+          }
+        };
+      }
+      
+      init() {
+        this.setupEventListeners();
+        this.render();
+      }
+      
+      setupEventListeners() {
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            this.setState({ presetId: e.target.dataset.preset });
+          });
+        });
+        
+        // Mode buttons
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            this.setState({ mode: e.target.dataset.mode });
+          });
+        });
+        
+        // Role buttons
+        document.querySelectorAll('.role-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            this.setState({ role: e.target.dataset.role });
+          });
+        });
+        
+        // Nav toggle
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            this.setState({ mention: null, drawer: false });
+          }
+        });
+      }
+      
+      setState(updates) {
+        this.state = { ...this.state, ...updates };
+        this.render();
+      }
+      
+      go(screen) {
+        this.setState({ screen, mention: null, drawer: false });
+      }
+      
+      render() {
+        this.renderHeader();
+        this.renderNav();
+        this.renderScreen();
+      }
+      
+      renderHeader() {
+        const preset = this.presets[this.state.presetId];
+        document.getElementById('screen-id').textContent = this.state.screen;
+        document.getElementById('mode-id').textContent = this.state.mode;
+        document.getElementById('user-label').textContent = this.state.role === 'lead'
+          ? `${preset.d.leadFull} · Lead`
+          : `${preset.d.me} · Member`;
+      }
+      
+      renderNav() {
+        const preset = this.presets[this.state.presetId];
+        const isLead = this.state.role === 'lead';
+        const currentScreen = this.screens[this.state.screen];
+        const chrome = currentScreen ? currentScreen.chrome : 'start';
+        
+        const navSidebar = document.getElementById('nav-sidebar');
+        
+        // Hide sidebar for 'start' chrome screens (B1, B2, etc.)
+        if (chrome === 'start') {
+          navSidebar.style.display = 'none';
+          navSidebar.classList.remove('open');
+          return;
+        }
+        
+        navSidebar.style.display = 'flex';
+        
+        // For 'orient' chrome, automatically open the sidebar
+        // For 'focus' chrome, keep it collapsed (icon-only) until hover
+        if (chrome === 'orient') {
+          navSidebar.classList.add('open');
+        } else if (chrome === 'focus') {
+          navSidebar.classList.remove('open');
+        }
+        
+        const navGroups = NavBuilder.buildNavGroups(preset, this.state, isLead);
+        
+        let html = '';
+        navGroups.forEach((group) => {
+          html += `
+            <div class="nav-group">
+              <div class="nav-group-label">${group.label}</div>
+              ${group.items.map((item, idx) => {
+                if (item.isCollapsible) {
+                  return `
+                    <button class="nav-item ${item.on ? 'active' : ''} collapsible" onclick="app.toggleCollapsible('${item.label}', event)" title="${item.label}">
+                      <span class="expand-arrow" style="transform: ${item.open ? 'rotate(0deg)' : 'rotate(-90deg)'};">▼</span>
+                      <span class="nav-label">${item.label}</span>
+                      ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
+                    </button>
+                  `;
+                } else if (item.depth === 0 && !item.isCollapsible) {
+                  return `
+                    <button class="nav-item ${item.on ? 'active' : ''}" onclick="app.go('${item.screen}')" title="${item.label}">
+                      <span></span>
+                      <span class="nav-label">${item.label}</span>
+                      ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
+                    </button>
+                  `;
+                } else if (item.depth === 1) {
+                  return `
+                    <button class="nav-item nav-item-nested ${item.on ? 'active' : ''}" onclick="app.go('${item.screen}')" title="${item.label}">
+                      <span class="state-dot" style="background: ${item.state === 'beendet' ? '#d1d0ca' : item.state === 'läuft' ? '#2fb8a0' : '#a3a3ab'}; opacity: 0.6;"></span>
+                      <span class="nav-label">${item.label}</span>
+                      ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
+                    </button>
+                  `;
+                } else {
+                  return `
+                    <button class="nav-item ${item.on ? 'active' : ''}" onclick="app.go('${item.screen}')" title="${item.label}">
+                      <span></span>
+                      <span class="nav-label">${item.label}</span>
+                      ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
+                    </button>
+                  `;
+                }
+              }).join('')}
+            </div>
+          `;
+        });
+        
+        navSidebar.innerHTML = html;
+        
+        // Manage hover event listeners based on chrome type
+        // First, remove any old listeners
+        const newNavBar = navSidebar.cloneNode(true);
+        navSidebar.parentNode.replaceChild(newNavBar, navSidebar);
+        const freshNavSidebar = document.getElementById('nav-sidebar');
+        
+        // Add listeners only for focus chrome
+        if (chrome === 'focus') {
+          freshNavSidebar.addEventListener('mouseenter', () => {
+            freshNavSidebar.classList.add('open');
+          });
+          freshNavSidebar.addEventListener('mouseleave', () => {
+            freshNavSidebar.classList.remove('open');
+          });
+        }
+      }
+      
+      toggleCollapsible(label, event) {
+        event.preventDefault();
+        const newState = {
+          navExp: Object.assign({}, this.state.navExp, {
+            [label]: !this.state.navExp[label]
+          })
+        };
+        this.setState(newState);
+      }
+      
+      renderScreen() {
+        const preset = this.presets[this.state.presetId];
+        const screenId = this.state.screen;
+        
+        // Hide all screens
+        document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+        
+        // Show current screen
+        const screenEl = document.getElementById(`screen-${screenId}`);
+        if (screenEl) {
+          screenEl.classList.add('active');
+          
+          // Render screen content
+          switch(screenId) {
+            case 'B1':
+              screenEl.innerHTML = renderScreenB1(preset, this.state);
+              break;
+            case 'B3':
+              screenEl.innerHTML = renderScreenB3(preset, this.state);
+              break;
+            case 'C1':
+              screenEl.innerHTML = renderScreenC1(preset, this.state);
+              break;
+            case 'D2':
+              screenEl.innerHTML = renderScreenD2(preset, this.state);
+              break;
+            case 'E1':
+              screenEl.innerHTML = renderScreenE1(preset, this.state, this.reviewMgr);
+              break;
+            default:
+              screenEl.innerHTML = '<div style="padding: 40px; text-align: center;"><p>Screen ' + screenId + ' - Coming soon</p></div>';
+          }
+        }
+      }
+    }
+    
+        // Initialize app
+        window.app = new NotellaMockupApp();
+        console.log('Notella Mockup initialized successfully');
+        
+      } catch(err) {
+        console.error('Fatal initialization error:', err);
+        document.getElementById('content-area').innerHTML = `
+          <div style="padding: 40px; text-align: center; color: #c8553d;">
+            <h2>Error loading application</h2>
+            <p style="font-size: 12px; color: #8b8d97;">${err.message}</p>
+          </div>
+        `;
+      }
+    })();
+  </script>
+</body>
+</html>
