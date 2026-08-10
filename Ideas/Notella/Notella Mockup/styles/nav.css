@@ -1,0 +1,132 @@
+/* Navigations-Sidebar.
+
+   Das Ein- und Ausklappen läuft rein über CSS: eingeklappt 52 px, bei
+   :hover 236 px. Die Klasse .open hält sie dauerhaft offen und wird von
+   components/navSidebar.js für chrome === 'orient' gesetzt — deshalb ist
+   jede Aufklapp-Regel unten für :hover UND .open formuliert. */
+
+.app-nav {
+  position: relative;
+  flex: none;
+  width: 52px;
+  transition: width 260ms cubic-bezier(.22, .7, .25, 1);
+  background: #fff;
+  border-right: 1px solid #e6e5e0;
+  overflow: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-nav:hover,
+.app-nav.open {
+  width: 236px;
+}
+
+/* Beschriftungen und Zähler nur im offenen Zustand */
+.app-nav .nav-label,
+.app-nav .nav-badge {
+  opacity: 0;
+  transition: opacity 240ms ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-nav:hover .nav-label,
+.app-nav:hover .nav-badge,
+.app-nav.open .nav-label,
+.app-nav.open .nav-badge {
+  opacity: 1;
+}
+
+/* Gruppenüberschriften klappen mit weg, damit keine Lücken bleiben */
+.app-nav .nav-group-label {
+  opacity: 0;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+  transition: opacity 200ms ease, max-height 200ms ease, padding 200ms ease;
+}
+
+.app-nav:hover .nav-group-label,
+.app-nav.open .nav-group-label {
+  opacity: 1;
+  max-height: 40px;
+  padding-bottom: 6px;
+}
+
+/* Eingeklappt: Icons zentriert, offen: linksbündig */
+.app-nav:not(.open):not(:hover) .nav-item {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.app-nav:not(.open):not(:hover) .nav-item-nested {
+  padding-left: 0;
+}
+
+/* -------- Gruppen und Einträge -------- */
+
+.nav-group {
+  padding: 10px 0 0 0;
+  display: grid;
+  gap: 0;
+}
+
+.nav-group-label {
+  padding: 0 12px 6px 12px;
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #a3a3ab;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nav-item {
+  padding: 9px 12px 6px 12px;
+  font-size: 13px;
+  color: #5a5c66;
+  font-weight: 400;
+  border-radius: 9px;
+  transition: background 120ms ease, color 120ms ease, padding 200ms ease, justify-content 200ms ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0 6px;
+}
+
+.nav-item:hover {
+  background: #f9f8f6;
+}
+
+.nav-item.active {
+  background: #f2f0fc;
+  color: #16161a;
+  font-weight: 600;
+}
+
+.nav-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Verschachtelte Einträge (Meetings unter einer Arbeitsgruppe) */
+.nav-item-nested {
+  padding-left: 38px;
+  font-size: 12px;
+  color: #7a7f8c;
+}
+
+.nav-item-nested.active {
+  background: #f2f0fc;
+  color: #16161a;
+}
