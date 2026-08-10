@@ -1,423 +1,204 @@
-# Notella Mockup Utilities — Architecture Map
+# Notella Mockup — Architektur
 
-## 🗺️ Module Dependency Graph
+## Leitgedanke
+
+`index.html` ist nur die Hülle: Markup-Gerüst, vier Stylesheets, ein
+Modul-Einstieg. Kein CSS, kein JavaScript, keine Daten im HTML. Alles
+andere hat genau einen Platz:
+
+| Ordner | Enthält | Enthält *nicht* |
+|---|---|---|
+| `data/` | Presets, Screen-Register | Logik, Markup |
+| `utils/` | Pure Helfer, Regeln (Review, Nav) | DOM-Zugriff auf feste IDs, Daten |
+| `components/` | Markup-Erzeugung je Baustein | State-Änderungen |
+| `core/` | State, Render-Takt, Aktionen | Markup, Daten |
+| `styles/` | CSS | — |
+
+---
+
+## Dateibaum
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        DATA & CONFIG                             │
-│  screens.json ─────────────────────────────────────────────────┐ │
-│                                                                  │ │
-└──────────────────────────────────────────────────────────────│──┘
-                                                                 │
-                        ┌────────────────┬────────────────┬──────┘
-                        │                │                │
-                        ▼                ▼                ▼
-        ┌──────────────────────┐ ┌─────────────────┐ ┌─────────────┐
-        │  RENDER HELPERS      │ │  EDITOR LOGIC   │ │STATE MANAGER│
-        │                      │ │                 │ │             │
-        │ • tint()             │ │ • checkMention()│ │ • Review    │
-        │ • chipSt()           │ │ • analyzeAi()   │ │   Manager   │
-        │ • markSt()           │ │ • insertMention │ │ • NavBuilder│
-        │ • avSt()             │ │ • acceptAi()    │ │ • Screen    │
-        │ • segSt()            │ │ • flipY()       │ │   Manager   │
-        │ • createIcon()       │ │ • typeOf()      │ │             │
-        │ • shapePath()        │ │ • tintColor()   │ │ Imports:    │
-        │                      │ │                 │ │ - tintColor │
-        │ Pure styling +       │ │ Imports:        │ │ - markSt    │
-        │ DOM utilities        │ │ - tintColor     │ │             │
-        │                      │ │ - typeOf (from  │ └─────────────┘
-        │ No dependencies      │ │   own module)   │
-        └──────────────────────┘ │                 │
-                 ▲                │ DOM APIs        │
-                 │                │ (getSelection,  │
-                 │                │  execCommand)  │
-                 └────────────────┴─────────────────┘
-                        │
-                        │ All export from index.js
-                        │
-                        ▼
-        ┌──────────────────────────────────────┐
-        │        utils/index.js                 │
-        │  (Central hub with examples)          │
-        │                                       │
-        │ • Re-exports all utilities            │
-        │ • Usage examples & patterns           │
-        │ • Integration guide                   │
-        │ • Quick reference                     │
-        └──────────────────────────────────────┘
-                        │
-                        │
-                        ▼
-        ┌──────────────────────────────────────┐
-        │    GLOBAL STYLES (CSS)                │
-        │    styles/global.css                  │
-        │                                       │
-        │ • Animations (@keyframes)             │
-        │ • Typography                          │
-        │ • Base element styles                 │
-        │ • Color system (via hex)              │
-        └──────────────────────────────────────┘
+index.html                    Hülle: Gerüst + 4 Stylesheets + <script src="app.js">
+app.js                        Einstieg: App starten, Ladefehler anzeigen
+
+core/
+  app.js                      NotellaMockupApp — State halten, 3 Bereiche zeichnen
+  state.js                    createInitialState() — eine State-Definition
+  keyboard.js                 Globale Tasten (Escape-Kette)
+  actions/
+    editor.js                 C1: @-Erwähnung, Notiz-Schublade
+    review.js                 E1: Entscheiden, Undo, Tastenkürzel
+    wiki.js                   D2: Baum-Modus, Herkunfts-Panel
+    graph.js                  D5: Filter, Fokus, Zoom, Knoten ziehen
+
+components/
+  appHeader.js                Kopfzeile + Dev-Leisten-Status (nur Textknoten)
+  navSidebar.js               Sidebar-Markup, chrome-Verhalten
+  devBar.js                   Verdrahtung der 3 Umschaltergruppen
+  screenStage.js              Screen-Registry: Container + Umschaltung
+  mentionPopup.js             Popover-Markup der @-Erwähnung
+  screenB1.js … screenE1.js   Ein Screen = eine Datei
+
+utils/
+  index.js                    Sammelexport (reine Weiterleitung)
+  renderHelpers.js            tint, chipSt, markSt, avSt, segSt, createIcon, shapePath
+  editorLogic.js              checkMention, analyzeAi, insertMention, acceptAi, …
+  stateManager.js             ReviewManager, NavBuilder, ScreenManager
+  icons.js                    navIcon() — Icon-Set der Navigation
+
+data/
+  screens.js                  SCREENS — Name + chrome je Screen
+  presets/
+    index.js                  PRESETS, getPreset()
+    software.js               Preset „Software-Projekt"
+    tabletop.js               Preset „TableTop-Projekt"
+
+styles/
+  global.css                  Reset, Schrift, @keyframes
+  layout.css                  App-Shell, Kopfzeile, Screen-Bühne
+  nav.css                     Sidebar (Ein-/Ausklappen rein per CSS)
+  devbar.css                  Dev-Leiste, Popover-Rahmen
 ```
 
 ---
 
-## 🔗 Cross-Module Usage
+## Abhängigkeitsrichtung
 
-### renderHelpers.js → Used By:
-- **editorLogic.js** — Uses `tintColor()` for mention badges
-- **stateManager.js** — Uses `markSt()` for nav indicators
-- **All components** — Uses styling functions
-- **index.js** — Re-exports for convenience
+```
+data/ ─────────┐
+               ├──▶ core/ ──▶ components/ ──▶ utils/
+utils/ ────────┘                                │
+                                                ▼
+                                          (keine Rückwege)
+```
 
-### editorLogic.js → Used By:
-- **C1 screen** (Meeting notes editor)
-- **Mention popup** (from Popovers component)
-- **AI suggestion** (inline suggestion UI)
-
-### stateManager.js → Used By:
-- **Parent router** (screen navigation)
-- **E1 screen** (Review workflow)
-- **NavSidebar** (navigation structure)
-- **B3 screen** (Project overview)
-
-### screens.json → Used By:
-- **stateManager.js** — ScreenManager queries config
-- **Parent router** — Routes between screens
-- **breadcrumbs** — Shows screen names
-- **devBar** — Lists available screens
-
-### global.css → Used By:
-- **All HTML/templates** — Base styling
-- **Render helpers** — Animations referenced in styles
-- **Components** — Animation names via CSS classes
+- `utils/` kennt niemanden außerhalb von `utils/`
+- `components/` kennt `utils/` und `data/`, nie `core/`
+- `core/` kennt alles, wird von niemandem importiert (außer `app.js`)
+- keine Zyklen
 
 ---
 
-## 🎯 Usage Scenarios
+## Render-Takt
 
-### Scenario 1: Build Meeting Notes Editor (C1 Screen)
-
-```
-Editor Component (C1)
-  │
-  ├─ Import editorLogic.js
-  │  ├─ checkMention() → popup position
-  │  ├─ analyzeAi() → suggestion data
-  │  ├─ insertMention() → badge insertion
-  │  └─ acceptAi() → accept suggestion
-  │
-  ├─ Import renderHelpers.js
-  │  ├─ chipSt() → style mention badges
-  │  ├─ tint() → background colors
-  │  └─ avSt() → avatar styles
-  │
-  ├─ Link to global.css
-  │  └─ @keyframes for animations
-  │
-  └─ Result: Fully functional meeting notes with:
-     • Mention popup with autocomplete
-     • AI suggestions
-     • Styled badges
-     • Keyboard navigation
-```
-
-### Scenario 2: Build Review Workflow (E1 Screen)
+Ein State-Wechsel zeichnet immer genau drei Bereiche neu:
 
 ```
-Review Screen (E1)
-  │
-  ├─ Import stateManager.js
-  │  ├─ ReviewManager.decide() → handle decisions
-  │  ├─ ReviewManager.ready() → validate fields
-  │  └─ ReviewManager.undoLast() → undo decision
-  │
-  ├─ Import renderHelpers.js
-  │  ├─ chipSt() → style review cards
-  │  ├─ markSt() → type indicators
-  │  └─ avSt() → author avatars
-  │
-  └─ Result: Fully functional review with:
-     • Decision workflow
-     • Field validation
-     • Progress tracking
-     • Styled UI elements
+app.setState({ … })
+      ▼
+core/app.js render()
+      ├─▶ components/appHeader.renderAppHeader()      Textknoten aktualisieren
+      ├─▶ components/navSidebar.renderNavSidebar()    Sidebar-Markup ersetzen
+      └─▶ components/screenStage.renderActiveScreen() aktiven Screen ersetzen
 ```
 
-### Scenario 3: Build Navigation Sidebar
+**Zwei bewusste Ausnahmen** — beide umgehen `setState()`, weil ein voller
+Re-Render sonst Inhalte zerstören würde:
 
-```
-NavSidebar Component
-  │
-  ├─ Import stateManager.js
-  │  └─ NavBuilder.buildNavGroups() → structure
-  │
-  ├─ Import renderHelpers.js
-  │  ├─ createIcon() → nav icons
-  │  └─ avSt() → user avatars
-  │
-  ├─ Import data/screens.json
-  │  └─ Screen names for labels
-  │
-  └─ Result: Dynamic navigation with:
-     • Role-based visibility
-     • Icon rendering
-     • Active state tracking
-     • Expandable sections
-```
+| Fall | Warum | Wo |
+|---|---|---|
+| @-Erwähnung im Editor | Re-Render würde den (nicht persistierten) Editor-Inhalt bei jedem Tastendruck leeren | `core/actions/editor.js` |
+| Knoten im Graph ziehen | Re-Render pro Pixel wäre unbrauchbar; Commit erst beim Loslassen | `core/actions/graph.js` |
 
 ---
 
-## 📊 Data Flow Through Utilities
+## Warum `Object.assign` auf den Prototyp
 
-### When User Types in Editor
-
-```
-User Input
-    ▼
-Editor onInput event
-    ▼
-[editorLogic] checkMention()
-    ├─ Returns mention position OR null
-    └─ Uses DOM APIs (getSelection, getRangeAt)
-    
-If mention found:
-    ▼
-[renderHelpers] tint(), chipSt()
-    ├─ Create mention badge styles
-    └─ Return CSS strings
-    
-If AI suggestion found:
-    ▼
-[editorLogic] analyzeAi()
-    ├─ Analyzes text for patterns
-    ├─ Queries preset entities
-    └─ Returns suggestion data
-    
-User accepts (Tab key):
-    ▼
-[editorLogic] acceptAi()
-    ├─ Deletes typed text
-    ├─ Inserts styled mention badge
-    └─ Uses DOM execCommand()
-```
-
-### When User Reviews Items
-
-```
-App starts Review mode (E1)
-    ▼
-[stateManager] ReviewManager initialized
-    ├─ Tracks current card index
-    ├─ Tracks decisions log
-    └─ Tracks field responses (rf)
-    
-User fills required fields:
-    ▼
-[stateManager] ReviewManager.ready()
-    ├─ Checks if all fields completed
-    └─ Returns boolean
-    
-User makes decision:
-    ▼
-[stateManager] ReviewManager.decide()
-    ├─ Updates reviewIdx
-    ├─ Adds to log
-    └─ Returns new state
-    
-User hits "Undo":
-    ▼
-[stateManager] ReviewManager.undoLast()
-    ├─ Reverts reviewIdx
-    ├─ Removes from log
-    └─ Returns previous state
-```
-
-### When App Navigates
-
-```
-User clicks navigation item
-    ▼
-[stateManager] NavBuilder.buildNavGroups()
-    ├─ Checks user role (lead/member)
-    ├─ Builds nav structure
-    └─ Marks current screen active
-    
-[stateManager] ScreenManager.shouldShow()
-    ├─ Checks if screen should be visible
-    └─ Returns boolean
-    
-[data/screens.json] ScreenManager.getScreen()
-    ├─ Looks up screen metadata
-    └─ Returns chrome type, name
-    
-Screen renders:
-    ▼
-[renderHelpers] for styled elements
-[editorLogic] for interactions (if editor)
-[global.css] for animations
-```
-
----
-
-## 🎨 Styling Pipeline
-
-```
-Global Styles (CSS)
-        ▼
-    global.css
-    ├─ @keyframes definitions
-    ├─ Base element styles
-    ├─ Font stack
-    └─ Color reset
-        ▼
-Component needs a badge
-        ▼
-[renderHelpers.chipSt()]
-    ├─ Takes color (hex)
-    ├─ Takes dashed flag
-    └─ Returns CSS string with:
-       - display:inline-flex
-       - background: tinted color
-       - border: dashed or solid
-       - Animations reference
-        ▼
-Applied to HTML element
-        ▼
-Browser renders with:
-    ├─ Base styles from global.css
-    ├─ Component styles from chipSt()
-    └─ Animations from @keyframes
-```
-
----
-
-## 🔄 Circular Dependency Check
-
-✅ **No circular dependencies detected**
-
-- `renderHelpers.js` — Standalone (imports: none)
-- `editorLogic.js` — Depends on: `renderHelpers.js` (one-way)
-- `stateManager.js` — Depends on: `renderHelpers.js` (one-way)
-- `index.js` — Central hub (imports all, no reverse deps)
-- `data/` — Configuration (imports: none)
-- `styles/` — Styling (imports: none)
-
-**Dependency flow is unidirectional: Helpers → Logic → Managers**
-
----
-
-## 📦 Import Paths (From Components)
-
-### From a screen component in `components/ScreenB1.html`
+Die Screens verdrahten ihre Knöpfe über Inline-Handler
+(`onclick="app.zoomGraph(0.2)"`). Das setzt eine flache API auf einem
+globalen `app` voraus. Die Aktionen liegen deshalb nach Zuständigkeit in
+`core/actions/*.js` und werden in `core/app.js` in den Prototyp gemischt:
 
 ```javascript
-// Option 1: Import specific utilities
-import { chipSt, tint } from '../utils/renderHelpers.js';
-import { ReviewManager } from '../utils/stateManager.js';
-import screens from '../data/screens.json' assert { type: 'json' };
-
-// Option 2: Import via hub
-import {
-  chipSt, tint,
-  ReviewManager,
-  screens: screensConfig
-} from '../utils/index.js';
-
-// Link CSS
-// <link rel="stylesheet" href="../styles/global.css">
+Object.assign(NotellaMockupApp.prototype, editorActions, reviewActions, wikiActions, graphActions);
 ```
 
-### From a utility within utils/
+Alternative wäre eine Delegationsmethode pro Aktion (~25 Einzeiler ohne
+eigene Aussage). Wenn die Screens später Event-Delegation statt Inline-Handler
+nutzen, können die Aktionen zu echten Controllern mit eigenem Zustand werden.
+
+---
+
+## Einen Screen hinzufügen
+
+1. `data/screens.js` — Eintrag mit `name` und `chrome`
+2. `components/screenXY.js` — `export function renderScreenXY(preset, state)`
+3. `components/screenStage.js` — Import + Zeile in `SCREEN_RENDERERS`
+
+Container-`<div>`, Sichtbarkeit, Sidebar-Verhalten und Breadcrumb-Name folgen
+automatisch. Ohne Renderer erscheint der Platzhalter aus `screenStage.js`.
+
+## Ein Preset hinzufügen
+
+1. `data/presets/xy.js` — Objekt in der Struktur von `software.js`
+2. `data/presets/index.js` — Zeile in `PRESETS`
+3. `index.html` — Knopf `<button class="preset-btn" data-preset="xy">` in der Dev-Leiste
+
+## Ein Tastenkürzel hinzufügen
+
+- global → `core/keyboard.js`
+- screen-spezifisch → in die Aktionsdatei des Screens (Vorbild:
+  `handleReviewKey` in `core/actions/review.js`), von `keyboard.js` aufgerufen
+
+---
+
+## chrome-Typen
+
+`chrome` in `data/screens.js` steuert den Rahmen, nicht der Screen selbst:
+
+| Wert | Sidebar | Verwendung |
+|---|---|---|
+| `start` | ausgeblendet | Einstiegsseiten (B1, B2) |
+| `orient` | dauerhaft offen (`.open`) | Überblicksseiten (B3) |
+| `focus` | eingeklappt, öffnet bei Hover | Arbeitsseiten (C1, D2, D5, E1, F3) |
+
+Das Aufklappen bei Hover ist reines CSS (`styles/nav.css`). Deshalb ist jede
+Aufklapp-Regel dort für `:hover` **und** `.open` formuliert — und deshalb
+braucht die Sidebar keine JS-Hover-Listener.
+
+---
+
+## Zustandsfelder
+
+`core/state.js` gruppiert die Felder nach Zuständigkeit. Wer ein Feld
+hinzufügt, trägt es in die passende Gruppe ein — das hält sichtbar, welcher
+Screen wovon abhängt:
+
+| Gruppe | Felder |
+|---|---|
+| Rahmen | `screen`, `presetId`, `role`, `mode` |
+| Navigation | `navOpen`, `railOpen`, `navExp` |
+| Meeting-Raum (C1) | `mention`, `mentionIdx`, `aiSug`, `drawer`, `hintOpen` |
+| Review-Inbox (E1) | `reviewIdx`, `rf`, `log`, `undo` |
+| Wiki (D2) | `treeMode`, `origin`, `originTab` |
+| Graph (D5) | `zoom`, `focus`, `edgeFocus`, `expand`, `hidden`, `onlyCanon`, `graphPanel`, `graphLayout`, `nodePos` |
+
+---
+
+## Testbarkeit
+
+Alles in `utils/` ist ohne DOM prüfbar:
 
 ```javascript
-// Within editorLogic.js
-import { tint, chipSt } from './renderHelpers.js';
+// utils/renderHelpers.js
+tint('#5340c4', 0.14)                      // → 'rgba(83,64,196,0.14)'
 
-// Within stateManager.js
-import { markSt } from './renderHelpers.js';
+// utils/stateManager.js
+new ReviewManager(PRESETS).decide(0, cards, state, 'primary').reviewIdx   // → 1
+NavBuilder.buildNavGroups(preset, state, true).length                     // → 5 (Lead)
 ```
 
----
-
-## ⚡ Performance Implications
-
-### Bundle Size
-- Each utility is small (5-6 KB)
-- Tree-shaking possible with modern bundlers
-- Only import what you use
-
-### Execution
-- Functions are pure → no side effects
-- Can be parallelized if needed
-- Minimal overhead (mostly DOM operations)
-
-### Caching
-- Utilities can be cached (long TTL)
-- Global CSS cached separately
-- Config data can be pre-loaded
+DOM brauchen `utils/editorLogic.js` (Selection-API), `core/actions/*` und
+`components/*` (Markup-Ausgabe prüfbar per String-Vergleich).
 
 ---
 
-## 🧪 Testing Strategy
+## Ausstehend
 
-### Unit Tests (Per Module)
-
-```javascript
-// test/renderHelpers.test.js
-describe('renderHelpers', () => {
-  test('tint applies alpha', () => {
-    expect(tint('#5340c4', 0.14)).toBe('rgba(83,64,196,0.14)');
-  });
-});
-
-// test/editorLogic.test.js
-describe('editorLogic', () => {
-  test('checkMention detects @', () => {
-    // Mock document.getSelection()
-    // Test mention detection
-  });
-});
-
-// test/stateManager.test.js
-describe('ReviewManager', () => {
-  test('decide updates state correctly', () => {
-    const mgr = new ReviewManager(preset);
-    const newState = mgr.decide(0, cards, state, 'primary');
-    expect(newState.reviewIdx).toBe(1);
-  });
-});
-```
-
-### Integration Tests
-
-```javascript
-// test/integration.test.js
-describe('Meeting Editor Integration', () => {
-  test('mention + styling works together', () => {
-    const mention = checkMention(state, preset);
-    const style = chipSt(typeColor, false);
-    expect(mention).toBeDefined();
-    expect(style).toContain('background:');
-  });
-});
-```
-
----
-
-## 📖 Summary
-
-**Key Points:**
-1. ✅ Utilities are **pure functions** (mostly)
-2. ✅ **One-way dependencies** (no circular)
-3. ✅ **Modular** (import only what needed)
-4. ✅ **Testable** (easy unit & integration tests)
-5. ✅ **Scalable** (easy to add new utilities)
-
-**Next Phase:**
-- Create component layer that uses these utilities
-- Wire up state management
-- Integrate with parent router
-
----
-
-**Generated:** 2026-08-10 14:32:48 UTC
+- **B2** und **F3** stehen im Screen-Register, haben aber noch keinen
+  Renderer — sie zeigen den Platzhalter aus `screenStage.js`
+- `#breadcrumbs` und `#ai-popup` sind im Gerüst angelegt, aber unbefüllt
+- `#user-initials` wird nicht auf die Rolle aktualisiert (zeigt immer „SR")
+- `utils/editorLogic.js` `analyzeAi`/`acceptAi` sind implementiert, aber
+  noch nicht an C1 angebunden

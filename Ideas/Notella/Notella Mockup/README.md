@@ -122,41 +122,45 @@ Classes for workflow and navigation:
 
 ---
 
-### Module Hub & Documentation
+### Module Hub
 
-**File:** `utils/index.js` (6.8 KB)
+**File:** `utils/index.js`
 
-Central hub for all utilities:
-- Re-exports all functions and classes
-- Comprehensive usage examples
-- Integration patterns
-- Quick reference
-
-**Use this for:** Learning how utilities work together
+Pure re-export barrel — components import helpers from here without needing
+to know which file holds them. Contains no code of its own; usage examples
+live in ARCHITECTURE.md so they cannot go stale inside a runtime module.
 
 ---
 
 ## 📊 Configuration Files
 
-**File:** `data/screens.json` (0.5 KB)
+**File:** `data/screens.js`
 
-Screen definitions:
-```json
-{
-  "SCREENS": {
-    "B1": { "name": "Alle Projekte", "chrome": "start" },
-    "B2": { "name": "Projekt anlegen", "chrome": "start" },
-    "C1": { "name": "Meeting-Raum", "chrome": "focus" },
-    ...
-  }
-}
+Single source for screen metadata (`SCREENS`), consumed by
+`components/screenStage.js` (containers + routing) and `core/app.js`
+(chrome type via `ScreenManager.getScreen`).
+
+```javascript
+export const SCREENS = {
+  B1: { name: 'Alle Projekte', chrome: 'start' },
+  C1: { name: 'Meeting-Raum', chrome: 'focus' },
+  // …
+};
 ```
 
-**Used by:** Screen routing, breadcrumbs, dev bar
+**File:** `data/presets/` — `software.js`, `tabletop.js`, registry in `index.js`
+
+Preset data (terminology, demo values, entity types, graph, review cards).
+Adding a preset = new file + one line in the registry.
 
 ---
 
 ## 🎨 Styling Files
+
+**Files:** `styles/global.css`, `layout.css`, `nav.css`, `devbar.css`
+
+`index.html` links all four; `global.css` first (reset + keyframes), then the
+three component sheets. See ARCHITECTURE.md for what belongs in which.
 
 **File:** `styles/global.css` (1.3 KB)
 
