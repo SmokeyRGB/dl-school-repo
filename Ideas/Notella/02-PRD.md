@@ -19,6 +19,7 @@
 | V0.2 | 2026-08-07 | Sam | O-01 geklärt (E-12: mehrere Teilnehmerprofile je Account und Projekt) · O-03 und O-06 geklärt und in §4.5 als Datenregeln aufgenommen · `participant_scope` aus beiden Presets entfernt |
 | V0.3 | 2026-08-07 | Sam | §4.4.5 Onboarding-Fluss ergänzt (Review-Lücke geschlossen) · nachfolgende Abschnitte umnummeriert |
 | V0.4 | 2026-08-07 | Sam | **Beziehungs-Graph** als §4.4.5 aufgenommen und aus dem V2-Backlog in eine eigene Phase **V1.2** gehoben · Preset um `graph.shape`/`graph.color`/`graph.style` erweitert (§4.1.2b) · responsives Verhalten und Screen-Liste ergänzt |
+| V0.8 | 2026-08-07 | Sam | **§4.4.1 Meeting-Raum auf eine zentrierte Spalte reduziert.** Kontextpanel (Team, „Gehört zu", „Frühere") gestrichen — jedes Element war entweder Dopplung zu Breadcrumb und Symbolleiste oder Nebeninformation. Der Live-Feed wird zur **Schublade** mit demselben Muster wie die Herkunftsansicht im Wiki; Anwesenheit und ungelesene Beiträge stecken im Umschalter |
 | V0.7 | 2026-08-07 | Sam | **§4.4.0 auf drei Chrome-Stufen reduziert.** Die vierte Stufe („Immersion“ ohne Rahmenwerk) wurde verworfen — sie erzeugte je Bildschirm einen anderen Rückweg. Konsistenz vor Reduktion: alle Fokus-Bildschirme teilen dieselbe Symbolleiste. Neue Regeln zu Layoutstabilität und Übergangsverhalten beim Ausfahren |
 | V0.6 | 2026-08-07 | Sam | §4.4.0 Navigationsmodell mit Chrome-Stufen neu · **§4.4.3 zum Wiki umgebaut**: zweispaltig mit Wissensbaum, zwei Gliederungen (nach Eintrag / nach Zeitpunkt), Herkunft als einfahrendes Panel mit den Reitern Herkunft und Verlauf · Chrome-Stufe je Screen in §4.4.4 ergänzt |
 | V0.5 | 2026-08-07 | Sam | **§4.4.2 Review-Inbox vollständig neu geschrieben.** Schnelldurchlauf statt Liste+Detail · drei Kartenarten mit je einer binären Frage · Pflichtfelder als Chip-Reihe · Kontextanforderungen explizit · kein Stapelweg (bewusste Entscheidung) · Reihenfolge chronologisch nach Meeting · Tastaturbedienung als Kernanforderung mit Zielmarke < 6 s je Vorschlag |
@@ -489,23 +490,50 @@ Daraus folgen **drei** Chrome-Stufen. Jeder Bildschirm gehört genau einer an.
 
 #### 4.4.1 Meeting-Raum (wichtigster Screen)
 
-**Aufbau (Desktop, dreispaltig):**
+**Aufbau: eine Spalte. Der Bildschirm ist die Schreibfläche.**
 
-| Bereich | Inhalt |
-|---------|--------|
-| **Links (schmal, einklappbar)** | Meeting-Kontext: Titel, Zustand, Teilnehmerliste mit Online-Punkt, Sprung zu vorherigen Meetings der Arbeitsgruppe |
-| **Mitte (breit)** | Eigenes Notizfeld: Markdown-Editor mit Live-Vorschau, Sichtbarkeits-Umschalter oben rechts, Erwähnungs-Chips inline hervorgehoben |
-| **Rechts (mittel, einklappbar)** | Live-Feed der geteilten Notizen anderer, chronologisch absteigend, mit Autor und Zeitstempel. Für Lead zusätzlich (bei `lead_can_read_private: true`) ein Filter „auch private anzeigen" |
+Ein früherer Entwurf hatte drei Spalten — links Meeting-Kontext, Mitte Editor, rechts der
+Live-Feed. Beide Randspalten sind gestrichen. Begründung je Element:
 
-**Editor-Verhalten:**
+| Gestrichenes Element | Warum es weg kann |
+|----------------------|-------------------|
+| Teilnehmerliste | Wer da ist, beantwortet der Avatar-Stapel am Feed-Umschalter — als Nebeneffekt, nicht als eigene Spalte |
+| „Gehört zu **Sprint 14**" | Steht bereits im Breadcrumb, eine Zeile darüber |
+| „Frühere **Meetings**" | Reine Navigation — steht bereits in der Symbolleiste (§4.4.0). Eine zweite Liste derselben Einträge ist Dopplung |
+| Dauerhafter Live-Feed | Siehe unten — er zieht Aufmerksamkeit vom Schreiben ab, genau in dem Moment, in dem sie gebraucht wird |
 
-- Markdown mit Live-Vorschau (Überschriften, Listen, Fett/Kursiv, Code, Zitate)
-- Automatisches Speichern nach 2 s Tippstille sowie bei Fokusverlust; sichtbarer
-  Speicherstatus („gespeichert" / „speichert…" / „offline — lokal zwischengespeichert")
-- Bei Verbindungsverlust: lokaler Zwischenspeicher, automatische Synchronisation bei
-  Rückkehr; Konflikt kann nicht entstehen, da jede Notiz genau einen Autor hat
+Was bleibt: eine **zentrierte Spalte von maximal ~840 px** mit Meeting-Titel, Zustandspille,
+dem Notizfeld und der Fußzeile mit den Kürzeln.
 
-**Typisierung — zwei gleichwertige Wege (E-07):**
+| Element | Ort |
+|---------|-----|
+| Meeting-Titel + Zustandspille (`geplant` · `läuft · 24 min` · `beendet`) | Kopf der Spalte |
+| Sichtbarkeits-Umschalter, Speicherstatus | Kopfzeile der Notizkarte |
+| **Feed-Umschalter** | rechts in derselben Kopfzeile |
+| Notizfeld | Rest der Fläche |
+| Kürzel-Fußzeile | Fuß der Karte |
+
+**Geteilte Notizen als Schublade, nicht als Spalte**
+
+Während eines Treffens ist die eigene Notiz die Aufgabe — auch für die Leitung. Ein
+permanent sichtbarer Feed konkurriert mit genau der Aufmerksamkeit, die das Zuhören und
+Mitschreiben braucht. Die Beiträge der anderen werden deshalb **abgerufen, nicht
+aufgedrängt**:
+
+- Ein Umschalter oben rechts in der Notizkarte öffnet eine **von rechts einfahrende
+  Schublade** mit den geteilten Notizen — **dasselbe Muster wie die Herkunftsansicht im
+  Wiki** (§4.4.3). Ein Muster, zwei Anwendungen, dieselbe Geste
+- Der Umschalter trägt einen **Avatar-Stapel der anwesenden Teilnehmenden** und eine
+  **Zählmarke ungelesener Beiträge**. Damit ersetzt ein Element drei gestrichene:
+  Anwesenheit, Aktivität und Zugang zum Feed
+- Die Zählmarke ist der Ausgleich für den fehlenden Dauer-Feed: Man verpasst nichts, wird
+  aber auch nicht unterbrochen. Kein Aufblitzen, kein Vorschautext, keine Bewegung im
+  Augenwinkel
+- Der Filter „auch private Notizen anzeigen" (bei `lead_can_read_private: true`) lebt
+  **in** der Schublade, nicht im Hauptbildschirm
+- `Esc` schließt die Schublade
+
+**Typisierung — zwei gleichwertige Wege (E-07):****Typisierung — zwei gleichwertige Wege (E-07):**
 
 *Weg A — Tastatur:* `@` öffnet einen Auswahldialog direkt an der Cursorposition.
 Die Liste zeigt zuerst passende bestehende Entitäten (unscharfe Suche über Titel und
@@ -541,6 +569,11 @@ Andockstelle der AI-Extraktion (E-09).
 - [ ] Nach Verbindungsverlust und Rückkehr geht kein getippter Text verloren
 - [ ] Im Zustand *geplant* ist das Notizfeld nicht bedienbar und zeigt den Grund an
 - [ ] Nach dem Beenden geschriebene Notizen tragen sichtbar die Markierung „nachträglich ergänzt"
+- [ ] Der Meeting-Raum zeigt außer der zentrierten Notizspalte keine dauerhaft sichtbaren Nebenbereiche
+- [ ] Geteilte Notizen anderer erscheinen ausschließlich in der Schublade, nie auf dem Hauptbildschirm
+- [ ] Die Schublade nutzt dieselbe Komponente und dieselbe Öffnungsrichtung wie die Herkunftsansicht im Wiki
+- [ ] Der Feed-Umschalter zeigt Anwesenheit (Avatar-Stapel) und ungelesene Beiträge (Zählmarke) in einem Element
+- [ ] Neue geteilte Notizen erzeugen keine Bewegung, kein Aufblitzen und keinen Vorschautext auf dem Hauptbildschirm — nur die Zählmarke ändert sich
 
 #### 4.4.2 Review-Inbox
 

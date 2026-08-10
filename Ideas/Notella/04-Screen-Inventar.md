@@ -246,23 +246,41 @@ V1.0 umfasst 17, V1.1 weitere 9, V1.2 einen.
 | **Zweck** | **Der wichtigste Bildschirm des Produkts.** Schreiben, ohne im Schreiben unterbrochen zu werden |
 | **Phase** | V1.0 (Editor, Sichtbarkeit, Feed) · V1.1 (Erwähnungen) |
 
-**Aufbau — drei Spalten**
+**Aufbau — eine zentrierte Spalte (max. ~840 px). Der Bildschirm ist die Schreibfläche.**
 
-| Spalte | Breite | Inhalt |
-|--------|--------|--------|
-| **Links** (einklappbar) | ~240 px | Meeting-Titel und -Zustand · Teilnehmerliste mit Anwesenheitspunkt · Sprung zu früheren Meetings der Gruppe · bei `beendet`: Verweis in die Review-Inbox |
-| **Mitte** | flexibel, max. ~760 px | Eigenes Notizfeld: Markdown mit Live-Vorschau · Sichtbarkeits-Umschalter oben rechts · Speicherstatus · Erwähnungen als farbige Chips inline |
-| **Rechts** (einklappbar) | ~320 px | Live-Feed geteilter Notizen, chronologisch absteigend, mit Autor und Zeit · für den Lead bei `lead_can_read_private: true` zusätzlich der Filter „auch private anzeigen" mit Warnfarbe |
+| Element | Ort |
+|---------|-----|
+| Meeting-Titel + Zustandspille (`geplant` · `läuft · 24 min` · `beendet`) | Kopf der Spalte |
+| Sichtbarkeits-Umschalter (Symbol **und** Text, nie nur Farbe), Speicherstatus | Kopfzeile der Notizkarte |
+| **Feed-Umschalter** mit Avatar-Stapel und Zählmarke ungelesener Beiträge | rechts in derselben Kopfzeile |
+| Markdown-Editor mit Live-Vorschau, Erwähnungs-Chips inline | Rest der Fläche |
+| Kürzel-Fußzeile | Fuß der Karte |
 
-**Kernelemente im Detail**
+**Gestrichen gegenüber dem ersten Entwurf** — je Element mit Begründung:
 
-- **Sichtbarkeits-Umschalter:** drei Segmente mit Symbol **und** Text (nie nur Farbe).
-  Beim Überfahren je ein Einzeiler. Vorbelegt aus `default_note_visibility`
-- **Speicherstatus:** `gespeichert` / `speichert…` / `offline — lokal zwischengespeichert`.
-  Der Offline-Zustand ist deutlich, aber nicht alarmierend
-- **Zustandsabhängigkeit:** bei `geplant` ist das Notizfeld gesperrt mit Begründung;
-  bei `beendet` erscheint über dem Feld „Dieses Meeting ist beendet — Ergänzungen werden markiert"
-- **Einmalige Hinweise:** `@`-Hinweis und Transparenzhinweis gemeinsam beim ersten Besuch (PRD §4.4.5)
+| Element | Warum weg |
+|---------|-----------|
+| Teilnehmerliste als Spalte | Anwesenheit steckt im Avatar-Stapel des Feed-Umschalters |
+| „Gehört zu **Sprint 14**" | Steht im Breadcrumb, eine Zeile darüber |
+| „Frühere **Meetings**" | Reine Navigation — steht in der Symbolleiste. Zweite Liste derselben Einträge = Dopplung |
+| Dauerhafter Live-Feed | Konkurriert mit der Aufmerksamkeit, die Zuhören und Mitschreiben brauchen |
+
+**Geteilte Notizen als Schublade**
+
+Beiträge der anderen werden **abgerufen, nicht aufgedrängt**. Der Umschalter öffnet eine
+von rechts einfahrende Schublade — **dieselbe Komponente wie die Herkunftsansicht im Wiki**
+(D1/D2). Ein Muster, zwei Anwendungen.
+
+- Die Zählmarke ist der Ausgleich für den fehlenden Dauer-Feed: nichts verpassen, ohne
+  unterbrochen zu werden. Kein Aufblitzen, kein Vorschautext, keine Bewegung im Augenwinkel
+- Der Filter „auch private Notizen" (bei `lead_can_read_private: true`) lebt **in** der
+  Schublade
+- `Esc` schließt sie
+
+**Zustandsabhängigkeit:** bei `geplant` ist das Notizfeld gesperrt mit Begründung; bei
+`beendet` erscheint über dem Feld „Dieses Meeting ist beendet — Ergänzungen werden markiert".
+
+**Einmalige Hinweise:** `@`-Hinweis und Transparenzhinweis gemeinsam beim ersten Besuch.
 
 **Abweichende Zustände**
 
