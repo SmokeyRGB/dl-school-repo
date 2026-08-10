@@ -432,6 +432,7 @@
               {
                 name: 'Sprint 12',
                 live: false,
+                av: ['SR', 'MK', 'JH'],
                 meetings: [
                   ['Sprint Review KW 30', 'beendet'],
                   ['Retro & Planning', 'beendet']
@@ -440,6 +441,7 @@
               {
                 name: 'Sprint 14',
                 live: true,
+                av: ['SR', 'MK', 'JH', 'LP'],
                 meetings: [
                   ['Sprint-Planung KW 32', 'läuft'],
                   ['Daily Standup', 'läuft'],
@@ -449,10 +451,16 @@
               {
                 name: 'Sprint 15',
                 live: false,
+                av: ['MK', 'LP'],
                 meetings: [
                   ['Planning Session', 'geplant']
                 ]
               }
+            ],
+            projects: [
+              { name: 'Produktteam Nord', preset: 'Software-Projekt', meta: '3 Sprints · 41 Einträge', activity: 'zuletzt heute', live: true, av: ['SR', 'MK', 'JH'] },
+              { name: 'Aethermoor', preset: 'TableTop', meta: '2 Kampagnen · 63 Einträge', activity: 'zuletzt Sonntag', live: false, av: ['TB', 'NV', 'RK'] },
+              { name: 'Studiengruppe Statistik', preset: 'Software-Projekt', meta: '1 Sprint · 8 Einträge', activity: 'zuletzt 22. Juli', live: false, av: ['MK', 'LP'] }
             ],
             review: []
           },
@@ -495,19 +503,34 @@
               {
                 name: 'Staffel 1',
                 live: true,
+                av: ['NV', 'RK', 'TB', 'MB'],
                 meetings: [
-                  ['Session 12', 'läuft'],
-                  ['Session 13', 'geplant'],
-                  ['Session 14', 'geplant']
+                  ['Session 12 — Der Rat von Falkenstein', 'läuft'],
+                  ['Session 11 — Die Möwenbucht', 'beendet'],
+                  ['Session 13', 'geplant']
                 ]
               },
               {
-                name: 'Staffel 2',
+                name: 'Die Binnenreiche',
                 live: false,
+                av: ['NV', 'RK'],
                 meetings: [
-                  ['Session 1', 'geplant']
+                  ['Session 7 — Abschied von Ravenlicht', 'beendet']
+                ]
+              },
+              {
+                name: 'One-Shot: Der Aschewald',
+                live: false,
+                av: ['NV', 'TB'],
+                meetings: [
+                  ['Der Aschewald', 'geplant']
                 ]
               }
+            ],
+            projects: [
+              { name: 'Aethermoor', preset: 'TableTop', meta: '2 Kampagnen · 63 Einträge', activity: 'zuletzt heute', live: true, av: ['NV', 'RK', 'TB'] },
+              { name: 'Die Feste Ravenlicht', preset: 'TableTop', meta: '1 Kampagne · 21 Einträge', activity: 'zuletzt 12. Juni', live: false, av: ['NV', 'MB'] },
+              { name: 'Produktteam Nord', preset: 'Software-Projekt', meta: '3 Sprints · 41 Einträge', activity: 'zuletzt heute', live: false, av: ['SR', 'MK'] }
             ],
             review: []
           }
