@@ -12,9 +12,11 @@ export function renderScreenC1(preset, state) {
   const meetingState = (meetingEntry && meetingEntry[1]) || 'geplant';
 
   const isLive = meetingState === 'läuft';
-  const pillColor = isLive ? '#2fb8a0' : '#c9a227';
-  const pillBg = isLive ? '#e7f8f5' : '#fdf5e0';
-  const pillLabel = isLive ? 'läuft' : 'geplant';
+  const isPlanned = meetingState === 'geplant';
+  const isEnded = meetingState === 'beendet';
+  const pillColor = isLive ? '#2fb8a0' : isEnded ? '#8b8d97' : '#c9a227';
+  const pillBg = isLive ? '#e7f8f5' : isEnded ? '#f0efec' : '#fdf5e0';
+  const pillLabel = isLive ? 'läuft' : isEnded ? 'beendet' : 'geplant';
   const dotAnim = isLive ? 'animation:npulse 1.8s ease-in-out infinite;' : '';
 
   // Stacked avatars for "Geteilte Notizen" button (up to 3)
@@ -29,7 +31,7 @@ export function renderScreenC1(preset, state) {
   const vis = [
     { label: 'Privat', icon: '🔒', active: state.vis === 'privat' || !state.vis },
     { label: 'Geteilt', icon: '👥', active: state.vis === 'geteilt' },
-    { label: 'Kanonisch', icon: '📖', active: state.vis === 'kanoisch' },
+    { label: 'Kanonisch', icon: '📖', active: state.vis === 'kanonisch' },
   ];
   const segHtml = vis.map(v => `
     <button onclick="app.setState({ vis: '${v.label.toLowerCase()}' })"
@@ -80,17 +82,28 @@ export function renderScreenC1(preset, state) {
           <span style="font-size:11.5px;color:#8b8d97">Gespeichert</span>
           <span style="flex:1"></span>
           <!-- Geteilte Notizen drawer button -->
-          <button style="display:flex;align-items:center;gap:9px;padding:6px 10px 6px 8px;border:1px solid #e4e3de;border-radius:999px;background:#fff;cursor:pointer;transition:border-color 120ms ease"
+          <button id="c1-drawer-btn" onclick="app.toggleDrawer()" style="display:flex;align-items:center;gap:9px;padding:6px 10px 6px 8px;border:1px solid ${state.drawer ? '#c9c3ec' : '#e4e3de'};border-radius:999px;background:${state.drawer ? '#faf9fd' : '#fff'};cursor:pointer;transition:border-color 120ms ease"
             onmouseover="this.style.borderColor='#c9c3ec';this.style.background='#faf9fd'"
-            onmouseout="this.style.borderColor='#e4e3de';this.style.background='#fff'">
+            onmouseout="this.style.borderColor='${state.drawer ? '#c9c3ec' : '#e4e3de'}';this.style.background='${state.drawer ? '#faf9fd' : '#fff'}'">
             <div style="display:flex;align-items:center">${avatarsHtml}</div>
             <span style="font-size:12.5px;color:#16161a">Geteilte Notizen</span>
             <span style="min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#5340c4;color:#fff;font-size:10.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">3</span>
           </button>
         </div>
 
+        ${isEnded ? `
+          <div style="padding:10px 24px;background:#fdf5e0;border-bottom:1px solid #efeee9;font-size:12.5px;color:#7a6a45">
+            Dieses Meeting ist beendet — Ergänzungen werden als „nachträglich ergänzt" markiert.
+          </div>
+        ` : ''}
+
         <!-- Editor content -->
-        <div contenteditable="true" style="padding:20px 24px 8px;min-height:290px;font-size:15.5px;line-height:1.78;letter-spacing:-.003em;outline:none" spellcheck="false">
+        ${isPlanned ? `
+          <div style="padding:40px 24px;text-align:center;color:#8b8d97;font-size:13.5px">
+            Das Notizfeld öffnet sich, sobald ${d.leadFull} das ${t.meeting} startet.
+          </div>
+        ` : `
+        <div contenteditable="true" oninput="app.onEditorInput(event)" onkeydown="app.onEditorKeyDown(event)" style="padding:20px 24px 8px;min-height:290px;font-size:15.5px;line-height:1.78;letter-spacing:-.003em;outline:none" spellcheck="false">
           <p style="margin:0 0 14px">Runde zum Preset-Loader: das Laden der YAML-Datei ist fertig, die Validierung fehlt noch.</p>
           <p style="margin:0 0 14px">Wir haben festgelegt, dass wir
             <span contenteditable="false" style="${chipStyle('#efecfb', '#4a3aad')}"><span style="width:5px;height:5px;border-radius:50%;background:#5340c4;display:inline-block"></span>Postgres statt SQLite</span>
@@ -103,6 +116,7 @@ export function renderScreenC1(preset, state) {
           </p>
           <p style="margin:0">Tippe hier weiter — mit <strong style="font-weight:600">@</strong> markierst du einen Eintrag.</p>
         </div>
+        `}
 
         <!-- Shortcuts bar -->
         <div style="display:flex;align-items:center;gap:16px;padding:11px 16px;border-top:1px solid #efeee9;font-size:11.5px;flex-wrap:wrap">
@@ -120,6 +134,37 @@ export function renderScreenC1(preset, state) {
         <button style="flex:none;font-size:12.5px;color:#8b8d97;padding:2px 6px;border:none;background:transparent;cursor:pointer;border-radius:5px"
           onmouseover="this.style.color='#16161a'" onmouseout="this.style.color='#8b8d97'">Verstanden</button>
       </div>
+    </div>
+
+    <!-- Geteilte-Notizen-Schublade -->
+    <div id="c1-drawer" style="position:fixed;top:53px;right:0;bottom:0;width:340px;background:#fff;border-left:1px solid #e6e5e0;box-shadow:-16px 0 40px -24px rgba(22,22,26,.3);
+                transform:translateX(${state.drawer ? '0' : '100%'});transition:transform 260ms cubic-bezier(.22,.7,.25,1);z-index:70;display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid #efeee9">
+        <span style="font-size:14px;font-weight:600;flex:1">Geteilte Notizen</span>
+        <button onclick="app.toggleDrawer()" style="border:none;background:transparent;cursor:pointer;color:#8b8d97;font-size:16px;padding:2px 6px;border-radius:6px" onmouseover="this.style.color='#16161a'" onmouseout="this.style.color='#8b8d97'">✕</button>
+      </div>
+      <div style="flex:1;overflow:auto;padding:14px 18px">
+        ${[
+          { a: 'A', name: d.leadFull, text: 'Postgres statt SQLite steht fest — JSONB für die Preset-Bindung.', ago: '2 Min' },
+          { a: 'B', name: d.me, text: 'Wer übernimmt den Schema-Validator? Ich kann das nächste Woche machen.', ago: '5 Min' },
+          { a: 'C', name: 'Jonas Herold', text: 'Erwähnungs-Auswahl per @ läuft schon lokal, muss noch an die Presets angebunden werden.', ago: '11 Min' },
+        ].map(n => `
+          <div style="padding:12px 0;border-bottom:1px solid #f4f4f2">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <span style="width:20px;height:20px;border-radius:50%;background:#5340c4;color:#fff;font-size:9px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">${n.a}</span>
+              <span style="font-size:12.5px;font-weight:600;color:#16161a">${n.name}</span>
+              <span style="font-size:11.5px;color:#8b8d97;margin-left:auto">${n.ago}</span>
+            </div>
+            <p style="margin:0;font-size:13px;line-height:1.55;color:#3f4048">${n.text}</p>
+          </div>
+        `).join('')}
+      </div>
+      ${state.role === 'lead' ? `
+        <div style="padding:12px 18px;border-top:1px solid #efeee9;font-size:12px;color:#5a5c66;display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="c1-priv-toggle" style="margin:0">
+          <label for="c1-priv-toggle">auch private Notizen anzeigen</label>
+        </div>
+      ` : ''}
     </div>
   `;
 }
