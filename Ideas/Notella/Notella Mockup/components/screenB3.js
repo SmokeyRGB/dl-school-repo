@@ -103,6 +103,9 @@ export function renderScreenB3(preset, state) {
             <button onclick="app.go('D2')" style="margin-top:14px;width:100%;padding:8px;background:#f4f4f2;color:#5340c4;border:none;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;text-align:center;">
               Alle Einträge →
             </button>
+            <button onclick="app.go('D5')" style="margin-top:8px;width:100%;padding:8px;background:#fff;color:#5340c4;border:1px solid #e4e4e0;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;text-align:center;">
+              Beziehungs-Graph →
+            </button>
           </div>
         </div>
       </div>
