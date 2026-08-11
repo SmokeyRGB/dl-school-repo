@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&amp;family=Spectral:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f4f2;font-family:Geist,ui-sans-serif,system-ui,sans-serif;color:#16161a;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-align:left}
+input,textarea,select{font:inherit;color:inherit}
+a{color:#5340c4;text-decoration:none}
+a:hover{color:#3b2b9e}
+::selection{background:#ded8fb}
+[contenteditable]:focus{outline:none}
+@keyframes npulse{0%,100%{opacity:.35;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+@keyframes nslide{from{transform:translateX(22px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes nfade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes nsvgin{from{opacity:0}to{opacity:1}}
+@keyframes nshim{0%{background-position:-360px 0}100%{background-position:360px 0}}
+</style>
+</helmet>
+
+<div style="height:100vh;display:flex;flex-direction:column;overflow:hidden;background:#f4f4f2">
+
+  <sc-if value="{{ devBar }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:none;display:flex;align-items:center;gap:18px;padding:8px 16px;background:#16161a;color:#f4f4f2;font-size:11.5px;letter-spacing:.01em;flex-wrap:wrap">
+      <span style="font-weight:600">Notella — Mockup</span>
+      <span style="color:#8b8d97">Screen {{ screenId }} · {{ screenName }}</span>
+      <span style="flex:1"></span>
+      <span style="color:#8b8d97;text-transform:uppercase;letter-spacing:.08em;font-size:10px">Preset</span>
+      <div style="display:flex;gap:3px;padding:3px;background:#26262c;border-radius:7px">
+        <sc-for list="{{ presetOptions }}" as="o" hint-placeholder-count="2">
+          <button onClick="{{ o.pick }}" style="{{ o.st }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+      <span style="color:#8b8d97;text-transform:uppercase;letter-spacing:.08em;font-size:10px">Zustand</span>
+      <div style="display:flex;gap:3px;padding:3px;background:#26262c;border-radius:7px">
+        <sc-for list="{{ modeOptions }}" as="o" hint-placeholder-count="5">
+          <button onClick="{{ o.pick }}" style="{{ o.st }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+      <span style="color:#8b8d97;text-transform:uppercase;letter-spacing:.08em;font-size:10px">AI Mode</span>
+      <div style="display:flex;gap:3px;padding:3px;background:#26262c;border-radius:7px">
+        <sc-for list="{{ aiOptions }}" as="o" hint-placeholder-count="2">
+          <button onClick="{{ o.pick }}" style="{{ o.st }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+      <span style="color:#8b8d97;text-transform:uppercase;letter-spacing:.08em;font-size:10px">Rolle</span>
+      <div style="display:flex;gap:3px;padding:3px;background:#26262c;border-radius:7px">
+        <sc-for list="{{ roleOptions }}" as="o" hint-placeholder-count="2">
+          <button onClick="{{ o.pick }}" style="{{ o.st }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="flex:none;display:flex;align-items:center;gap:14px;height:53px;padding:0 18px;background:#fff;border-bottom:1px solid #e4e4e0;z-index:60">
+    <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:9px">
+      <span style="width:23px;height:23px;border-radius:7px;background:#5340c4;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600;line-height:1">n</span>
+      <span style="font-size:15px;font-weight:600;letter-spacing:-.015em">Notella</span>
+    </button>
+    <sc-if value="{{ hasCrumbs }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;gap:2px;padding-left:6px;border-left:1px solid #e4e4e0;margin-left:2px">
+        <sc-for list="{{ crumbs }}" as="c" hint-placeholder-count="3">
+          <button onClick="{{ c.go }}" style="{{ c.st }}">{{ c.label }}</button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <span style="flex:1"></span>
+    <sc-if value="{{ showProposalCount }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ goReview }}" style="display:flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid #e4e4e0;border-radius:999px;font-size:12.5px;background:#faf9f7" style-hover="border-color:#c9c3ec;background:#f6f4fd">
+        <span style="width:6px;height:6px;border-radius:50%;background:#5340c4"></span>
+        {{ openCount }} offene Vorschläge
+      </button>
+    </sc-if>
+    <div style="display:flex;align-items:center;gap:8px;padding-left:4px">
+      <span style="font-size:12.5px;color:#5a5c66">{{ meLabel }}</span>
+      <span style="width:27px;height:27px;border-radius:50%;background:#dedbf6;color:#4a3aad;font-size:11.5px;font-weight:600;display:flex;align-items:center;justify-content:center">{{ meInitials }}</span>
+    </div>
+  </div>
+
+  <sc-if value="{{ isOrient }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:none;display:flex;align-items:center;gap:6px;padding:8px 18px;background:#edece8;border-bottom:1px solid #e0dfda;font-size:12px">
+      <sc-for list="{{ band }}" as="b" hint-placeholder-count="3">
+        <button onClick="{{ b.go }}" style="{{ b.st }}">
+          <span style="font-weight:500">{{ b.label }}</span>
+          <span style="color:#8b8d97">{{ b.value }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1;min-height:0;display:flex;position:relative">
+
+    <sc-if value="{{ hasNav }}" hint-placeholder-val="{{ true }}">
+      <div style="{{ trackStyle }}">
+        <nav onMouseEnter="{{ railEnter }}" onMouseLeave="{{ railLeave }}" style="{{ navStyle }}">
+          <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="4">
+            <div style="{{ g.wrapSt }}">
+              <div style="{{ g.labelSt }}">{{ g.label }}</div>
+              <sc-for list="{{ g.items }}" as="n" hint-placeholder-count="3">
+                <button onClick="{{ n.go }}" title="{{ n.label }}" style="{{ n.st }}">
+                  <span style="{{ n.dot }}"></span>
+                  <span style="width:16px;flex:none;display:flex;align-items:center;justify-content:center;color:{{ n.ink }}">{{ n.icon }}</span>
+                  <span style="min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity 240ms ease;opacity:{{ navLabelOpacity }}">{{ n.label }}</span>
+                  <span style="flex:1"></span>
+                  <span style="font-size:10.5px;color:#8b8d97;transition:opacity 240ms ease;opacity:{{ navLabelOpacity }}">{{ n.badge }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-for>
+        </nav>
+      </div>
+    </sc-if>
+
+    <div style="flex:1;min-width:0;position:relative;overflow:auto;background:{{ contentBg }}">
+
+      <sc-if value="{{ showSkeleton }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:36px 44px;max-width:1000px">
+          <div style="height:15px;width:180px;border-radius:5px;background:linear-gradient(90deg,#eceae5,#f6f5f2,#eceae5);background-size:360px 100%;animation:nshim 1.3s linear infinite"></div>
+          <div style="height:34px;width:44%;margin-top:16px;border-radius:7px;background:linear-gradient(90deg,#eceae5,#f6f5f2,#eceae5);background-size:360px 100%;animation:nshim 1.3s linear infinite"></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:32px">
+            <sc-for list="{{ skeletonCards }}" as="s" hint-placeholder-count="6">
+              <div style="height:{{ s.h }};border-radius:12px;border:1px solid #e8e7e2;background:linear-gradient(90deg,#f1efeb,#f8f7f4,#f1efeb);background-size:360px 100%;animation:nshim 1.3s linear infinite"></div>
+            </sc-for>
+          </div>
+          <p style="margin:26px 0 0;font-size:12.5px;color:#8b8d97">Skeleton in der Form des erwarteten Inhalts — kein Vollbild-Spinner, kein Layoutsprung.</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showStatePanel }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:64px 44px;display:flex;justify-content:center">
+          <div style="max-width:520px;width:100%">
+            <span style="display:inline-block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:{{ st.tone }};margin-bottom:14px">{{ st.kicker }}</span>
+            <h2 style="margin:0;font-family:Spectral,Georgia,serif;font-size:25px;font-weight:500;letter-spacing:-.01em;line-height:1.25">{{ st.title }}</h2>
+            <p style="margin:12px 0 0;font-size:14.5px;line-height:1.65;color:#5a5c66;text-wrap:pretty">{{ st.body }}</p>
+            <sc-if value="{{ st.hasStats }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:26px;margin:24px 0 0;padding:18px 20px;background:#fff;border:1px solid #e8e7e2;border-radius:12px">
+                <sc-for list="{{ st.stats }}" as="s" hint-placeholder-count="3">
+                  <div>
+                    <div style="font-family:Spectral,Georgia,serif;font-size:26px;line-height:1">{{ s.n }}</div>
+                    <div style="font-size:12px;color:#5a5c66;margin-top:5px">{{ s.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <div style="display:flex;gap:10px;margin-top:24px;flex-wrap:wrap">
+              <sc-for list="{{ st.actions }}" as="a" hint-placeholder-count="2">
+                <button onClick="{{ a.go }}" style="{{ a.st }}">{{ a.label }}</button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ st.hasHint }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:20px 0 0;font-size:12.5px;color:#8b8d97;line-height:1.6">{{ st.hint }}</p>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sB1 }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:38px 44px 64px;max-width:1060px">
+          <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8b8d97">Start</span>
+          <h1 style="margin:8px 0 0;font-family:Spectral,Georgia,serif;font-size:31px;font-weight:500;letter-spacing:-.015em">Alle {{ t.projects }}</h1>
+          <p style="margin:8px 0 0;font-size:14px;color:#5a5c66">Wo geht es gerade weiter?</p>
+
+          <div style="margin-top:26px;padding:18px 20px;border:1px solid #cec7ef;background:#f7f5fe;border-radius:13px;display:flex;align-items:center;gap:18px">
+            <span style="width:9px;height:9px;border-radius:50%;background:#5340c4;animation:npulse 1.8s ease-in-out infinite;flex:none"></span>
+            <div style="min-width:0">
+              <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5340c4">Läuft gerade</div>
+              <div style="font-size:16px;font-weight:600;margin-top:4px;letter-spacing:-.01em">{{ d.meetingTitle }}</div>
+              <div style="font-size:12.5px;color:#5a5c66;margin-top:3px">{{ d.projectName }} › {{ d.wgName }} · seit {{ d.minutes }} min · 4 von 5 {{ t.parts }} anwesend</div>
+            </div>
+            <span style="flex:1"></span>
+            <button onClick="{{ goMeeting }}" style="padding:10px 17px;border-radius:9px;background:#5340c4;color:#fff;font-size:13.5px;font-weight:500" style-hover="background:#4633ad">Einsteigen</button>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:16px;margin-top:26px">
+            <sc-for list="{{ projectCards }}" as="p" hint-placeholder-count="3">
+              <button onClick="{{ p.go }}" style="display:block;padding:18px;background:#fff;border:1px solid #e6e5e0;border-radius:13px;transition:border-color 160ms ease,transform 160ms ease" style-hover="border-color:#c9c3ec;transform:translateY(-2px)">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="{{ p.badgeSt }}">{{ p.preset }}</span>
+                  <span style="flex:1"></span>
+                  <sc-if value="{{ p.live }}" hint-placeholder-val="{{ false }}">
+                    <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#5340c4"><span style="width:6px;height:6px;border-radius:50%;background:#5340c4;animation:npulse 1.8s ease-in-out infinite"></span>läuft</span>
+                  </sc-if>
+                </div>
+                <div style="font-family:Spectral,Georgia,serif;font-size:20px;margin-top:12px;letter-spacing:-.01em">{{ p.name }}</div>
+                <div style="font-size:12.5px;color:#5a5c66;margin-top:6px">{{ p.meta }}</div>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:16px">
+                  <div style="display:flex">
+                    <sc-for list="{{ p.avatars }}" as="a" hint-placeholder-count="3">
+                      <span style="{{ a.st }}">{{ a.i }}</span>
+                    </sc-for>
+                  </div>
+                  <span style="font-size:11.5px;color:#8b8d97">{{ p.activity }}</span>
+                </div>
+              </button>
+            </sc-for>
+            <button onClick="{{ goCreate }}" style="display:flex;flex-direction:column;justify-content:center;gap:6px;padding:18px;border:1px dashed #cfcec8;border-radius:13px;color:#5a5c66;min-height:158px" style-hover="border-color:#5340c4;color:#5340c4;background:#faf9fd">
+                <span style="font-size:22px;line-height:1">+</span>
+                <span style="font-size:13.5px;font-weight:500">{{ t.project }} anlegen</span>
+                <span style="font-size:12px;color:#8b8d97">Preset wählen und loslegen</span>
+            </button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sB2 }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:38px 44px 64px;max-width:840px">
+          <h1 style="margin:0;font-family:Spectral,Georgia,serif;font-size:29px;font-weight:500;letter-spacing:-.015em">Neues {{ t.project }}</h1>
+          <p style="margin:8px 0 0;font-size:14px;color:#5a5c66;max-width:56ch;text-wrap:pretty">Die einzige Konfigurationsentscheidung, die du treffen musst — und die weitreichendste.</p>
+
+          <div style="display:grid;gap:14px;margin-top:26px;max-width:520px">
+            <label style="display:block">
+              <span style="display:block;font-size:12.5px;font-weight:500;margin-bottom:6px">Name</span>
+              <input value="Produktteam Nord" style="width:100%;padding:10px 12px;border:1px solid #dcdbd5;border-radius:9px;background:#fff;font-size:14px">
+            </label>
+            <label style="display:block">
+              <span style="display:block;font-size:12.5px;font-weight:500;margin-bottom:6px">Beschreibung <span style="color:#8b8d97;font-weight:400">optional</span></span>
+              <input value="Discovery und Umsetzung, wöchentlich" style="width:100%;padding:10px 12px;border:1px solid #dcdbd5;border-radius:9px;background:#fff;font-size:14px">
+            </label>
+          </div>
+
+          <h2 style="margin:34px 0 4px;font-size:14px;font-weight:600">Preset</h2>
+          <p style="margin:0 0 16px;font-size:12.5px;color:#5a5c66">Legt Begriffe, Eintragstypen und Beziehungen fest. Karten, keine Auswahlliste.</p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <sc-for list="{{ presetCards }}" as="p" hint-placeholder-count="2">
+              <button onClick="{{ p.pick }}" style="{{ p.st }}">
+                <div style="display:flex;align-items:center;gap:9px">
+                  <span style="{{ p.radio }}"></span>
+                  <span style="font-size:15.5px;font-weight:600;letter-spacing:-.01em">{{ p.name }}</span>
+                </div>
+                <p style="margin:9px 0 0;font-size:12.5px;color:#5a5c66;line-height:1.55">{{ p.desc }}</p>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:14px;font-size:11.5px;color:#16161a">
+                  <sc-for list="{{ p.chain }}" as="c" hint-placeholder-count="3">
+                    <span style="{{ c.st }}">{{ c.label }}</span>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+                  <sc-for list="{{ p.chips }}" as="c" hint-placeholder-count="3">
+                    <span style="{{ c.st }}">{{ c.label }}</span>
+                  </sc-for>
+                </div>
+                <div style="display:grid;gap:6px;margin-top:14px;padding-top:13px;border-top:1px solid #ecebe6">
+                  <sc-for list="{{ p.flags }}" as="f" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#5a5c66">
+                      <span style="width:15px;text-align:center">{{ f.icon }}</span>{{ f.label }}
+                    </div>
+                  </sc-for>
+                </div>
+              </button>
+            </sc-for>
+          </div>
+
+          <p style="margin:16px 0 0;padding:11px 14px;background:#fdf7ec;border:1px solid #efdfc0;border-radius:9px;font-size:12.5px;color:#6b5a34">Das Preset lässt sich später erweitern, aber nicht wechseln.</p>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:22px">
+            <button onClick="{{ goProject }}" style="padding:11px 18px;border-radius:9px;background:#5340c4;color:#fff;font-size:13.5px;font-weight:500" style-hover="background:#4633ad">{{ t.project }} anlegen</button>
+            <span style="font-size:12.5px;color:#5a5c66">Eigenes Preset? <a href="#">Preset-Verwaltung (F5)</a></span>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sB3 }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:34px 44px 64px;max-width:1080px">
+          <div style="display:flex;align-items:flex-start;gap:16px">
+            <div>
+              <div style="display:flex;align-items:center;gap:9px">
+                <span style="{{ presetBadgeSt }}">{{ p.name }}</span>
+                <span style="font-size:11.5px;color:#8b8d97">Preset v{{ p.version }}</span>
+              </div>
+              <h1 style="margin:10px 0 0;font-family:Spectral,Georgia,serif;font-size:30px;font-weight:500;letter-spacing:-.015em">{{ d.projectName }}</h1>
+              <p style="margin:7px 0 0;font-size:13.5px;color:#5a5c66">{{ d.projectDesc }}</p>
+            </div>
+            <span style="flex:1"></span>
+            <sc-if value="{{ isLead }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;gap:8px">
+                <button style="padding:9px 14px;border:1px solid #dcdbd5;border-radius:9px;background:#fff;font-size:13px" style-hover="border-color:#5340c4;color:#5340c4">Einladen</button>
+                <button onClick="{{ goPreset }}" style="padding:9px 14px;border:1px solid #dcdbd5;border-radius:9px;background:#fff;font-size:13px" style-hover="border-color:#5340c4;color:#5340c4">Einstellungen</button>
+                <button style="padding:9px 14px;border-radius:9px;background:#5340c4;color:#fff;font-size:13px;font-weight:500" style-hover="background:#4633ad">{{ t.wg }} anlegen</button>
+              </div>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ isMember }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:18px 0 0;padding:12px 15px;background:#fff;border:1px solid #e6e5e0;border-radius:11px;font-size:13px;color:#5a5c66;display:flex;align-items:center;gap:10px">
+              <span style="width:7px;height:7px;border-radius:50%;background:#5340c4;flex:none"></span>{{ memberNote }}
+            </p>
+          </sc-if>
+          <h2 style="margin:32px 0 12px;font-size:14px;font-weight:600">{{ t.wgs }}</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(292px,1fr));gap:16px">
+            <sc-for list="{{ wgCards }}" as="w" hint-placeholder-count="3">
+              <div style="{{ w.st }}">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:15.5px;font-weight:600;letter-spacing:-.01em">{{ w.name }}</span>
+                  <span style="flex:1"></span>
+                  <span style="{{ w.pillSt }}">{{ w.pill }}</span>
+                </div>
+                <div style="font-size:12.5px;color:#5a5c66;margin-top:7px">{{ w.meta }}</div>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:16px">
+                  <div style="display:flex">
+                    <sc-for list="{{ w.avatars }}" as="a" hint-placeholder-count="3">
+                      <span style="{{ a.st }}">{{ a.i }}</span>
+                    </sc-for>
+                  </div>
+                  <span style="flex:1"></span>
+                  <button onClick="{{ w.go }}" style="{{ w.btnSt }}">{{ w.btn }}</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <h2 style="margin:34px 0 4px;font-size:14px;font-weight:600">{{ t.canonNoun }}</h2>
+          <p style="margin:0 0 14px;font-size:12.5px;color:#5a5c66">Bestand nach Eintragstyp — aus dem Preset gerendert.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            <sc-for list="{{ typeStats }}" as="ty" hint-placeholder-count="5">
+              <button onClick="{{ goWiki }}" style="display:flex;align-items:center;gap:10px;padding:12px 15px;background:#fff;border:1px solid #e6e5e0;border-radius:11px" style-hover="border-color:#c9c3ec">
+                <span style="{{ ty.mark }}"></span>
+                <span style="display:block">
+                  <span style="display:block;font-family:Spectral,Georgia,serif;font-size:21px;line-height:1">{{ ty.count }}</span>
+                  <span style="display:block;font-size:11.5px;color:#5a5c66;margin-top:4px">{{ ty.label }}</span>
+                </span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sC1 }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:840px;margin:0 auto;padding:34px 28px 70px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <h1 style="margin:0;font-family:Spectral,Georgia,serif;font-size:26px;font-weight:500;letter-spacing:-.015em">{{ d.meetingTitle }}</h1>
+            <span style="{{ meetingPillSt }}">
+              <span style="{{ meetingDotSt }}"></span>{{ meetingPill }}
+            </span>
+          </div>
+          <p style="margin:7px 0 0;font-size:12.5px;color:#8b8d97">{{ d.meetingDate }} · {{ t.parts }}: 4 anwesend</p>
+
+          <div style="margin-top:22px;background:#fff;border:1px solid #e6e5e0;border-radius:14px;box-shadow:0 1px 2px rgba(22,22,26,.04),0 8px 24px -18px rgba(22,22,26,.18)">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #efeee9;flex-wrap:wrap">
+              <div style="display:flex;gap:3px;padding:3px;background:#f4f3f0;border-radius:9px">
+                <sc-for list="{{ visOptions }}" as="v" hint-placeholder-count="3">
+                  <button onClick="{{ v.pick }}" title="{{ v.help }}" style="{{ v.st }}">
+                    <span style="width:13px;display:flex;align-items:center;justify-content:center">{{ v.icon }}</span>{{ v.label }}
+                  </button>
+                </sc-for>
+              </div>
+              <span style="font-size:11.5px;color:#8b8d97">{{ saveStatus }}</span>
+              <span style="flex:1"></span>
+              <button onClick="{{ toggleDrawer }}" style="display:flex;align-items:center;gap:9px;padding:6px 10px 6px 8px;border:1px solid #e4e3de;border-radius:999px;background:#fff" style-hover="border-color:#c9c3ec;background:#faf9fd">
+                <div style="display:flex">
+                  <sc-for list="{{ feedAvatars }}" as="a" hint-placeholder-count="3">
+                    <span style="{{ a.st }}">{{ a.i }}</span>
+                  </sc-for>
+                </div>
+                <span style="font-size:12.5px">Geteilte Notizen</span>
+                <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ true }}">
+                  <span style="min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#5340c4;color:#fff;font-size:10.5px;font-weight:600;display:flex;align-items:center;justify-content:center">{{ unread }}</span>
+                </sc-if>
+              </button>
+            </div>
+
+            <sc-if value="{{ editorLocked }}" hint-placeholder-val="{{ false }}">
+              <div style="margin:14px;padding:12px 14px;border:1px solid #e4e3de;background:#f7f6f3;border-radius:10px;font-size:13px;color:#5a5c66">{{ lockNote }}</div>
+            </sc-if>
+
+            <div contentEditable="{{ editable }}" suppressContentEditableWarning="{{ true }}" onInput="{{ onEditorInput }}" onKeyDown="{{ onEditorKey }}" ref="{{ editorRef }}" style="padding:20px 24px 8px;min-height:290px;font-size:15.5px;line-height:1.78;letter-spacing:-.003em">
+              <p style="margin:0 0 14px">Runde zum Preset-Loader: das Laden der YAML-Datei ist fertig, die Validierung fehlt noch.</p>
+              <p style="margin:0 0 14px">Wir haben festgelegt, dass wir <span contentEditable="false" style="display:inline-flex;align-items:center;gap:5px;padding:1px 8px 2px;border-radius:999px;background:#efecfb;color:#4a3aad;font-size:14px;font-weight:500;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#5340c4"></span>Postgres statt SQLite</span> nehmen — Begründung: wir brauchen JSONB für die Preset-Bindung.</p>
+              <p style="margin:0 0 14px">Offen: wer den Schema-Validator schreibt. <span contentEditable="false" style="display:inline-flex;align-items:center;gap:5px;padding:1px 8px 2px;border-radius:999px;background:#eaf3ec;color:#2c6b45;font-size:14px;font-weight:500;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#3f8f5f"></span>Schema-Validator schreiben</span> hängt am <span contentEditable="false" style="display:inline-flex;align-items:center;gap:5px;padding:1px 8px 2px;border-radius:999px;background:#e6f4f2;color:#1d6a5f;font-size:14px;font-weight:500;white-space:nowrap"><span style="width:5px;height:5px;border-radius:50%;background:#2fb8a0"></span>Preset-Loader</span>.</p>
+              <p style="margin:0">Tippe hier weiter — mit <strong style="font-weight:600">@</strong> markierst du einen Eintrag.</p>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:16px;padding:11px 16px;border-top:1px solid #efeee9;font-size:11.5px;color:#8b8d97;flex-wrap:wrap">
+              <sc-for list="{{ shortcuts }}" as="s" hint-placeholder-count="4">
+                <span style="display:flex;align-items:center;gap:6px"><span style="padding:2px 6px;border:1px solid #e2e1dc;border-radius:5px;background:#faf9f7;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#16161a">{{ s.k }}</span>{{ s.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+
+          <sc-if value="{{ showSaveError }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:14px;padding:13px 15px;border:1px solid #e9c9c3;background:#fdf4f2;border-radius:11px;display:flex;gap:11px;align-items:flex-start">
+              <span style="width:18px;height:18px;border-radius:50%;background:#c8553d;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px">!</span>
+              <div>
+                <div style="font-size:13.5px;font-weight:600;color:#8a3a27">Nicht gespeichert</div>
+                <p style="margin:4px 0 0;font-size:13px;color:#7a4636;line-height:1.6">Dein Text ist lokal gesichert und wird automatisch übertragen, sobald die Verbindung zurück ist. Schreib einfach weiter.</p>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hintOpen }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top:14px;padding:14px 16px;border:1px solid #e6e5e0;background:#fff;border-radius:11px;display:flex;gap:12px;align-items:flex-start">
+              <span style="font-size:14px;color:#5340c4;flex:none;margin-top:1px">@</span>
+              <div style="min-width:0">
+                <p style="margin:0;font-size:13px;line-height:1.6;color:#3f4048">Tipp <strong style="font-weight:600">@</strong>, um {{ hintTypes }} zu markieren. Oder Text markieren und den Typ zuweisen — beides erzeugt denselben Eintrag.</p>
+                <p style="margin:6px 0 0;font-size:12.5px;color:#8b8d97;line-height:1.6">{{ privacyNote }}</p>
+                <sc-if value="{{ aiMode }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:8px 0 0;font-size:12.5px;color:#3b3f8f;line-height:1.6">KI-Modus ist aktiv: erkannte Namen, Orte und Beziehungen werden im Schreiben vorgeschlagen — <strong style="font-weight:600">Tab</strong> übernimmt, <strong style="font-weight:600">Esc</strong> verwirft. Alles landet als Vorschlag in derselben Review-Inbox.</p>
+                </sc-if>
+              </div>
+              <button onClick="{{ closeHint }}" style="flex:none;font-size:12.5px;color:#8b8d97;padding:2px 6px" style-hover="color:#16161a">Verstanden</button>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sD2 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;min-height:100%;align-items:stretch">
+          <div style="width:262px;flex:none;border-right:1px solid #e6e5e0;background:#fbfaf8;padding:18px 14px 40px">
+            <input placeholder="{{ t.canonNoun }} durchsuchen" style="width:100%;padding:8px 11px;border:1px solid #dcdbd5;border-radius:8px;background:#fff;font-size:13px">
+            <div style="display:flex;gap:3px;margin-top:12px;padding:3px;background:#f1f0ec;border-radius:8px">
+              <sc-for list="{{ treeModes }}" as="m" hint-placeholder-count="2">
+                <button onClick="{{ m.pick }}" style="{{ m.st }}">{{ m.label }}</button>
+              </sc-for>
+            </div>
+            <div style="margin-top:18px;display:grid;gap:18px">
+              <sc-for list="{{ treeGroups }}" as="g" hint-placeholder-count="4">
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;padding:0 4px 7px">
+                    <span style="{{ g.mark }}"></span>
+                    <span style="font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#5a5c66">{{ g.label }}</span>
+                    <span style="flex:1"></span>
+                    <span style="font-size:11px;color:#a3a3ab">{{ g.count }}</span>
+                  </div>
+                  <div style="display:grid;gap:1px">
+                    <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="3">
+                      <button onClick="{{ i.go }}" style="{{ i.st }}">
+                        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ i.label }}</span>
+                        <span style="flex:1"></span>
+                        <span style="{{ i.tagSt }}">{{ i.tag }}</span>
+                      </button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="flex:1;min-width:0;display:flex;justify-content:center">
+            <article style="width:100%;max-width:760px;padding:34px 40px 80px">
+              <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+                <span style="{{ art.typeSt }}">{{ art.typeLabel }}</span>
+                <span style="{{ art.stateSt }}">{{ art.state }}</span>
+                <sc-if value="{{ art.hasAliases }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-size:12px;color:#8b8d97">Alias: {{ art.aliases }}</span>
+                </sc-if>
+              </div>
+              <h1 style="margin:12px 0 0;font-family:Spectral,Georgia,serif;font-size:34px;font-weight:500;letter-spacing:-.02em;line-height:1.15">{{ art.title }}</h1>
+              <button onClick="{{ openOrigin }}" style="margin-top:10px;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:#5340c4;border-bottom:1px solid #d9d4f3;padding-bottom:2px" style-hover="border-color:#5340c4">
+                {{ art.originLine }} <span style="font-size:11px">↗</span>
+              </button>
+
+              <div style="margin-top:26px;display:grid;grid-template-columns:150px 1fr;gap:1px 18px;border-top:1px solid #ecebe6">
+                <sc-for list="{{ art.fields }}" as="f" hint-placeholder-count="4">
+                  <div style="padding:11px 0;border-bottom:1px solid #f2f1ec;font-size:12.5px;color:#8b8d97">{{ f.label }}</div>
+                  <div style="padding:11px 0;border-bottom:1px solid #f2f1ec;font-size:13.5px;display:flex;align-items:center;gap:8px">
+                    <span>{{ f.value }}</span>
+                    <sc-if value="{{ f.hasChip }}" hint-placeholder-val="{{ false }}">
+                      <span style="{{ f.chipSt }}">{{ f.chip }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+
+              <h2 style="margin:32px 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8b8d97">Beschreibung</h2>
+              <sc-for list="{{ art.body }}" as="b" hint-placeholder-count="2">
+                <p style="margin:0 0 14px;font-family:Spectral,Georgia,serif;font-size:17px;line-height:1.75;color:#26262c;text-wrap:pretty">{{ b.text }}</p>
+              </sc-for>
+
+              <h2 style="margin:30px 0 12px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8b8d97">Beziehungen</h2>
+              <div style="display:grid;gap:12px">
+                <sc-for list="{{ art.relGroups }}" as="r" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+                    <span style="font-size:13px;color:#5a5c66;min-width:132px">{{ r.label }}</span>
+                    <div style="display:flex;flex-wrap:wrap;gap:7px">
+                      <sc-for list="{{ r.items }}" as="i" hint-placeholder-count="2">
+                        <button onClick="{{ i.go }}" style="{{ i.st }}">
+                          <span style="{{ i.mark }}"></span>{{ i.label }}
+                        </button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:16px">
+                <button onClick="{{ goGraph }}" style="padding:8px 13px;border:1px solid #dcdbd5;border-radius:8px;background:#fff;font-size:12.5px" style-hover="border-color:#5340c4;color:#5340c4">Umgebung im Netz ansehen</button>
+                <sc-if value="{{ canEdit }}" hint-placeholder-val="{{ true }}">
+                  <button style="padding:8px 13px;border:1px solid #dcdbd5;border-radius:8px;background:#fff;font-size:12.5px" style-hover="border-color:#5340c4;color:#5340c4">Beziehung hinzufügen</button>
+                </sc-if>
+              </div>
+
+              <h2 style="margin:32px 0 10px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8b8d97">Verweist hierher</h2>
+              <div style="display:flex;flex-wrap:wrap;gap:7px">
+                <sc-for list="{{ art.backrefs }}" as="b" hint-placeholder-count="2">
+                  <span style="{{ b.st }}">{{ b.label }}</span>
+                </sc-for>
+              </div>
+
+              <sc-if value="{{ isNoPerm }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:30px 0 0;padding:12px 14px;border:1px solid #e6e5e0;background:#faf9f7;border-radius:10px;font-size:12.5px;color:#5a5c66">Nur die Projektleitung kann das {{ t.canonNoun }} ändern — frag {{ d.leadName }}. Felder sind schreibgeschützt.</p>
+              </sc-if>
+            </article>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sD5 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;display:flex;background:#fbfaf8">
+          <sc-if value="{{ leftPanel }}" hint-placeholder-val="{{ true }}">
+            <div style="width:238px;flex:none;border-right:1px solid #e6e5e0;background:#fff;padding:16px 14px;overflow:auto">
+              <input placeholder="Im Netz suchen" style="width:100%;padding:8px 11px;border:1px solid #dcdbd5;border-radius:8px;font-size:13px">
+              <div style="margin-top:16px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#8b8d97">Typen aus dem Preset</div>
+              <div style="display:grid;gap:1px;margin-top:8px">
+                <sc-for list="{{ typeFilters }}" as="f" hint-placeholder-count="5">
+                  <button onClick="{{ f.toggle }}" style="{{ f.st }}">
+                    <svg width="16" height="16" viewBox="-9 -9 18 18" style="flex:none"><path d="{{ f.d }}" fill="{{ f.fill }}" stroke="{{ f.stroke }}" stroke-width="1.4"></path></svg>
+                    <span style="font-size:12.5px">{{ f.label }}</span>
+                    <span style="flex:1"></span>
+                    <span style="font-size:11px;color:#a3a3ab">{{ f.count }}</span>
+                  </button>
+                </sc-for>
+              </div>
+              <div style="margin-top:18px;padding-top:14px;border-top:1px solid #efeee9;font-size:12.5px;color:#5a5c66">{{ graphCounts }}</div>
+              <div style="margin-top:14px;display:grid;gap:8px">
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#8b8d97;margin-bottom:6px">Zeitraum</span>
+                  <select style="width:100%;padding:7px 9px;border:1px solid #dcdbd5;border-radius:8px;font-size:12.5px;background:#fff">
+                    <option>Alle {{ t.wgs }}</option>
+                    <option>{{ d.wgName }}</option>
+                    <option>Letzte 30 Tage</option>
+                  </select>
+                </label>
+                <button onClick="{{ toggleCanon }}" style="{{ canonToggleSt }}">
+                  <span style="{{ canonKnobSt }}"></span>
+                  <span style="font-size:12.5px">nur kanonisch</span>
+                </button>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="flex:1;min-width:0;position:relative">
+            <button onClick="{{ toggleLeft }}" style="position:absolute;left:12px;top:12px;z-index:5;padding:6px 10px;border:1px solid #e4e3de;border-radius:8px;background:#fff;font-size:12px;box-shadow:0 1px 3px rgba(22,22,26,.06)" style-hover="border-color:#5340c4;color:#5340c4">{{ leftPanelLabel }}</button>
+            <svg viewBox="0 0 900 560" preserveAspectRatio="xMidYMid meet" style="position:absolute;inset:0;width:100%;height:100%;background-image:radial-gradient(#e2e1db 1px,transparent 1px);background-size:22px 22px" onClick="{{ clearFocus }}">
+              <g transform="{{ graphTransform }}">
+                <sc-for list="{{ edges }}" as="e" hint-placeholder-count="6">
+                  <g opacity="{{ e.op }}">
+                    <line x1="{{ e.x1 }}" y1="{{ e.y1 }}" x2="{{ e.x2 }}" y2="{{ e.y2 }}" stroke="#9a9aa2" stroke-width="{{ e.w }}" stroke-dasharray="{{ e.dash }}"></line>
+                    <circle cx="{{ e.hx }}" cy="{{ e.hy }}" r="2.6" fill="#9a9aa2"></circle>
+                    <sc-if value="{{ e.showLabel }}" hint-placeholder-val="{{ false }}">
+                      {{ e.labelEl }}
+                    </sc-if>
+                  </g>
+                </sc-for>
+                <sc-for list="{{ nodes }}" as="n" hint-placeholder-count="8">
+                  <g transform="{{ n.tr }}" opacity="{{ n.op }}" onClick="{{ n.pick }}" style="{{ n.gst }}">
+                    <path d="{{ n.d }}" fill="{{ n.fill }}" stroke="{{ n.stroke }}" stroke-width="{{ n.sw }}" stroke-dasharray="{{ n.dash }}"></path>
+                    {{ n.labelEl }}
+                  </g>
+                </sc-for>
+              </g>
+            </svg>
+
+            <div style="position:absolute;right:14px;bottom:14px;display:flex;align-items:center;gap:6px;padding:5px;background:#fff;border:1px solid #e4e3de;border-radius:10px;box-shadow:0 1px 3px rgba(22,22,26,.07)">
+              <button onClick="{{ zoomOut }}" style="width:28px;height:28px;border-radius:7px;text-align:center;font-size:15px" style-hover="background:#f2f1ed">−</button>
+              <span style="font-size:11.5px;color:#5a5c66;min-width:38px;text-align:center">{{ zoomLabel }}</span>
+              <button onClick="{{ zoomIn }}" style="width:28px;height:28px;border-radius:7px;text-align:center;font-size:15px" style-hover="background:#f2f1ed">+</button>
+              <span style="width:1px;height:18px;background:#e4e3de"></span>
+              <button onClick="{{ resetView }}" style="padding:0 9px;height:28px;border-radius:7px;font-size:12px" style-hover="background:#f2f1ed">Zurücksetzen</button>
+            </div>
+            <div style="position:absolute;left:12px;bottom:14px;font-size:11.5px;color:#8b8d97;background:rgba(251,250,248,.86);padding:5px 9px;border-radius:7px">{{ graphHint }}</div>
+          </div>
+
+          <sc-if value="{{ hasFocus }}" hint-placeholder-val="{{ false }}">
+            <div style="width:290px;flex:none;border-left:1px solid #e6e5e0;background:#fff;padding:18px 16px;animation:nslide 220ms ease both;overflow:auto">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="{{ focusNode.typeSt }}">{{ focusNode.typeLabel }}</span>
+                <span style="flex:1"></span>
+                <button onClick="{{ clearFocus }}" style="font-size:12px;color:#8b8d97" style-hover="color:#16161a">Esc</button>
+              </div>
+              <h3 style="margin:12px 0 0;font-family:Spectral,Georgia,serif;font-size:21px;font-weight:500;letter-spacing:-.01em">{{ focusNode.label }}</h3>
+              <div style="margin-top:14px;display:grid;gap:9px">
+                <sc-for list="{{ focusNode.fields }}" as="f" hint-placeholder-count="2">
+                  <div style="display:flex;gap:10px;font-size:12.5px">
+                    <span style="color:#8b8d97;min-width:86px">{{ f.label }}</span>
+                    <span>{{ f.value }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <p style="margin:14px 0 0;font-size:12px;color:#8b8d97">{{ focusNode.origin }}</p>
+              <div style="display:grid;gap:8px;margin-top:16px">
+                <button onClick="{{ goWiki }}" style="padding:8px 12px;border:1px solid #dcdbd5;border-radius:8px;font-size:12.5px;background:#fff" style-hover="border-color:#5340c4;color:#5340c4">Detailseite öffnen</button>
+                <button style="padding:8px 12px;border:1px solid #dcdbd5;border-radius:8px;font-size:12.5px;background:#fff" style-hover="border-color:#5340c4;color:#5340c4">Nachbarschaft erweitern</button>
+              </div>
+              <div style="margin-top:18px;padding-top:14px;border-top:1px solid #efeee9">
+                <div style="font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#8b8d97">Verbindungen</div>
+                <div style="display:grid;gap:6px;margin-top:9px">
+                  <sc-for list="{{ focusNode.links }}" as="l" hint-placeholder-count="3">
+                    <div style="font-size:12.5px;color:#3f4048">{{ l.text }}</div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sE1 }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:100%;display:flex;flex-direction:column;background:#fbfaf8">
+          <div style="flex:none;padding:14px 26px;border-bottom:1px solid #e6e5e0;background:#fff;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+            <div style="font-size:12.5px;color:#5a5c66">{{ review.where }}</div>
+            <span style="flex:1"></span>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="display:flex;gap:3px">
+                <sc-for list="{{ review.segments }}" as="s" hint-placeholder-count="7">
+                  <span style="{{ s.st }}"></span>
+                </sc-for>
+              </div>
+              <span style="font-size:12px;color:#8b8d97">{{ review.progress }}</span>
+            </div>
+          </div>
+
+          <div style="flex:1;display:flex;justify-content:center;gap:30px;padding:30px 26px 90px">
+            <div style="width:100%;max-width:720px">
+              <div style="font-size:12px;color:#5a5c66;display:flex;align-items:center;gap:8px">
+                <span style="{{ review.kindSt }}">{{ review.kindLabel }}</span>
+                <span>{{ review.freq }}</span>
+                <sc-if value="{{ review.hasAi }}" hint-placeholder-val="{{ false }}">
+                  <span style="{{ review.aiSt }}">KI-Vorschlag · Konfidenz {{ review.aiConfidence }}</span>
+                </sc-if>
+              </div>
+
+              <div style="margin-top:14px;padding:18px 20px;background:#fff;border:1px solid #e6e5e0;border-radius:13px">
+                <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8b8d97">Belegstelle · ganzer Absatz</div>
+                <p style="margin:10px 0 0;font-family:Spectral,Georgia,serif;font-size:16.5px;line-height:1.75;color:#26262c;text-wrap:pretty">{{ review.pre }}<mark style="background:#efecfb;color:#3b2b9e;padding:1px 3px;border-radius:3px">{{ review.hit }}</mark>{{ review.post }}</p>
+              </div>
+
+              <div style="margin-top:16px;padding:18px 20px;background:#fff;border:1px solid #cec7ef;border-radius:13px">
+                <div style="display:flex;align-items:center;gap:9px">
+                  <span style="{{ review.typeSt }}">{{ review.typeLabel }}</span>
+                  <sc-if value="{{ review.hasTarget }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:12px;color:#8b8d97">→ vorhandener Eintrag: {{ review.target }}</span>
+                  </sc-if>
+                </div>
+                <div style="margin-top:10px;font-family:Spectral,Georgia,serif;font-size:23px;letter-spacing:-.01em">{{ review.title }}</div>
+                <div style="margin-top:14px;font-size:14.5px;font-weight:600">{{ review.question }}</div>
+
+                <sc-if value="{{ review.hasFields }}" hint-placeholder-val="{{ true }}">
+                  <div style="margin-top:16px;display:grid;gap:12px">
+                    <sc-for list="{{ review.fields }}" as="f" hint-placeholder-count="2">
+                      <div>
+                        <div style="font-size:12px;color:#5a5c66;margin-bottom:7px">{{ f.label }} <span style="color:#c8553d">Pflicht</span></div>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px">
+                          <sc-for list="{{ f.options }}" as="o" hint-placeholder-count="4">
+                            <button onClick="{{ o.pick }}" style="{{ o.st }}"><span style="font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#8b8d97;margin-right:6px">{{ o.key }}</span>{{ o.label }}</button>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ showActions }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;align-items:center;gap:10px;margin-top:20px;flex-wrap:wrap">
+                    <button onClick="{{ review.primary.go }}" style="{{ review.primary.st }}">{{ review.primary.label }}</button>
+                    <button onClick="{{ review.secondary.go }}" style="{{ review.secondary.st }}">{{ review.secondary.label }}</button>
+                    <span style="flex:1"></span>
+                    <button onClick="{{ review.later.go }}" style="font-size:12.5px;color:#8b8d97;padding:6px 8px" style-hover="color:#16161a">Später</button>
+                  </div>
+                  <sc-if value="{{ review.hasBlock }}" hint-placeholder-val="{{ false }}">
+                    <p style="margin:10px 0 0;font-size:12px;color:#8a3a27">{{ review.blockReason }}</p>
+                  </sc-if>
+                </sc-if>
+                <sc-if value="{{ isNoPerm }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:18px 0 0;padding-top:14px;border-top:1px solid #efeee9;font-size:12.5px;color:#5a5c66">Hier arbeitet die Projektleitung Vorschläge ab. Du siehst mit, damit nachvollziehbar bleibt, was übernommen wird.</p>
+                </sc-if>
+              </div>
+            </div>
+
+            <aside style="width:242px;flex:none;padding-top:38px;display:grid;gap:18px;align-content:start">
+              <div>
+                <div style="font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#a3a3ab">Herkunft</div>
+                <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+                  <span style="width:22px;height:22px;border-radius:50%;background:#e7e5f8;color:#4a3aad;font-size:10.5px;font-weight:600;display:flex;align-items:center;justify-content:center">{{ review.authorInitials }}</span>
+                  <span style="font-size:12.5px;color:#5a5c66">{{ review.author }}</span>
+                </div>
+                <div style="margin-top:6px;font-size:12px;color:#8b8d97;line-height:1.55">{{ review.where }}<br>{{ review.when }}</div>
+              </div>
+              <div>
+                <div style="font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#a3a3ab">Streuung</div>
+                <div style="margin-top:7px;display:grid;gap:5px">
+                  <sc-for list="{{ review.spread }}" as="s" hint-placeholder-count="2">
+                    <div style="font-size:12px;color:#5a5c66">{{ s.text }}</div>
+                  </sc-for>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#a3a3ab">Vorhanden, gleicher Typ</div>
+                <div style="margin-top:7px;display:grid;gap:4px">
+                  <sc-for list="{{ review.existing }}" as="e" hint-placeholder-count="3">
+                    <div style="font-size:12px;color:#5a5c66">{{ e.label }}</div>
+                  </sc-for>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <div style="position:sticky;bottom:0;flex:none;display:flex;align-items:center;gap:16px;padding:10px 26px;border-top:1px solid #e6e5e0;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);font-size:11.5px;color:#8b8d97;flex-wrap:wrap">
+            <sc-for list="{{ review.keys }}" as="k" hint-placeholder-count="4">
+              <span style="display:flex;align-items:center;gap:6px"><span style="padding:2px 6px;border:1px solid #e2e1dc;border-radius:5px;background:#faf9f7;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#16161a">{{ k.k }}</span>{{ k.label }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sF3 }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:34px 44px 70px;max-width:900px">
+          <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8b8d97">Projekteinstellungen</span>
+          <h1 style="margin:8px 0 0;font-family:Spectral,Georgia,serif;font-size:29px;font-weight:500;letter-spacing:-.015em">Preset-Ansicht</h1>
+          <p style="margin:8px 0 0;font-size:14px;color:#5a5c66;max-width:60ch;text-wrap:pretty">So ist dieses {{ t.project }} konfiguriert. Für alle Mitglieder einsehbar — der einzige Ort, an dem generische Begriffe auftauchen.</p>
+
+          <div style="display:flex;flex-wrap:wrap;gap:26px;margin-top:24px;padding:16px 18px;background:#fff;border:1px solid #e6e5e0;border-radius:12px">
+            <sc-for list="{{ presetMeta }}" as="m" hint-placeholder-count="3">
+              <div>
+                <div style="font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#a3a3ab">{{ m.label }}</div>
+                <div style="font-size:14px;margin-top:5px">{{ m.value }}</div>
+              </div>
+            </sc-for>
+            <span style="flex:1"></span>
+            <button style="align-self:center;padding:9px 14px;border:1px solid #dcdbd5;border-radius:9px;background:#fff;font-size:13px" style-hover="border-color:#5340c4;color:#5340c4">Erweitern (F4)</button>
+          </div>
+
+          <h2 style="margin:30px 0 10px;font-size:14px;font-weight:600">Terminologie</h2>
+          <div style="background:#fff;border:1px solid #e6e5e0;border-radius:12px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;padding:9px 16px;background:#faf9f7;border-bottom:1px solid #efeee9;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#8b8d97">
+              <span>generisch</span><span>Einzahl</span><span>Mehrzahl</span>
+            </div>
+            <sc-for list="{{ termRows }}" as="r" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:11px 16px;border-bottom:1px solid #f4f3ee;font-size:13.5px">
+                <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8b8d97">{{ r.key }}</span>
+                <span>{{ r.singular }}</span>
+                <span style="color:#5a5c66">{{ r.plural }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <h2 style="margin:30px 0 10px;font-size:14px;font-weight:600">Eintragstypen</h2>
+          <div style="display:grid;gap:10px">
+            <sc-for list="{{ typeRows }}" as="ty" hint-placeholder-count="5">
+              <div style="padding:14px 16px;background:#fff;border:1px solid #e6e5e0;border-radius:12px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <svg width="16" height="16" viewBox="-9 -9 18 18" style="flex:none"><path d="{{ ty.d }}" fill="{{ ty.fill }}" stroke="{{ ty.stroke }}" stroke-width="1.4"></path></svg>
+                  <span style="font-size:14.5px;font-weight:600">{{ ty.label }}</span>
+                  <span style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#a3a3ab">{{ ty.key }}</span>
+                  <span style="flex:1"></span>
+                  <span style="font-size:12px;color:#8b8d97">{{ ty.count }}</span>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:11px">
+                  <sc-for list="{{ ty.fields }}" as="f" hint-placeholder-count="3">
+                    <span style="{{ f.st }}">{{ f.label }}<span style="color:#a3a3ab;margin-left:6px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px">{{ f.type }}</span></span>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <h2 style="margin:30px 0 10px;font-size:14px;font-weight:600">Beziehungstypen</h2>
+          <div style="background:#fff;border:1px solid #e6e5e0;border-radius:12px;overflow:hidden">
+            <sc-for list="{{ relRows }}" as="r" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid #f4f3ee;font-size:13px;flex-wrap:wrap">
+                <span style="color:#5a5c66">{{ r.source }}</span>
+                <span style="font-weight:600">{{ r.label }}</span>
+                <span style="color:#5a5c66">{{ r.target }}</span>
+                <span style="flex:1"></span>
+                <span style="font-size:12px;color:#a3a3ab">Gegenrichtung: {{ r.inverse }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <h2 style="margin:30px 0 10px;font-size:14px;font-weight:600">Verhalten</h2>
+          <div style="display:grid;gap:8px">
+            <sc-for list="{{ flagRows }}" as="f" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border:1px solid #e6e5e0;border-radius:11px;font-size:13.5px">
+                <span>{{ f.label }}</span>
+                <span style="flex:1"></span>
+                <span style="{{ f.st }}">{{ f.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ drawer }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;z-index:70;display:flex;justify-content:flex-end">
+          <div onClick="{{ toggleDrawer }}" style="position:absolute;inset:0;background:rgba(22,22,26,.14)"></div>
+          <div style="position:relative;width:392px;max-width:88%;height:100%;background:#fff;border-left:1px solid #e2e1dc;box-shadow:-18px 0 44px -30px rgba(22,22,26,.4);animation:nslide 240ms cubic-bezier(.22,.7,.25,1) both;display:flex;flex-direction:column">
+            <div style="flex:none;padding:16px 18px;border-bottom:1px solid #efeee9;display:flex;align-items:center;gap:10px">
+              <span style="font-size:14px;font-weight:600">Geteilte Notizen</span>
+              <span style="font-size:12px;color:#8b8d97">{{ d.meetingTitle }}</span>
+              <span style="flex:1"></span>
+              <button onClick="{{ toggleDrawer }}" style="font-size:12px;color:#8b8d97" style-hover="color:#16161a">Esc</button>
+            </div>
+            <sc-if value="{{ p.leadPrivate }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ togglePrivateFilter }}" style="{{ privateFilterSt }}">
+                <span style="{{ privateKnobSt }}"></span>
+                <span style="font-size:12.5px">auch private Notizen anzeigen</span>
+              </button>
+            </sc-if>
+            <div style="flex:1;overflow:auto;padding:14px 18px 30px;display:grid;gap:14px;align-content:start">
+              <sc-if value="{{ feedError }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:12px 14px;border:1px solid #e9c9c3;background:#fdf4f2;border-radius:10px;font-size:12.5px;color:#7a4636">Aktualisierung unterbrochen · <button style="color:#8a3a27;text-decoration:underline">Erneut verbinden</button><br>Dein Editor bleibt voll funktionsfähig.</div>
+              </sc-if>
+              <sc-if value="{{ feedEmpty }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:0;font-size:13px;color:#5a5c66;line-height:1.65">Noch hat niemand etwas geteilt. Was du auf <em>geteilt</em> stellst, erscheint hier bei allen.</p>
+              </sc-if>
+              <sc-for list="{{ feed }}" as="f" hint-placeholder-count="3">
+                <div style="padding:13px 14px;border:1px solid #ecebe6;border-radius:11px;background:#fdfdfc">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span style="width:21px;height:21px;border-radius:50%;background:#e7e5f8;color:#4a3aad;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center">{{ f.initials }}</span>
+                    <span style="font-size:12.5px;font-weight:500">{{ f.author }}</span>
+                    <span style="font-size:11.5px;color:#a3a3ab">{{ f.time }}</span>
+                    <span style="flex:1"></span>
+                    <span style="{{ f.visSt }}">{{ f.vis }}</span>
+                  </div>
+                  <p style="margin:9px 0 0;font-size:13.5px;line-height:1.65;color:#26262c">{{ f.text }}</p>
+                  <sc-if value="{{ f.hasChips }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:9px">
+                      <sc-for list="{{ f.chips }}" as="c" hint-placeholder-count="2">
+                        <span style="{{ c.st }}">{{ c.label }}</span>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ originOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;z-index:70;display:flex;justify-content:flex-end">
+          <div onClick="{{ closeOrigin }}" style="position:absolute;inset:0;background:rgba(22,22,26,.14)"></div>
+          <div style="position:relative;width:430px;max-width:92%;height:100%;background:#fff;border-left:1px solid #e2e1dc;box-shadow:-18px 0 44px -30px rgba(22,22,26,.4);animation:nslide 240ms cubic-bezier(.22,.7,.25,1) both;display:flex;flex-direction:column">
+            <div style="flex:none;padding:15px 18px 0">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:14px;font-weight:600">{{ art.title }}</span>
+                <span style="flex:1"></span>
+                <button onClick="{{ closeOrigin }}" style="font-size:12px;color:#8b8d97" style-hover="color:#16161a">Esc</button>
+              </div>
+              <div style="display:flex;gap:16px;margin-top:14px">
+                <sc-for list="{{ originTabs }}" as="tb" hint-placeholder-count="2">
+                  <button onClick="{{ tb.pick }}" style="{{ tb.st }}">{{ tb.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+            <div style="flex:1;overflow:auto;padding:18px;display:grid;gap:14px;align-content:start">
+              <sc-for list="{{ originItems }}" as="o" hint-placeholder-count="3">
+                <div style="padding:13px 15px;border:1px solid #ecebe6;border-radius:11px;background:#fdfdfc">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                    <span style="{{ o.tagSt }}">{{ o.tag }}</span>
+                    <span style="font-size:12px;color:#5a5c66">{{ o.meta }}</span>
+                  </div>
+                  <p style="margin:9px 0 0;font-family:Spectral,Georgia,serif;font-size:14.5px;line-height:1.7;color:#26262c">{{ o.text }}</p>
+                  <sc-if value="{{ o.hasLink }}" hint-placeholder-val="{{ true }}">
+                    <button style="margin-top:9px;font-size:12px;color:#5340c4" style-hover="color:#3b2b9e">{{ o.link }} ↗</button>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ undoOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:50%;bottom:64px;transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:14px;padding:11px 16px;background:#16161a;color:#f4f4f2;border-radius:11px;box-shadow:0 12px 30px -14px rgba(22,22,26,.5);animation:nfade 180ms ease both">
+          <span style="font-size:13px">{{ undoText }}</span>
+          <button onClick="{{ undoAction }}" style="font-size:13px;font-weight:600;color:#bdb3f5" style-hover="color:#fff">Rückgängig</button>
+        </div>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ aiSugOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed;z-index:88;width:352px;background:#fff;border:1px solid #d5d3ee;border-radius:11px;box-shadow:0 14px 34px -18px rgba(22,22,26,.32);overflow:hidden;left:{{ aiSugX }}px;top:{{ aiSugY }}px;animation:nfade 140ms ease both">
+        <div style="display:flex;align-items:center;gap:9px;padding:10px 12px">
+          <span style="{{ aiSugMark }}"></span>
+          <span style="min-width:0;flex:1">
+            <span style="display:block;font-size:12.5px;color:#16161a">{{ aiSugText }}</span>
+            <span style="display:block;font-size:11px;color:#8b8d97;margin-top:2px">KI-Vorschlag · dieselbe Review-Inbox wie manuelle Vorschläge</span>
+          </span>
+          <button onClick="{{ aiSugAccept }}" style="flex:none;padding:5px 9px;border-radius:7px;background:#eef0fb;color:#3b3f8f;font-size:11px;font-family:ui-monospace,Menlo,monospace" style-hover="background:#dfe2f8">Tab</button>
+          <button onClick="{{ aiSugDismiss }}" style="flex:none;font-size:11px;color:#a3a3ab;padding:4px" style-hover="color:#16161a">Esc</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ mentionOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed;z-index:90;width:326px;background:#fff;border:1px solid #e2e1dc;border-radius:11px;box-shadow:0 16px 40px -18px rgba(22,22,26,.34);overflow:hidden;left:{{ mentionX }}px;top:{{ mentionY }}px">
+        <div style="padding:9px 12px;border-bottom:1px solid #f2f1ec;font-size:11.5px;color:#8b8d97">{{ mentionHead }}</div>
+        <div style="max-height:212px;overflow:auto">
+          <sc-for list="{{ mentionHits }}" as="m" hint-placeholder-count="3">
+            <button onClick="{{ m.pick }}" onMouseEnter="{{ m.hover }}" style="{{ m.st }}">
+              <span style="{{ m.mark }}"></span>
+              <span style="min-width:0">
+                <span style="display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.label }}</span>
+                <span style="display:block;font-size:11.5px;color:#8b8d97">{{ m.sub }}</span>
+              </span>
+            </button>
+          </sc-for>
+          <sc-if value="{{ mentionEmpty }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;padding:12px;font-size:12.5px;color:#5a5c66">Kein Treffer für <em>{{ mentionQuery }}</em> — leg ihn direkt an:</p>
+          </sc-if>
+        </div>
+        <div style="border-top:1px solid #f2f1ec;padding:6px;display:grid;gap:1px">
+          <sc-for list="{{ mentionNew }}" as="m" hint-placeholder-count="3">
+            <button onClick="{{ m.pick }}" style="{{ m.st }}">
+              <span style="{{ m.mark }}"></span>
+              <span style="font-size:12.5px">Neu anlegen als {{ m.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="padding:7px 12px;background:#faf9f7;border-top:1px solid #f2f1ec;font-size:11px;color:#a3a3ab">↑ ↓ wählen · Enter einfügen · Tab Typ einschränken · Esc</div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;showDevBar&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Mockup&quot;}}">
+class Component extends DCLogic {
+  state = {
+    presetId: 'software', screen: 'B1', role: 'lead', mode: 'normal',
+    railOpen: false, vis: null, drawer: false, treeMode: 'entry',
+    mention: null, mentionIdx: 0, origin: false, originTab: 'origin',
+    reviewIdx: 0, rf: {}, undo: null, hintOpen: true,
+    zoom: 1, focus: null, hidden: [], onlyCanon: false, leftPanel: true, navExp: {},
+    aiMode: false, aiSug: null, log: [],
+    newPreset: 'software'
+  };
+
+  PRESETS = {
+    software: {
+      id: 'software-project', name: 'Software-Projekt', version: '1.2',
+      bound: 'gebunden am 12. Juli 2026',
+      desc: 'Produkt- und Entwicklungsteams mit Sprints und Meetings',
+      t: { project: 'Projekt', projects: 'Projekte', wg: 'Sprint', wgs: 'Sprints',
+           meeting: 'Meeting', meetings: 'Meetings', part: 'Teammitglied', parts: 'Team',
+           canonVerb: 'übernehmen', canonNoun: 'Projektwissen' },
+      defaultVis: 'shared', leadPrivate: false, delegation: true,
+      types: [
+        { key: 'component', label: 'Komponente', color: '#2fb8a0', shape: 'roundrect', count: 7,
+          fields: [['Ebene', 'select'], ['Status', 'select'], ['Verantwortlich', 'reference']] },
+        { key: 'decision', label: 'Entscheidung', color: '#5340c4', shape: 'diamond', count: 4,
+          fields: [['Entschieden am', 'date'], ['Begründung', 'longtext'], ['Status', 'select']] },
+        { key: 'risk', label: 'Risiko', color: '#c8553d', shape: 'star', count: 3,
+          fields: [['Schwere', 'select'], ['Gegenmaßnahme', 'longtext']] },
+        { key: 'task', label: 'Aufgabe', color: '#3f7fd0', shape: 'pentagon', count: 6,
+          fields: [['Zuständig', 'reference'], ['Fällig', 'date'], ['Status', 'select']] },
+        { key: 'teammember', label: 'Teammitglied', color: '#7a7f8c', shape: 'circle', count: 5,
+          fields: [['Rolle', 'select'], ['Schwerpunkt', 'text']] }
+      ],
+      relations: [
+        { label: 'hängt ab von', inverse: 'wird benötigt von', source: 'Komponente', target: 'Komponente' },
+        { label: 'verantwortet', inverse: 'verantwortet von', source: 'Teammitglied', target: 'Komponente' },
+        { label: 'betrifft', inverse: 'betroffen von', source: 'Entscheidung', target: 'alles' },
+        { label: 'gefährdet', inverse: 'gefährdet durch', source: 'Risiko', target: 'alles' },
+        { label: 'setzt um', inverse: 'umgesetzt durch', source: 'Aufgabe', target: 'Komponente' }
+      ],
+      d: {
+        projectName: 'Produktteam Nord', projectDesc: 'Discovery und Umsetzung, wöchentlich',
+        wgName: 'Sprint 14', meetingTitle: 'Sprint-Planung KW 32',
+        meetingDate: 'Mi, 5. August 2026 · 10:00', minutes: 24, leadName: 'Sam',
+        leadFull: 'Sam Ritter', me: 'Mira Kant', open: 5
+      },
+      projects: [
+        { name: 'Produktteam Nord', preset: 'Software-Projekt', meta: '3 Sprints · 41 Einträge', activity: 'zuletzt heute', live: true, av: ['SR', 'MK', 'JH'] },
+        { name: 'Aethermoor', preset: 'TableTop', meta: '2 Kampagnen · 63 Einträge', activity: 'zuletzt Sonntag', live: false, av: ['TB', 'NV', 'RK'] },
+        { name: 'Studiengruppe Statistik', preset: 'Software-Projekt', meta: '1 Sprint · 8 Einträge', activity: 'zuletzt 22. Juli', live: false, av: ['MK', 'LP'] }
+      ],
+      wgs: [
+        { name: 'Sprint 14', meta: '6 Meetings · 18 Notizen · 5 offene Vorschläge', pill: 'läuft', live: true, av: ['SR', 'MK', 'JH', 'LP'],
+          meetings: [['Sprint-Planung KW 32', 'läuft'], ['Daily Mi 30.07.', 'beendet'], ['Refinement 28.07.', 'beendet']] },
+        { name: 'Sprint 13', meta: '8 Meetings · 24 Notizen · abgeschlossen', pill: 'beendet', live: false, av: ['SR', 'MK', 'JH'],
+          meetings: [['Retro KW 30', 'beendet'], ['Sprint-Planung KW 30', 'beendet']] },
+        { name: 'Breakout: Design-Spike', meta: '2 Meetings · 5 Notizen', pill: 'geplant', live: false, av: ['MK', 'LP'],
+          meetings: [['Design-Spike Kickoff', 'geplant']] }
+      ],
+      feed: [
+        { author: 'Sam Ritter', initials: 'SR', time: 'vor 3 min', vis: 'geteilt', text: 'Preset-Bindung wird als Kopie am Projekt gespeichert — Änderungen an der Quelldatei berühren laufende Projekte nicht.', chips: ['Preset-Loader'] },
+        { author: 'Jo Halász', initials: 'JH', time: 'vor 8 min', vis: 'geteilt', text: 'Auth-Gateway ist auf Staging deployt, Token-Refresh fehlt noch.', chips: ['Auth-Gateway'] },
+        { author: 'Lea Pohl', initials: 'LP', time: 'vor 14 min', vis: 'geteilt', text: 'Frage an die Runde: wollen wir die Review-Inbox pro Sprint oder pro Meeting gruppieren?', chips: [] }
+      ],
+      hintTypes: 'Komponenten, Entscheidungen oder Risiken',
+      entities: [
+        { key: 'component', label: 'Preset-Loader', tag: '' },
+        { key: 'component', label: 'Auth-Gateway', tag: '' },
+        { key: 'component', label: 'Notiz-Editor', tag: '' },
+        { key: 'decision', label: 'Postgres statt SQLite', tag: '' },
+        { key: 'decision', label: 'Kein Live-Co-Editing', tag: '' },
+        { key: 'risk', label: 'Kanonisierung als Flaschenhals', tag: '' },
+        { key: 'task', label: 'Schema-Validator schreiben', tag: 'Vorschlag' },
+        { key: 'teammember', label: 'Sam Ritter', tag: '' },
+        { key: 'teammember', label: 'Mira Kant', tag: '' }
+      ],
+      article: {
+        typeKey: 'component', typeLabel: 'Komponente', title: 'Preset-Loader',
+        state: 'kanonisch', aliases: 'Schema-Loader, PresetReader',
+        originLine: 'Aus 3 Notizen · zuletzt geändert heute von Sam',
+        fields: [['Ebene', 'Backend'], ['Status', 'In Arbeit'], ['Verantwortlich', 'Sam Ritter'], ['Angelegt', '22. Juli 2026 aus Sprint-Planung KW 30']],
+        body: [
+          'Lädt Preset-Dateien, validiert sie gegen das JSON-Schema und bindet eine Kopie an das Projekt. Der Loader ist die einzige Stelle, an der Preset-Dateien gelesen werden — alle anderen Bausteine fragen die gebundene Kopie.',
+          'Offen ist die Validierung: derzeit werden Fehler gesammelt, aber nicht zeilengenau gemeldet. Die zeilengenaue Ausgabe ist Voraussetzung für den Import-Bildschirm.'
+        ],
+        rels: [
+          { label: 'wird benötigt von', items: ['Notiz-Editor', 'Review-Inbox'] },
+          { label: 'betroffen von', items: ['Postgres statt SQLite'] },
+          { label: 'gefährdet durch', items: ['Kanonisierung als Flaschenhals'] },
+          { label: 'umgesetzt durch', items: ['Schema-Validator schreiben'] }
+        ],
+        backrefs: ['Sprint-Planung KW 30', 'Daily Mi 30.07.', 'Notiz von Jo Halász'],
+        origin: [
+          { tag: 'Notiz', meta: 'Sprint 14 › Sprint-Planung KW 30 · Sam Ritter · 22. Juli', text: 'Wir brauchen einen Loader, der das YAML liest und gegen ein Schema prüft — sonst fällt jede kaputte Preset-Datei erst zur Laufzeit auf.', link: 'An die Textstelle springen' },
+          { tag: 'Notiz', meta: 'Sprint 14 › Daily Mi · Jo Halász · 30. Juli', text: 'Loader lädt jetzt, Validierung fehlt. Fehler kommen als Sammelmeldung, das reicht für F5 nicht.', link: 'An die Textstelle springen' },
+          { tag: 'Notiz · nachträglich geändert', meta: 'Sprint 14 › Sprint-Planung KW 32 · Sam Ritter · heute', text: 'Preset-Bindung wird als Kopie am Projekt gespeichert.', link: 'An die Textstelle springen' }
+        ],
+        history: [
+          { tag: 'Kanonisierung', meta: 'Sam Ritter · 22. Juli, 10:41', text: 'Aus Vorschlag übernommen. Ebene: leer → Backend. Status: leer → Idee.', link: 'Auslösende Notiz' },
+          { tag: 'Bearbeitung', meta: 'Jo Halász · 30. Juli, 09:12', text: 'Status: Idee → In Arbeit.', link: '' },
+          { tag: 'Zusammenführung', meta: 'Sam Ritter · heute, 10:18', text: '„Schema-Loader" zusammengeführt, Titel als Alias übernommen. Umkehrbar innerhalb von 30 Tagen.', link: 'Zusammenführung ansehen' }
+        ]
+      },
+      nodes: [
+        { id: 'c1', label: 'Auth-Gateway', key: 'component', x: 262, y: 176, canon: true, fields: [['Ebene', 'Backend'], ['Status', 'Fertig']] },
+        { id: 'c2', label: 'Notiz-Editor', key: 'component', x: 486, y: 112, canon: true, fields: [['Ebene', 'Frontend'], ['Status', 'In Arbeit']] },
+        { id: 'c3', label: 'Preset-Loader', key: 'component', x: 442, y: 300, canon: true, fields: [['Ebene', 'Backend'], ['Status', 'In Arbeit']] },
+        { id: 'd1', label: 'Postgres statt SQLite', key: 'decision', x: 676, y: 232, canon: true, fields: [['Status', 'Gültig'], ['Entschieden am', '30. Juli']] },
+        { id: 'r1', label: 'Kanonisierung als Flaschenhals', key: 'risk', x: 654, y: 428, canon: true, fields: [['Schwere', 'Hoch']] },
+        { id: 't1', label: 'Schema-Validator schreiben', key: 'task', x: 246, y: 412, canon: false, fields: [['Status', 'Offen'], ['Zuständig', 'Jo Halász']] },
+        { id: 'm1', label: 'Sam Ritter', key: 'teammember', x: 116, y: 288, canon: true, fields: [['Rolle', 'Backend']] },
+        { id: 'm2', label: 'Mira Kant', key: 'teammember', x: 622, y: 74, canon: true, fields: [['Rolle', 'UI/UX']] }
+      ],
+      edges: [
+        ['c2', 'c1', 'hängt ab von', 'solid', 2],
+        ['c3', 'c1', 'hängt ab von', 'solid', 2],
+        ['m1', 'c1', 'verantwortet', 'solid', 1],
+        ['m2', 'c2', 'verantwortet', 'solid', 1],
+        ['d1', 'c3', 'betrifft', 'dashed', 1],
+        ['r1', 'c3', 'gefährdet', 'dotted', 2],
+        ['t1', 'c3', 'setzt um', 'dashed', 1]
+      ],
+      review: [
+        { kind: 'A', kindLabel: 'Neu', typeKey: 'task', typeLabel: 'Aufgabe', title: 'Schema-Validator schreiben',
+          question: 'Gehört das ins Projektwissen?', freq: '3 Erwähnungen · 2 Meetings',
+          pre: 'Loader lädt jetzt, aber die Validierung fehlt. ', hit: 'Jemand muss den Schema-Validator schreiben, sonst blockiert F5',
+          post: ' — ich würde das noch in diesem Sprint einplanen, sonst zieht sich der Import-Bildschirm.',
+          author: 'Jo Halász', authorInitials: 'JH', when: '30. Juli, 09:12',
+          fields: [{ label: 'Status', options: ['Offen', 'In Arbeit', 'Erledigt'] }],
+          existing: ['Token-Refresh nachziehen', 'Fehlerseiten bauen', 'Preset-Import testen'],
+          spread: ['3 Erwähnungen in 2 Meetings', 'zuletzt heute in Sprint-Planung KW 32'],
+          primary: 'Übernehmen', secondary: 'Ablehnen' },
+        { kind: 'B', kindLabel: 'Duplikat', typeKey: 'component', typeLabel: 'Komponente', title: 'Auth Gateway',
+          target: 'Auth-Gateway', question: 'Ist das derselbe Eintrag?', freq: '1 Erwähnung · 1 Meeting',
+          pre: 'Zum Deployment: ', hit: 'Auth Gateway läuft auf Staging', post: ', Token-Refresh fehlt noch. Ich prüfe morgen die Logs.',
+          author: 'Jo Halász', authorInitials: 'JH', when: 'heute, 10:24',
+          fields: [], existing: ['Auth-Gateway', 'Notiz-Editor', 'Preset-Loader'],
+          spread: ['1 Erwähnung · beiläufig', 'Titel zu 92 % ähnlich zu Auth-Gateway'],
+          primary: 'Ist dasselbe → zusammenführen', secondary: 'Ist etwas anderes → neu anlegen' },
+        { kind: 'C', kindLabel: 'Ergänzung', typeKey: 'decision', typeLabel: 'Entscheidung', title: 'Begründung: JSONB für die Preset-Bindung',
+          target: 'Postgres statt SQLite', question: 'Soll das zum vorhandenen Eintrag hinzukommen?', freq: '2 Erwähnungen · 1 Meeting',
+          pre: 'Wir haben festgelegt, dass wir Postgres statt SQLite nehmen — ', hit: 'Begründung: wir brauchen JSONB für die Preset-Bindung',
+          post: '. SQLite kann das nur über Textfelder, und dann verlieren wir die Abfragen.',
+          author: 'Mira Kant', authorInitials: 'MK', when: 'heute, 10:31',
+          fields: [{ label: 'Status', options: ['Gültig', 'Überholt', 'Zurückgenommen'] }],
+          existing: ['Postgres statt SQLite', 'Kein Live-Co-Editing'],
+          spread: ['2 Erwähnungen in 1 Meeting', 'Feld „Begründung" ist derzeit leer'],
+          primary: 'Übernehmen', secondary: 'Verwerfen' },
+        { kind: 'A', kindLabel: 'Neu', typeKey: 'risk', typeLabel: 'Risiko', title: 'Token-Refresh fehlt im Auth-Gateway',
+          question: 'Gehört das ins Projektwissen?', freq: '2 Erwähnungen · 2 Meetings', confidence: '0,74',
+          pre: 'Staging läuft, aber nach einer Stunde fliegen alle raus. ', hit: 'Der Token-Refresh fehlt im Auth-Gateway',
+          post: ' — bis das drin ist, können wir niemanden zum Testen einladen.',
+          author: 'Jo Halász', authorInitials: 'JH', when: 'heute, 10:29',
+          fields: [{ label: 'Schwere', options: ['Niedrig', 'Mittel', 'Hoch'] }],
+          existing: ['Kanonisierung als Flaschenhals', 'Preset-Fehldesign'],
+          spread: ['2 Erwähnungen in 2 Meetings', 'blockiert 1 Aufgabe'],
+          primary: 'Übernehmen', secondary: 'Ablehnen' },
+        { kind: 'A', kindLabel: 'Neu', typeKey: 'decision', typeLabel: 'Entscheidung', title: 'Review-Inbox gruppiert nach Meeting',
+          question: 'Gehört das ins Projektwissen?', freq: '1 Erwähnung · 1 Meeting', confidence: '0,61',
+          pre: 'Zur Frage von Lea: ', hit: 'Wir gruppieren die Review-Inbox nach Meeting, nicht nach Sprint',
+          post: ' — dann bleibt die Trennkarte ein sinnvoller Ausstiegspunkt.',
+          author: 'Sam Ritter', authorInitials: 'SR', when: 'heute, 10:36',
+          fields: [{ label: 'Status', options: ['Gültig', 'Überholt', 'Zurückgenommen'] }],
+          existing: ['Postgres statt SQLite', 'Kein Live-Co-Editing'],
+          spread: ['1 Erwähnung · Festlegung der Leitung', 'zuletzt heute'],
+          primary: 'Übernehmen', secondary: 'Ablehnen' }
+      ]
+    },
+
+    tabletop: {
+      id: 'tabletop-rpg', name: 'TableTop / Pen & Paper', version: '1.0',
+      bound: 'gebunden am 3. Mai 2026',
+      desc: 'Rollenspielrunden mit Welten, Kampagnen und Sessions',
+      t: { project: 'Welt', projects: 'Welten', wg: 'Kampagne', wgs: 'Kampagnen',
+           meeting: 'Session', meetings: 'Sessions', part: 'Charakter', parts: 'Charaktere',
+           canonVerb: 'kanonisieren', canonNoun: 'Weltwissen' },
+      defaultVis: 'private', leadPrivate: true, delegation: false,
+      types: [
+        { key: 'npc', label: 'NSC', color: '#f0a24b', shape: 'circle', count: 12,
+          fields: [['Gesinnung', 'select'], ['Status', 'select']] },
+        { key: 'poi', label: 'Ort', color: '#2f8fb8', shape: 'hexagon', count: 9,
+          fields: [['Region', 'text'], ['Art', 'select']] },
+        { key: 'faction', label: 'Fraktion', color: '#a2478c', shape: 'pentagon', count: 4,
+          fields: [['Ziel', 'longtext']] },
+        { key: 'item', label: 'Gegenstand', color: '#5f9b3f', shape: 'diamond', count: 6,
+          fields: [['Seltenheit', 'select']] },
+        { key: 'event', label: 'Ereignis', color: '#c8553d', shape: 'star', count: 5,
+          fields: [['Zeitpunkt (Ingame)', 'text']] },
+        { key: 'character', label: 'Charakter', color: '#7a7f8c', shape: 'roundrect', count: 4,
+          fields: [['Klasse', 'text'], ['Stufe', 'number'], ['Hintergrund', 'longtext']] }
+      ],
+      relations: [
+        { label: 'lebt in', inverse: 'Bewohner', source: 'NSC', target: 'Ort' },
+        { label: 'kennt', inverse: 'bekannt mit', source: 'NSC', target: 'NSC' },
+        { label: 'Mitglied von', inverse: 'Mitglieder', source: 'NSC', target: 'Fraktion' },
+        { label: 'besitzt', inverse: 'im Besitz von', source: 'alles', target: 'Gegenstand' },
+        { label: 'geschah bei', inverse: 'Ereignisse', source: 'Ereignis', target: 'Ort' }
+      ],
+      d: {
+        projectName: 'Aethermoor', projectDesc: 'Sturmküste und Binnenreiche, seit Herbst 2025',
+        wgName: 'Die Sturmküste', meetingTitle: 'Session 12 — Der Rat von Falkenstein',
+        meetingDate: 'So, 2. August 2026 · 19:00', minutes: 41, leadName: 'Nils',
+        leadFull: 'Nils Vandenberg', me: 'Thessaly (Ronja)', open: 5
+      },
+      projects: [
+        { name: 'Aethermoor', preset: 'TableTop', meta: '2 Kampagnen · 63 Einträge', activity: 'zuletzt heute', live: true, av: ['NV', 'RK', 'TB'] },
+        { name: 'Die Feste Ravenlicht', preset: 'TableTop', meta: '1 Kampagne · 21 Einträge', activity: 'zuletzt 12. Juni', live: false, av: ['NV', 'MB'] },
+        { name: 'Produktteam Nord', preset: 'Software-Projekt', meta: '3 Sprints · 41 Einträge', activity: 'zuletzt heute', live: false, av: ['SR', 'MK'] }
+      ],
+      wgs: [
+        { name: 'Die Sturmküste', meta: '12 Sessions · 44 Notizen · 5 offene Vorschläge', pill: 'läuft', live: true, av: ['NV', 'RK', 'TB', 'MB'],
+          meetings: [['Session 12 — Der Rat von Falkenstein', 'läuft'], ['Session 11 — Die Möwenbucht', 'beendet'], ['Session 10 — Der Schmied', 'beendet']] },
+        { name: 'Die Binnenreiche', meta: '7 Sessions · 19 Notizen', pill: 'beendet', live: false, av: ['NV', 'RK'],
+          meetings: [['Session 7 — Abschied von Ravenlicht', 'beendet']] },
+        { name: 'One-Shot: Der Aschewald', meta: '1 Session geplant', pill: 'geplant', live: false, av: ['NV', 'TB'],
+          meetings: [['Der Aschewald', 'geplant']] }
+      ],
+      feed: [
+        { author: 'Nils (DM)', initials: 'NV', time: 'vor 2 min', vis: 'geteilt', text: 'Der Rat der Sieben empfängt euch erst nach Sonnenuntergang — bis dahin habt ihr freie Hand in der Stadt.', chips: ['Rat der Sieben', 'Falkenstein'] },
+        { author: 'Ronja', initials: 'RK', time: 'vor 11 min', vis: 'geteilt', text: 'Thessaly fragt Gorm nach der Sturmklinge. Er weicht aus, nennt aber den Namen „Vandermeer".', chips: ['Gorm Eisenfaust', 'Sturmklinge'] },
+        { author: 'Timo', initials: 'TB', time: 'vor 20 min', vis: 'geteilt', text: 'Wir haben im tanzenden Pony übernachtet, der Wirt kennt Lyra.', chips: ['Der tanzende Pony'] }
+      ],
+      hintTypes: 'Personen, Orte oder Ereignisse',
+      entities: [
+        { key: 'npc', label: 'Gorm Eisenfaust', tag: '' },
+        { key: 'npc', label: 'Lyra Vandermeer', tag: '' },
+        { key: 'npc', label: 'Der Wirt vom Pony', tag: 'Vorschlag' },
+        { key: 'poi', label: 'Falkenstein', tag: '' },
+        { key: 'poi', label: 'Der tanzende Pony', tag: '' },
+        { key: 'faction', label: 'Rat der Sieben', tag: '' },
+        { key: 'item', label: 'Sturmklinge', tag: '' },
+        { key: 'event', label: 'Der Rat tagt', tag: 'Vorschlag' },
+        { key: 'character', label: 'Thessaly', tag: '' }
+      ],
+      article: {
+        typeKey: 'npc', typeLabel: 'NSC', title: 'Gorm Eisenfaust',
+        state: 'kanonisch', aliases: 'Gorm der Schmied, Eisenfaust',
+        originLine: 'Aus 3 Notizen · zuletzt geändert heute von Nils',
+        fields: [['Gesinnung', 'Neutral'], ['Status', 'Lebendig'], ['Region', 'Sturmküste'], ['Angelegt', '14. Juni 2026 aus Session 8']],
+        body: [
+          'Waffenschmied in Falkenstein, Mitglied im Rat der Sieben und der einzige in der Stadt, der die Sturmklinge je in Händen hielt. Redet wenig über die Zeit vor seiner Ankunft.',
+          'Nach der Begegnung in Session 12 ist klar: er kennt Lyra Vandermeer, verschweigt aber, woher. Die Gruppe vermutet eine gemeinsame Vergangenheit an der Küste.'
+        ],
+        rels: [
+          { label: 'lebt in', items: ['Falkenstein'] },
+          { label: 'kennt', items: ['Lyra Vandermeer', 'Thessaly'] },
+          { label: 'Mitglied von', items: ['Rat der Sieben'] },
+          { label: 'besitzt', items: ['Sturmklinge'] }
+        ],
+        backrefs: ['Session 8', 'Session 12', 'Notiz von Ronja'],
+        origin: [
+          { tag: 'Notiz', meta: 'Die Sturmküste › Session 8 · Nils · 14. Juni', text: 'In Falkenstein gibt es einen Schmied, Gorm Eisenfaust, der offenbar im Rat sitzt.', link: 'An die Textstelle springen' },
+          { tag: 'Notiz', meta: 'Die Sturmküste › Session 10 · Timo · 12. Juli', text: 'Gorm will die Klinge nicht verkaufen. „Sie ist nicht meine, sie war es nie."', link: 'An die Textstelle springen' },
+          { tag: 'Notiz · nachträglich geändert', meta: 'Die Sturmküste › Session 12 · Ronja · heute', text: 'Er weicht aus, nennt aber den Namen „Vandermeer".', link: 'An die Textstelle springen' }
+        ],
+        history: [
+          { tag: 'Kanonisierung', meta: 'Nils · 14. Juni, 20:15', text: 'Aus Vorschlag übernommen. Status: leer → Lebendig.', link: 'Auslösende Notiz' },
+          { tag: 'Bearbeitung', meta: 'Nils · 12. Juli, 21:40', text: 'Gesinnung: Unbekannt → Neutral.', link: '' },
+          { tag: 'Zusammenführung', meta: 'Nils · heute, 19:22', text: '„Gorm der Schmied" zusammengeführt, Titel als Alias übernommen. Umkehrbar innerhalb von 30 Tagen.', link: 'Zusammenführung ansehen' }
+        ]
+      },
+      nodes: [
+        { id: 'n1', label: 'Gorm Eisenfaust', key: 'npc', x: 268, y: 178, canon: true, fields: [['Gesinnung', 'Neutral'], ['Status', 'Lebendig']] },
+        { id: 'n2', label: 'Lyra Vandermeer', key: 'npc', x: 486, y: 106, canon: true, fields: [['Gesinnung', 'Chaotisch'], ['Status', 'Verschollen']] },
+        { id: 'p1', label: 'Falkenstein', key: 'poi', x: 430, y: 300, canon: true, fields: [['Region', 'Sturmküste'], ['Art', 'Stadt']] },
+        { id: 'p2', label: 'Der tanzende Pony', key: 'poi', x: 660, y: 386, canon: false, fields: [['Art', 'Bauwerk']] },
+        { id: 'f1', label: 'Rat der Sieben', key: 'faction', x: 674, y: 186, canon: true, fields: [['Ziel', 'Die Küste halten']] },
+        { id: 'i1', label: 'Sturmklinge', key: 'item', x: 196, y: 392, canon: true, fields: [['Seltenheit', 'Legendär']] },
+        { id: 'e1', label: 'Der Rat tagt', key: 'event', x: 522, y: 456, canon: false, fields: [['Zeitpunkt (Ingame)', 'Nach Sonnenuntergang']] },
+        { id: 'ch1', label: 'Thessaly', key: 'character', x: 112, y: 268, canon: true, fields: [['Klasse', 'Schurkin'], ['Stufe', '6']] }
+      ],
+      edges: [
+        ['n1', 'p1', 'lebt in', 'solid', 2],
+        ['n2', 'p1', 'lebt in', 'solid', 2],
+        ['n1', 'n2', 'kennt', 'dashed', 1],
+        ['n1', 'f1', 'Mitglied von', 'solid', 2],
+        ['n1', 'i1', 'besitzt', 'solid', 1],
+        ['e1', 'p1', 'geschah bei', 'dotted', 2],
+        ['ch1', 'n1', 'kennt', 'dashed', 1],
+        ['n2', 'p2', 'lebt in', 'dotted', 1]
+      ],
+      review: [
+        { kind: 'A', kindLabel: 'Neu', typeKey: 'poi', typeLabel: 'Ort', title: 'Falkenstein',
+          question: 'Gehört das ins Weltwissen?', freq: '4 Erwähnungen · 3 Sessions',
+          pre: 'Nach zwei Tagen Ritt erreichen wir die Stadt. ', hit: 'Falkenstein liegt auf einer Klippe über der Sturmküste',
+          post: ' — Hafen unten, Rat oben, dazwischen die Handwerkergassen. Wir suchen zuerst den Schmied.',
+          author: 'Ronja', authorInitials: 'RK', when: 'heute, 19:08',
+          fields: [{ label: 'Art', options: ['Stadt', 'Dorf', 'Verlies', 'Bauwerk', 'Wildnis'] }],
+          existing: ['Der tanzende Pony', 'Möwenbucht', 'Aschewald'],
+          spread: ['4 Erwähnungen in 3 Sessions', 'zuletzt heute in Session 12'],
+          primary: 'Kanonisieren', secondary: 'Ablehnen' },
+        { kind: 'B', kindLabel: 'Duplikat', typeKey: 'poi', typeLabel: 'Ort', title: 'The Dancing Pony',
+          target: 'Der tanzende Pony', question: 'Ist das derselbe Eintrag?', freq: '1 Erwähnung · 1 Session',
+          pre: 'Wir nehmen Quartier. ', hit: 'The Dancing Pony hat einen Keller', post: ', und der Wirt kennt Lyra offenbar seit Jahren.',
+          author: 'Timo', authorInitials: 'TB', when: 'heute, 19:26',
+          fields: [], existing: ['Der tanzende Pony', 'Falkenstein', 'Möwenbucht'],
+          spread: ['1 Erwähnung · beiläufig', 'Titel zu 86 % ähnlich zu Der tanzende Pony'],
+          primary: 'Ist dasselbe → zusammenführen', secondary: 'Ist etwas anderes → neu anlegen' },
+        { kind: 'C', kindLabel: 'Ergänzung', typeKey: 'npc', typeLabel: 'NSC', title: 'Gesinnung: Neutral',
+          target: 'Gorm Eisenfaust', question: 'Soll das zum vorhandenen Eintrag hinzukommen?', freq: '2 Erwähnungen · 2 Sessions',
+          pre: 'Gorm hilft uns, aber nur gegen Gegenleistung. ', hit: 'Er steht auf keiner Seite, nur auf seiner eigenen',
+          post: '. Er würde die Stadt verteidigen, aber nicht den Rat.',
+          author: 'Ronja', authorInitials: 'RK', when: 'heute, 19:34',
+          fields: [{ label: 'Gesinnung', options: ['Rechtschaffen', 'Neutral', 'Chaotisch', 'Unbekannt'] }],
+          existing: ['Gorm Eisenfaust', 'Lyra Vandermeer'],
+          spread: ['2 Erwähnungen in 2 Sessions', 'Feld „Gesinnung" war zuvor Unbekannt'],
+          primary: 'Kanonisieren', secondary: 'Verwerfen' },
+        { kind: 'A', kindLabel: 'Neu', typeKey: 'faction', typeLabel: 'Fraktion', title: 'Rat der Sieben',
+          question: 'Gehört das ins Weltwissen?', freq: '5 Erwähnungen · 3 Sessions', confidence: '0,91',
+          pre: 'Über der Stadt thront das Ratshaus. ', hit: 'Der Rat der Sieben entscheidet über jeden Handel im Hafen',
+          post: ' — und Gorm sitzt seit dem letzten Sturm darin.',
+          author: 'Nils (DM)', authorInitials: 'NV', when: 'heute, 19:12',
+          fields: [], existing: ['Die Sturmgilde', 'Haus Vandermeer'],
+          spread: ['5 Erwähnungen in 3 Sessions', 'stärkstes Signal dieser Session'],
+          primary: 'Kanonisieren', secondary: 'Ablehnen' },
+        { kind: 'A', kindLabel: 'Neu', typeKey: 'event', typeLabel: 'Ereignis', title: 'Der Rat tagt nach Sonnenuntergang',
+          question: 'Gehört das ins Weltwissen?', freq: '2 Erwähnungen · 1 Session', confidence: '0,68',
+          pre: 'Nils: ', hit: 'Der Rat empfängt euch erst nach Sonnenuntergang',
+          post: ' — bis dahin habt ihr freie Hand in der Stadt.',
+          author: 'Nils (DM)', authorInitials: 'NV', when: 'heute, 19:41',
+          fields: [{ label: 'Zeitpunkt (Ingame)', options: ['Tag', 'Abend', 'Nacht'] }],
+          existing: ['Der Sturm von Falkenstein', 'Die Ratssitzung'],
+          spread: ['2 Erwähnungen in 1 Session', 'verknüpft mit Falkenstein'],
+          primary: 'Kanonisieren', secondary: 'Ablehnen' }
+      ]
+    }
+  };
+
+  SCREENS = {
+    B1: { name: 'Alle Projekte', chrome: 'start' },
+    B2: { name: 'Projekt anlegen', chrome: 'start' },
+    B3: { name: 'Projektübersicht', chrome: 'orient' },
+    C1: { name: 'Meeting-Raum', chrome: 'focus' },
+    D2: { name: 'Wiki-Artikel', chrome: 'focus' },
+    D5: { name: 'Beziehungs-Graph', chrome: 'focus' },
+    E1: { name: 'Review-Inbox', chrome: 'focus' },
+    F3: { name: 'Preset-Ansicht', chrome: 'focus' }
+  };
+
+  componentDidMount() {
+    this._key = (e) => {
+      const s = this.state;
+      if (e.key === 'Escape') {
+        if (s.mention) { this.setState({ mention: null }); return; }
+        if (s.drawer || s.origin || s.focus) this.setState({ drawer: false, origin: false, focus: null });
+        return;
+      }
+      if (s.screen === 'E1' && s.role === 'lead' && s.mode !== 'noperm' && !s.mention) {
+        const cards = this.cards();
+        const card = cards[s.reviewIdx];
+        const k = e.key.toLowerCase();
+        if (k === 'u' && s.log.length) { e.preventDefault(); this.undoLast(); return; }
+        if (!card) return;
+        if (/^[1-9]$/.test(e.key)) {
+          const f = (card.fields || []).find(f => !s.rf[card.title + '|' + f.label]) || (card.fields || [])[0];
+          if (f) {
+            const opt = f.options[+e.key - 1];
+            if (opt) { e.preventDefault(); this.setState({ rf: Object.assign({}, s.rf, { [card.title + '|' + f.label]: opt }) }); }
+          }
+          return;
+        }
+        if (e.key === 'Enter') { e.preventDefault(); this.decide('primary'); }
+        else if (k === 'a') { e.preventDefault(); this.decide('secondary'); }
+        else if (k === 's') { e.preventDefault(); this.decide('later'); }
+      }
+    };
+    document.addEventListener('keydown', this._key);
+  }
+  componentWillUnmount() { document.removeEventListener('keydown', this._key); clearTimeout(this._ut); }
+
+  p() { return this.PRESETS[this.state.presetId]; }
+  cards() { return this.p().review; }
+
+  set(k, v) { return () => this.setState({ [k]: v }); }
+  go(screen) { return () => this.setState({ screen, drawer: false, origin: false, mention: null, focus: null }); }
+
+  decide(which) {
+    const cards = this.cards();
+    const i = this.state.reviewIdx;
+    if (i >= cards.length) return;
+    const c = cards[i];
+    if (which !== 'later' && !this.ready(c)) return;
+    const txt = which === 'later' ? 'Später vorgemerkt' :
+      which === 'primary' ? (c.kind === 'B' ? 'Zusammengeführt mit ' + c.target : 'Übernommen: ' + c.title) : 'Abgelehnt: ' + c.title;
+    clearTimeout(this._ut);
+    this._ut = setTimeout(() => this.setState({ undo: null }), 8000);
+    this.setState({ reviewIdx: i + 1, undo: txt, log: this.state.log.concat([{ which: which, kind: c.kind }]) });
+  }
+  undoLast() {
+    const log = this.state.log.slice(0, -1);
+    this.setState({ reviewIdx: Math.max(0, this.state.reviewIdx - 1), log: log, undo: null });
+  }
+  resetReview() { this.setState({ reviewIdx: 0, log: [], undo: null, rf: {} }); }
+  ready(c) {
+    if (!c.fields || !c.fields.length) return true;
+    return c.fields.every(f => this.state.rf[c.title + '|' + f.label]);
+  }
+
+  shapeD(shape, r) {
+    const pts = (n, rot) => {
+      let a = [];
+      for (let i = 0; i < n; i++) { const t = rot + i * 2 * Math.PI / n; a.push((r * Math.cos(t)).toFixed(1) + ',' + (r * Math.sin(t)).toFixed(1)); }
+      return 'M' + a.join('L') + 'Z';
+    };
+    if (shape === 'circle') return 'M' + (-r) + ',0a' + r + ',' + r + ' 0 1,0 ' + (2 * r) + ',0a' + r + ',' + r + ' 0 1,0 ' + (-2 * r) + ',0';
+    if (shape === 'roundrect') { const w = r * 1.25, h = r * 0.86, k = 3.5; return 'M' + (-w + k) + ',' + (-h) + 'h' + (2 * w - 2 * k) + 'a' + k + ',' + k + ' 0 0 1 ' + k + ',' + k + 'v' + (2 * h - 2 * k) + 'a' + k + ',' + k + ' 0 0 1 ' + (-k) + ',' + k + 'h' + (-2 * w + 2 * k) + 'a' + k + ',' + k + ' 0 0 1 ' + (-k) + ',' + (-k) + 'v' + (-2 * h + 2 * k) + 'a' + k + ',' + k + ' 0 0 1 ' + k + ',' + (-k) + 'Z'; }
+    if (shape === 'diamond') return pts(4, -Math.PI / 2);
+    if (shape === 'hexagon') return pts(6, Math.PI / 2);
+    if (shape === 'pentagon') return pts(5, -Math.PI / 2);
+    if (shape === 'star') {
+      let a = [];
+      for (let i = 0; i < 10; i++) { const rr = i % 2 ? r * 0.46 : r; const t = -Math.PI / 2 + i * Math.PI / 5; a.push((rr * Math.cos(t)).toFixed(1) + ',' + (rr * Math.sin(t)).toFixed(1)); }
+      return 'M' + a.join('L') + 'Z';
+    }
+    return pts(6, Math.PI / 2);
+  }
+
+  tint(hex, a) {
+    const n = parseInt(hex.slice(1), 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+  typeOf(key) { return this.p().types.find(t => t.key === key) || this.p().types[0]; }
+
+  // ---------- shared style atoms ----------
+  seg(active) {
+    return 'padding:5px 11px;border-radius:6px;font-size:11.5px;white-space:nowrap;' +
+      (active ? 'background:#f4f4f2;color:#16161a;font-weight:600' : 'color:#a3a3ab');
+  }
+  chipSt(color, dashed) {
+    return 'display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:500;' +
+      'background:' + this.tint(color, .13) + ';color:' + color + ';border:1px ' + (dashed ? 'dashed' : 'solid') + ' ' + this.tint(color, .3);
+  }
+  markSt(color, size) {
+    const s = size || 9;
+    return 'width:' + s + 'px;height:' + s + 'px;border-radius:3px;background:' + color + ';flex:none;display:inline-block';
+  }
+  avSt(i) {
+    return 'width:24px;height:24px;border-radius:50%;background:#e9e7f7;color:#4a3aad;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;border:2px solid #fff;margin-left:' + (i ? '-7px' : '0');
+  }
+
+  icon(name) {
+    const R = React.createElement;
+    const p = { width: 15, height: 15, viewBox: '0 0 20 20', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' };
+    const paths = {
+      home: ['M3 8.5 10 3l7 5.5V16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z'],
+      pencil: ['M4 16h3l9-9-3-3-9 9z', 'M13 4l3 3'],
+      book: ['M4 4h5a2 2 0 0 1 2 2v10a2 2 0 0 0-2-2H4z', 'M16 4h-5a2 2 0 0 0-2 2v10a2 2 0 0 1 2-2h5z'],
+      graph: ['M6 6.5h0.01', 'M14 5h0.01', 'M9 14h0.01', 'M6.6 7.2 13.4 5.6', 'M7 8 8.6 12.6', 'M10 13.4 13.6 6.2'],
+      inbox: ['M3 11h4l1 2h4l1-2h4', 'M3 11l2-6h10l2 6v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z'],
+      gear: ['M10 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z', 'M10 3v2M10 15v2M3 10h2M15 10h2M5.5 5.5l1.4 1.4M13.1 13.1l1.4 1.4M14.5 5.5l-1.4 1.4M6.9 13.1l-1.4 1.4'],
+      user: ['M10 4.5a2.6 2.6 0 1 0 0 5.2 2.6 2.6 0 0 0 0-5.2z', 'M4.5 16.5c.7-2.8 2.9-4.3 5.5-4.3s4.8 1.5 5.5 4.3']
+    };
+    const circles = { graph: [[6, 6.5, 2.2], [14, 5, 1.8], [9, 14, 2]] };
+    const kids = (paths[name] || []).map((d, i) => R('path', { key: 'p' + i, d }));
+    (circles[name] || []).forEach((c, i) => kids.push(R('circle', { key: 'c' + i, cx: c[0], cy: c[1], r: c[2] })));
+    return R('svg', p, kids);
+  }
+
+  renderVals() {
+    const s = this.state, P = this.p(), t = P.t, d = P.d, sc = this.SCREENS[s.screen];
+    const chrome = sc.chrome;
+    const isLead = s.role === 'lead';
+    const mode = s.mode;
+    const modeIs = m => mode === m;
+
+    // ---------- state panels ----------
+    const MSG = {
+      B1: { empty: { kicker: 'Leer', title: 'Noch keine ' + t.projects, body: 'Hier stehen deine ' + t.projects + '. Zwei Wege führen zum ersten: du legst eines an, oder du wirst eingeladen.', actions: [[t.project + ' anlegen', 'B2', 1], ['Auf Einladung warten', null, 0]], hint: 'Schick deiner Projektleitung deine E-Mail-Adresse — sie kann dich in ein bestehendes ' + t.project + ' einladen.' } },
+      B2: { empty: { kicker: 'Leer', title: 'Kann nicht auftreten', body: 'Zwei Presets sind immer ausgeliefert. Ein fehlerhaftes Preset erscheint ausgegraut mit Verweis auf die Preset-Verwaltung.', actions: [] } },
+      B3: { empty: { kicker: 'Leer', title: 'Noch keine ' + t.wgs, body: isLead ? 'Der erste ' + t.wg + ' ist schnell angelegt.' : 'Deine Projektleitung hat noch keinen ' + t.wg + ' angelegt. Sobald sie das tut, erscheint er hier.', actions: isLead ? [[t.wg + ' anlegen', null, 1]] : [] } },
+      C1: { empty: { kicker: 'Leer', title: 'Noch hat niemand etwas geteilt', body: 'Was du auf geteilt stellst, erscheint hier bei allen anderen — ohne dass sie es suchen müssen.', actions: [['Zurück zum ' + t.meeting, 'C1', 1]] } },
+      D2: { empty: { kicker: 'Leer', title: 'Hier entsteht euer ' + t.canonNoun, body: 'Aus dem, was ihr in ' + t.meetings + ' schreibt und markiert. Noch gibt es keinen Eintrag.', actions: [['Ins nächste ' + t.meeting, 'C1', 1]] } },
+      D5: { empty: { kicker: 'Leer', title: 'Hier entsteht die Karte eures ' + t.canonNoun + 's', body: 'Sobald ihr in ' + t.meetings + ' Einträge markiert, erscheinen sie als Netz. Die Liste zeigt dieselben Daten schon jetzt.', actions: [['Zum ' + t.canonNoun, 'D2', 1], ['Ins ' + t.meeting, 'C1', 0]] } },
+      E1: { empty: { kicker: 'Fertig', title: 'Alles durch', body: 'Keine offenen Vorschläge mehr. Das Ergebnis der Mühe siehst du am besten im Netz.', stats: [['7', 'Vorschläge bearbeitet'], ['5', 'neue Einträge'], ['2', 'zusammengeführt']], actions: [['Beziehungs-Graph ansehen', 'D5', 1], ['Zum ' + t.canonNoun, 'D2', 0]] } },
+      F3: { empty: { kicker: 'Leer', title: 'Kein Preset gebunden', body: 'Jedes ' + t.project + ' bindet beim Anlegen genau ein Preset. Ohne Bindung gibt es dieses ' + t.project + ' nicht.', actions: [] } }
+    };
+    const ERR = {
+      D5: { kicker: 'Fehler', title: 'Die Karte konnte nicht geladen werden', body: 'Das Netz ließ sich nicht berechnen. Die Liste zeigt dieselben Daten — nichts ist verloren gegangen.', actions: [['Erneut versuchen', 'D5', 1], ['Zur Liste', 'D2', 0]] },
+      DEF: { kicker: 'Fehler', title: 'Das hat nicht geklappt', body: 'Die Daten kamen nicht durch. Nichts ist verloren gegangen — ein erneuter Versuch genügt meist.', actions: [['Erneut versuchen', s.screen, 1]] }
+    };
+    const NOPERM = {
+      B3: { kicker: 'Keine Berechtigung', title: 'Nur die Projektleitung kann das', body: 'Einstellungen dieses ' + t.projects + ' ändert nur ' + d.leadName + '. Fragen kannst du direkt dort.', actions: [['Zur Übersicht', 'B3', 1]] },
+      F3: { kicker: 'Nur lesend', title: 'Die Preset-Ansicht ist für alle sichtbar', body: 'Ändern darf sie nur die Projektleitung — frag ' + d.leadName + '. Alles hier ist bewusst einsehbar, damit klar ist, wie das ' + t.project + ' arbeitet.', actions: [['Trotzdem ansehen', 'F3', 1]] },
+      DEF: { kicker: 'Keine Berechtigung', title: 'Das kann nur die Projektleitung', body: 'Frag ' + d.leadName + ' — sie kann dir die Rolle geben oder den Schritt selbst machen.', actions: [['Zurück', 'B3', 1]] }
+    };
+
+    let stRaw = null;
+    if (modeIs('empty')) stRaw = (MSG[s.screen] || {}).empty;
+    if (modeIs('error')) stRaw = s.screen === 'C1' ? null : (ERR[s.screen] || ERR.DEF);
+    if (modeIs('noperm')) stRaw = (s.screen === 'D2' || s.screen === 'E1') ? null : (NOPERM[s.screen] || NOPERM.DEF);
+    if (!isLead && (s.screen === 'E1' || s.screen === 'F3')) stRaw = {
+      kicker: 'Für dich nicht sichtbar', tone: '#8b8d97',
+      title: s.screen === 'E1' ? 'Die Review-Inbox führt die Projektleitung' : 'Preset und Einstellungen liegen bei der Projektleitung',
+      body: s.screen === 'E1'
+        ? 'Was aus Notizen ins ' + t.canonNoun + ' übergeht, entscheidet ' + d.leadName + '. Deine Vorschläge aus ' + d.meetingTitle + ' stehen dort noch an — du siehst das Ergebnis im ' + t.canonNoun + '.'
+        : 'Wie dieses ' + t.project + ' konfiguriert ist, verwaltet ' + d.leadName + '. Du nimmst als ' + t.part + ' teil und brauchst dafür nichts einzustellen.',
+      actions: [['Zum ' + t.canonNoun, 'D2', 1], ['Ins ' + t.meeting, 'C1', 0]]
+    };
+
+    if (isLead && s.screen === 'E1' && modeIs('normal') && s.reviewIdx >= P.review.length) {
+      const acc = s.log.filter(l => l.which === 'primary' && l.kind !== 'B').length;
+      const mer = s.log.filter(l => l.which === 'primary' && l.kind === 'B').length;
+      const rej = s.log.filter(l => l.which === 'secondary').length;
+      const lat = s.log.filter(l => l.which === 'later').length;
+      stRaw = {
+        kicker: 'Durchlauf beendet', title: 'Alles durch',
+        body: 'Keine offenen Vorschläge mehr in ' + d.meetingTitle + '. Wo die Mühe sichtbar wird: im Netz.',
+        stats: [[String(s.log.length), 'Vorschläge bearbeitet'], [String(acc), 'neue Einträge'], [String(mer), 'zusammengeführt'], [String(rej + lat), rej + lat === 1 ? 'abgelehnt / später' : 'abgelehnt / später']],
+        actions: [['Beziehungs-Graph ansehen', 'D5', 1], ['Zum ' + t.canonNoun, 'D2', 0], ['Nochmal durchlaufen', () => this.resetReview(), 0]],
+        hint: 'Als Nächstes: ' + P.wgs[0].meetings[1][0] + ' — dort stehen noch keine Vorschläge an.'
+      };
+    }
+
+    const st = stRaw ? {
+      kicker: stRaw.kicker, title: stRaw.title, body: stRaw.body,
+      tone: modeIs('error') ? '#c8553d' : '#8b8d97',
+      hasStats: !!stRaw.stats, stats: (stRaw.stats || []).map(x => ({ n: x[0], label: x[1] })),
+      hasHint: !!stRaw.hint, hint: stRaw.hint || '',
+      actions: (stRaw.actions || []).map((a, i) => ({
+        label: a[0], go: typeof a[1] === 'function' ? a[1] : a[1] ? this.go(a[1]) : () => this.setState({ mode: 'normal' }),
+        st: a[2] ? 'padding:10px 16px;border-radius:9px;background:#5340c4;color:#fff;font-size:13.5px;font-weight:500'
+          : 'padding:10px 16px;border-radius:9px;border:1px solid #dcdbd5;background:#fff;font-size:13.5px'
+      }))
+    } : { actions: [], stats: [] };
+
+    const showStatePanel = !!stRaw;
+    const showSkeleton = modeIs('loading') && s.screen !== 'D5';
+    const blocked = showStatePanel || showSkeleton;
+    const show = id => s.screen === id && !blocked;
+
+    // ---------- nav ----------
+    const navOpen = chrome === 'orient' || s.railOpen;
+    const row = (o) => {
+      const on = !!o.on;
+      const pad = 12 + (o.depth || 0) * 13;
+      return {
+        label: o.label, badge: o.badge || '', icon: o.icon || null,
+        go: o.go, ink: on ? '#5340c4' : '#7a7c86',
+        dot: 'position:absolute;left:0;top:7px;bottom:7px;width:2px;border-radius:2px;background:' + (on ? '#5340c4' : 'transparent'),
+        st: 'position:relative;display:flex;align-items:center;gap:10px;padding:' + (o.small ? '6px ' : '9px ') + '12px 6px ' + pad + 'px;' +
+          'border-radius:9px;width:100%;font-size:' + (o.small ? '12.5' : '13') + 'px;' +
+          'color:' + (on ? '#16161a' : o.muted ? '#8b8d97' : '#5a5c66') + ';font-weight:' + (on ? '600' : '400') + ';' +
+          'background:' + (on ? '#f2f0fc' : 'transparent')
+      };
+    };
+    const stateDot = (state) => {
+      const c = state === 'läuft' ? '#5340c4' : state === 'geplant' ? '#c9a227' : '#c4c3bd';
+      return React.createElement('span', { style: { width: 7, height: 7, borderRadius: '50%', background: c, display: 'block', animation: state === 'läuft' ? 'npulse 1.8s ease-in-out infinite' : 'none' } });
+    };
+    const chev = (open) => React.createElement('svg', { width: 13, height: 13, viewBox: '0 0 20 20', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', style: { transform: 'rotate(' + (open ? 90 : 0) + 'deg)', transition: 'transform 180ms ease' } }, React.createElement('path', { d: 'M8 5l5 5-5 5' }));
+
+    const wgRows = [];
+    P.wgs.forEach(w => {
+      const open = s.navExp[w.name] !== undefined ? s.navExp[w.name] : w.name === d.wgName;
+      wgRows.push(row({
+        label: w.name, icon: chev(open), depth: 0, small: true,
+        badge: w.live ? 'läuft' : '',
+        go: () => this.setState({ navExp: Object.assign({}, s.navExp, { [w.name]: !open }) })
+      }));
+      if (open) w.meetings.forEach(m => wgRows.push(row({
+        label: m[0], icon: stateDot(m[1]), depth: 1, small: true, muted: m[1] === 'beendet',
+        on: s.screen === 'C1' && m[0] === d.meetingTitle,
+        go: this.go('C1')
+      })));
+    });
+
+    const navGroups = [
+      { label: t.projects, items: [row({ label: d.projectName, icon: this.icon('home'), on: s.screen === 'B3', go: this.go('B3') })] },
+      { label: t.wgs + ' & ' + t.meetings, items: wgRows },
+      { label: t.canonNoun, items: [
+        row({ label: 'Einträge', icon: this.icon('book'), badge: String(P.types.reduce((a, x) => a + x.count, 0)), on: s.screen === 'D2', go: this.go('D2') }),
+        row({ label: 'Beziehungs-Netz', icon: this.icon('graph'), on: s.screen === 'D5', go: this.go('D5') })
+      ] }
+    ];
+    if (isLead) {
+      navGroups.push({ label: 'Kuration', items: [row({ label: 'Review-Inbox', icon: this.icon('inbox'), badge: String(Math.max(0, d.open - s.log.length)), on: s.screen === 'E1', go: this.go('E1') })] });
+      navGroups.push({ label: 'Verwaltung', items: [row({ label: 'Preset & Einstellungen', icon: this.icon('gear'), on: s.screen === 'F3', go: this.go('F3') })] });
+    } else {
+      navGroups.push({ label: 'Deine Teilnahme', items: [row({ label: t.part + ': ' + d.me.split(' ')[0], icon: this.icon('user'), small: true, go: this.go('B3') })] });
+    }
+    const navGroupsOut = navGroups.map((g, i) => ({
+      label: g.label, items: g.items,
+      labelSt: 'padding:0 12px 6px;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:#a3a3ab;white-space:nowrap;' +
+        'transition:opacity 200ms ease;opacity:' + (navOpen ? 1 : 0) + ';height:' + (navOpen ? 'auto' : '0') + ';overflow:hidden',
+      wrapSt: 'display:grid;gap:1px;padding:' + (i ? '10px' : '0') + ' 0 0;margin-top:' + (i ? '9px' : '0') +
+        ';border-top:1px solid ' + (i ? '#efeee9' : 'transparent')
+    }));
+
+    const crumbDefs = chrome === 'start' ? [] : [
+      [d.projectName, 'B3'], [d.wgName, 'B3'],
+      s.screen === 'C1' ? [d.meetingTitle, 'C1'] : [sc.name, s.screen]
+    ];
+
+    // ---------- graph ----------
+    const hidden = s.hidden;
+    const visNodes = P.nodes.filter(n => hidden.indexOf(n.key) < 0 && (!s.onlyCanon || n.canon));
+    const nodeMap = {};
+    visNodes.forEach(n => nodeMap[n.id] = n);
+    const focus = s.focus && nodeMap[s.focus] ? s.focus : null;
+    const nbrs = {};
+    P.edges.forEach(e => { if (e[0] === focus) nbrs[e[1]] = 1; if (e[1] === focus) nbrs[e[0]] = 1; });
+    const degree = {};
+    P.edges.forEach(e => { degree[e[0]] = (degree[e[0]] || 0) + 1; degree[e[1]] = (degree[e[1]] || 0) + 1; });
+    const labelsOn = !!focus || s.zoom >= 1.4;
+
+    const building = modeIs('loading') && s.screen === 'D5';
+    const nodes = visNodes.map((n, ni) => {
+      const ty = this.typeOf(n.key);
+      const r = 15 + Math.min(9, (degree[n.id] || 1) * 2.2);
+      const dim = focus && n.id !== focus && !nbrs[n.id];
+      return {
+        tr: 'translate(' + n.x + ',' + n.y + ')', d: this.shapeD(ty.shape, r),
+        fill: n.canon ? this.tint(ty.color, .22) : this.tint(ty.color, .08),
+        stroke: ty.color, sw: n.id === focus ? 2.6 : 1.6,
+        dash: n.canon ? 'none' : '4 3',
+        op: dim ? 0.13 : 1,
+        gst: 'cursor:pointer' + (building ? ';animation:nsvgin 620ms ease both;animation-delay:' + (ni * 90) + 'ms' : ''),
+        labelEl: React.createElement('text', {
+          y: r + 15, textAnchor: 'middle', fontSize: 11.5, fill: '#26262c',
+          style: { fontFamily: 'Geist,sans-serif', paintOrder: 'stroke', stroke: '#fbfaf8', strokeWidth: '4px' }
+        }, n.label),
+        pick: (e) => { e.stopPropagation(); this.setState({ focus: n.id }); }
+      };
+    });
+    const edges = P.edges.filter(e => nodeMap[e[0]] && nodeMap[e[1]]).map(e => {
+      const a = nodeMap[e[0]], b = nodeMap[e[1]];
+      const dim = focus && e[0] !== focus && e[1] !== focus;
+      return {
+        x1: a.x, y1: a.y, x2: b.x, y2: b.y,
+        hx: a.x + (b.x - a.x) * 0.72, hy: a.y + (b.y - a.y) * 0.72,
+        mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 - 5,
+        w: e[4] * 0.9 + 0.4, dash: e[3] === 'dashed' ? '6 4' : e[3] === 'dotted' ? '2 4' : 'none',
+        label: e[2], showLabel: labelsOn && !dim, op: dim ? 0.08 : 0.85,
+        labelEl: React.createElement('text', {
+          x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - 5, textAnchor: 'middle', fontSize: 10.5, fill: '#5a5c66',
+          style: { fontFamily: 'Geist,sans-serif', paintOrder: 'stroke', stroke: '#fbfaf8', strokeWidth: '4px' }
+        }, e[2])
+      };
+    });
+    const fNode = focus ? nodeMap[focus] : null;
+    const focusNode = fNode ? {
+      label: fNode.label, typeLabel: this.typeOf(fNode.key).label,
+      typeSt: this.chipSt(this.typeOf(fNode.key).color, false),
+      fields: fNode.fields.map(f => ({ label: f[0], value: f[1] })),
+      origin: (fNode.canon ? 'Aus 2 Notizen · kanonisch' : 'Vorschlag aus 1 Notiz · noch nicht ' + t.canonVerb),
+      links: P.edges.filter(e => e[0] === fNode.id || e[1] === fNode.id).map(e => ({
+        text: e[0] === fNode.id ? fNode.label + ' ' + e[2] + ' ' + (nodeMap[e[1]] ? nodeMap[e[1]].label : '…')
+          : (nodeMap[e[0]] ? nodeMap[e[0]].label : '…') + ' ' + e[2] + ' ' + fNode.label
+      }))
+    } : { fields: [], links: [] };
+
+    // ---------- wiki ----------
+    const art = P.article;
+    const groups = P.types.map(ty => ({
+      label: ty.label, count: P.entities.filter(e => e.key === ty.key).length, mark: this.markSt(ty.color),
+      items: P.entities.filter(e => e.key === ty.key).map(e => {
+        const on = e.label === art.title;
+        return {
+          label: e.label, go: this.go('D2'), tag: e.tag,
+          tagSt: e.tag ? 'font-size:10px;padding:1px 6px;border-radius:5px;background:#f3f1ea;color:#8b8d97;flex:none' : 'display:none',
+          st: 'display:flex;align-items:center;gap:6px;width:100%;padding:6px 8px;border-radius:7px;font-size:13px;' +
+            (on ? 'background:#f2f0fc;color:#16161a;font-weight:600' : 'color:' + (e.tag ? '#8b8d97' : '#3f4048'))
+        };
+      })
+    })).filter(g => g.items.length);
+    const timeGroups = [
+      { label: d.meetingTitle + ' · heute', count: 3, mark: this.markSt('#5340c4'), items: P.entities.slice(0, 3).map((e, i) => ({ label: e.label, go: this.go('D2'), tag: ['neu', 'geändert', 'Vorschlag'][i], tagSt: 'font-size:10px;padding:1px 6px;border-radius:5px;background:#f3f1ea;color:#8b8d97;flex:none', st: 'display:flex;align-items:center;gap:6px;width:100%;padding:6px 8px;border-radius:7px;font-size:13px;color:#3f4048' })) },
+      { label: 'Vorheriges ' + t.meeting, count: 4, mark: this.markSt('#a3a3ab'), items: P.entities.slice(3, 7).map((e, i) => ({ label: e.label, go: this.go('D2'), tag: i === 0 ? 'geändert' : 'neu', tagSt: 'font-size:10px;padding:1px 6px;border-radius:5px;background:#f3f1ea;color:#8b8d97;flex:none', st: 'display:flex;align-items:center;gap:6px;width:100%;padding:6px 8px;border-radius:7px;font-size:13px;color:#3f4048' })) }
+    ];
+    const artTy = this.typeOf(art.typeKey);
+    const originList = (s.originTab === 'origin' ? art.origin : art.history).map(o => ({
+      tag: o.tag, meta: o.meta, text: o.text, link: o.link, hasLink: !!o.link,
+      tagSt: 'font-size:10.5px;padding:2px 7px;border-radius:6px;background:' + (o.tag.indexOf('geändert') > 0 ? '#fdf3e6;color:#8a6a2f' : '#f1f0fb') + ';color:#4a3aad'
+    }));
+
+    // ---------- review ----------
+    const cards = P.review;
+    const idx = Math.min(s.reviewIdx, cards.length);
+    const card = cards[idx] || cards[cards.length - 1];
+    const done = idx >= cards.length;
+    const rTy = this.typeOf(card.typeKey);
+    const rReady = this.ready(card);
+    const review = {
+      where: d.wgName + ' › ' + d.meetingTitle + ' · ' + d.meetingDate.split('·')[0].trim(),
+      progress: Math.min(idx + 1, cards.length) + ' von ' + cards.length + ' · ' + Math.max(0, d.open - s.log.length) + ' offen im ' + t.wg,
+      segments: cards.map((c, i) => ({
+        st: 'width:26px;height:5px;border-radius:3px;background:' +
+          (i < idx ? '#5340c4' : i === idx ? '#bdb3f5' : '#e4e3de')
+      })),
+      kindLabel: card.kindLabel, kindSt: this.chipSt(card.kind === 'A' ? '#3f7fd0' : card.kind === 'B' ? '#c8553d' : '#5f9b3f', false),
+      freq: card.freq, pre: card.pre, hit: card.hit, post: card.post,
+      typeLabel: rTy.label, typeSt: this.chipSt(rTy.color, !done),
+      title: card.title, question: card.question,
+      hasTarget: !!card.target, target: card.target || '',
+      hasFields: !!(card.fields && card.fields.length),
+      fields: (card.fields || []).map(f => ({
+        label: f.label,
+        options: f.options.map((o, i) => {
+          const k = card.title + '|' + f.label;
+          const on = s.rf[k] === o;
+          return {
+            label: o, key: String(i + 1),
+            pick: () => this.setState({ rf: Object.assign({}, s.rf, { [k]: o }) }),
+            st: 'display:inline-flex;align-items:center;padding:7px 12px;border-radius:8px;font-size:13px;border:1px solid ' +
+              (on ? '#5340c4' : '#dcdbd5') + ';background:' + (on ? '#f2f0fc' : '#fff') + ';color:#16161a;font-weight:' + (on ? '600' : '400')
+          };
+        })
+      })),
+      primary: {
+        label: card.primary, go: () => this.decide('primary'),
+        st: 'padding:11px 17px;border-radius:9px;font-size:13.5px;font-weight:500;' +
+          (rReady ? 'background:#5340c4;color:#fff' : 'background:#e8e7e2;color:#a3a3ab;cursor:not-allowed')
+      },
+      secondary: {
+        label: card.secondary, go: () => this.decide('secondary'),
+        st: 'padding:11px 17px;border-radius:9px;font-size:13.5px;border:1px solid #dcdbd5;background:#fff'
+      },
+      later: { go: () => this.decide('later') },
+      hasBlock: !rReady, blockReason: 'Erst „' + (card.fields[0] ? card.fields[0].label : '') + '" wählen — ein Klick oder eine Zifferntaste.',
+      author: card.author, authorInitials: card.authorInitials, when: card.when,
+      spread: card.spread.map(x => ({ text: x })), existing: card.existing.map(x => ({ label: x })),
+      keys: [{ k: 'Enter', label: card.primary.split('→')[0].trim() }, { k: 'A', label: card.secondary.split('→')[0].trim() }, { k: 'S', label: 'Später' }, { k: '1–4', label: 'Pflichtfeld setzen' }, { k: 'U', label: 'Rückgängig' }],
+      hasAi: s.aiMode, aiConfidence: card.confidence || '0,82',
+      aiSt: 'display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:#eef0fb;color:#3b3f8f;font-size:11.5px'
+    };
+
+    // ---------- mention ----------
+    const men = s.mention;
+    const q = men ? men.q : '';
+    const hits = men ? P.entities.filter(e => e.label.toLowerCase().indexOf(q.toLowerCase()) >= 0).slice(0, 5) : [];
+    const mentionHits = hits.map((e, i) => {
+      const ty = this.typeOf(e.key);
+      return {
+        label: e.label, sub: ty.label + (e.tag ? ' · ' + e.tag : ''), mark: this.markSt(ty.color, 8),
+        hover: () => this.setState({ mentionIdx: i }),
+        pick: () => this.insertMention(e.label, ty.color),
+        st: 'display:flex;align-items:center;gap:9px;width:100%;padding:8px 12px;' + (i === s.mentionIdx ? 'background:#f4f3fb' : '')
+      };
+    });
+    const mentionNew = (men ? P.types.slice(0, 3) : []).map(ty => ({
+      label: ty.label, mark: this.markSt(ty.color, 8),
+      pick: () => this.insertMention(q || 'Neuer Eintrag', ty.color),
+      st: 'display:flex;align-items:center;gap:9px;width:100%;padding:7px 8px;border-radius:7px;font-size:12.5px;color:#3f4048'
+    }));
+
+    let vis = s.vis || P.defaultVis;
+    if (!isLead && vis === 'canon') vis = 'shared';
+    const visDefs = [['private', 'privat', '🔒'], ['shared', 'geteilt', '↗'], ['canon', 'kanonisch', '✓']];
+
+    return {
+      devBar: this.props.showDevBar !== false,
+      screenId: s.screen, screenName: sc.name,
+      t, d, p: { name: P.name, version: P.version, leadPrivate: P.leadPrivate },
+      isLead, isMember: !isLead, isNoPerm: modeIs('noperm'),
+      contentBg: s.screen === 'D5' ? '#fbfaf8' : s.screen === 'C1' ? '#f4f4f2' : '#f4f4f2',
+
+      presetOptions: [['software', 'Software'], ['tabletop', 'TableTop']].map(o => ({
+        label: o[1], pick: () => this.setState({ presetId: o[0], vis: null, focus: null, reviewIdx: 0, rf: {}, hidden: [], undo: null }),
+        st: this.seg(s.presetId === o[0])
+      })),
+      modeOptions: [['normal', 'normal'], ['loading', 'laden'], ['empty', 'leer'], ['error', 'Fehler'], ['noperm', 'keine Berechtigung']].map(o => ({
+        label: o[1], pick: this.set('mode', o[0]), st: this.seg(mode === o[0])
+      })),
+      roleOptions: [['lead', 'Lead'], ['member', 'Member']].map(o => ({
+        label: o[1], pick: () => this.setState({ role: o[0], mode: o[0] === 'member' && mode === 'noperm' ? 'noperm' : mode }),
+        st: this.seg(s.role === o[0])
+      })),
+
+      goHome: this.go('B1'), goCreate: this.go('B2'), goProject: this.go('B3'),
+      goMeeting: this.go('C1'), goWiki: this.go('D2'), goGraph: this.go('D5'),
+      goReview: this.go('E1'), goPreset: this.go('F3'),
+      meLabel: isLead ? d.leadFull + ' · Lead' : d.me + ' · Member',
+      meInitials: isLead ? d.leadFull.split(' ').map(x => x[0]).join('') : 'MK',
+      showProposalCount: isLead && chrome !== 'start' && Math.max(0, d.open - s.log.length) > 0,
+      openCount: Math.max(0, d.open - s.log.length),
+
+      hasCrumbs: crumbDefs.length > 0,
+      crumbs: crumbDefs.map((c, i) => ({
+        label: (i ? '› ' : '') + c[0], go: this.go(c[1]),
+        st: 'font-size:12.5px;padding:4px 6px;border-radius:6px;color:' + (i === crumbDefs.length - 1 ? '#16161a' : '#5a5c66')
+      })),
+      isOrient: chrome === 'orient',
+      band: [[t.project, d.projectName, 'B3'], [t.wg, d.wgName, 'B3'], [t.meeting, d.meetingTitle, 'C1']].map((b, i) => ({
+        label: b[0] + ':', value: b[1], go: this.go(b[2]),
+        st: 'display:flex;align-items:center;gap:7px;padding:5px 11px;border-radius:7px;border:1px solid ' +
+          (i === 0 ? '#dedcd4' : 'transparent') + ';background:' + (i === 0 ? '#fff' : 'transparent') + ';font-size:12px'
+      })),
+
+      hasNav: chrome !== 'start',
+      trackStyle: 'position:relative;flex:none;width:' + (chrome === 'orient' ? 236 : 52) + 'px',
+      navStyle: 'position:absolute;left:0;top:0;bottom:0;z-index:50;overflow-x:hidden;overflow-y:auto;scrollbar-gutter:stable;padding:12px 10px 12px 8px;display:grid;gap:0;align-content:start;' +
+        'background:#fff;border-right:1px solid #e6e5e0;transition:width 260ms cubic-bezier(.22,.7,.25,1),box-shadow 260ms ease;' +
+        'width:' + (navOpen ? 236 : 52) + 'px;box-shadow:' + (s.railOpen && chrome === 'focus' ? '10px 0 34px -22px rgba(22,22,26,.4)' : 'none'),
+      navLabelOpacity: navOpen ? 1 : 0,
+      navGroups: navGroupsOut,
+      memberNote: 'Du nimmst als ' + t.part + ' „' + d.me.split(' ')[0] + '" teil. Was ins ' + t.canonNoun + ' übergeht, entscheidet ' + d.leadName + '.',
+      railEnter: () => { if (chrome === 'focus') this.setState({ railOpen: true }); },
+      railLeave: () => this.setState({ railOpen: false }),
+
+      showSkeleton, showStatePanel, st,
+      skeletonCards: [{ h: '150px' }, { h: '150px' }, { h: '150px' }, { h: '150px' }, { h: '150px' }, { h: '150px' }],
+
+      sB1: show('B1'), sB2: show('B2'), sB3: show('B3'), sC1: show('C1'),
+      sD2: s.screen === 'D2' && (!blocked), sD5: show('D5'), sE1: s.screen === 'E1' && !blocked, sF3: show('F3'),
+
+      projectCards: P.projects.map(pr => ({
+        name: pr.name, preset: pr.preset, meta: pr.meta, activity: pr.activity, live: pr.live, go: this.go('B3'),
+        badgeSt: 'font-size:11px;padding:3px 8px;border-radius:6px;background:' + (pr.preset === 'TableTop' ? '#fdf1e3;color:#8a5a1f' : '#e9f5f3;color:#1d6a5f'),
+        avatars: pr.av.map((a, i) => ({ i: a, st: this.avSt(i) }))
+      })),
+      presetBadgeSt: 'font-size:11px;padding:3px 8px;border-radius:6px;background:' + (s.presetId === 'tabletop' ? '#fdf1e3;color:#8a5a1f' : '#e9f5f3;color:#1d6a5f'),
+
+      presetCards: ['software', 'tabletop'].map(k => {
+        const pp = this.PRESETS[k], on = s.newPreset === k;
+        return {
+          name: pp.name, desc: pp.desc, pick: () => this.setState({ newPreset: k, presetId: k, vis: null, reviewIdx: 0, rf: {}, focus: null }),
+          st: 'display:block;padding:17px 18px;border-radius:13px;text-align:left;border:1px solid ' + (on ? '#5340c4' : '#e6e5e0') +
+            ';background:' + (on ? '#faf9fe' : '#fff') + ';box-shadow:' + (on ? '0 0 0 3px rgba(83,64,196,.1)' : 'none'),
+          radio: 'width:15px;height:15px;border-radius:50%;flex:none;border:' + (on ? '5px solid #5340c4' : '1.5px solid #cfcec8'),
+          chain: [pp.t.project, pp.t.wg, pp.t.meeting].map((c, i) => ({
+            label: (i ? '→ ' : '') + c,
+            st: 'font-size:11.5px;color:' + (i === 0 ? '#16161a' : '#5a5c66')
+          })),
+          chips: pp.types.slice(0, 3).map(ty => ({ label: ty.label, st: this.chipSt(ty.color, false) })),
+          flags: [
+            { icon: pp.defaultVis === 'shared' ? '↗' : '🔒', label: 'Standard: ' + (pp.defaultVis === 'shared' ? 'geteilt' : 'privat') },
+            { icon: pp.leadPrivate ? '👁' : '—', label: 'Leitung liest private Notizen: ' + (pp.leadPrivate ? 'ja, mit Hinweis' : 'nein') },
+            { icon: pp.delegation ? '⇄' : '—', label: pp.delegation ? 'Kuratoren möglich' : 'nur die Leitung kanonisiert' }
+          ]
+        };
+      }),
+
+      wgCards: P.wgs.map(w => ({
+        name: w.name, meta: w.meta, pill: w.pill, go: this.go(w.live ? 'C1' : 'C1'),
+        st: 'padding:17px 18px;border-radius:13px;background:#fff;border:1px solid ' + (w.live ? '#cec7ef' : '#e6e5e0'),
+        pillSt: 'font-size:11px;padding:3px 9px;border-radius:999px;' + (w.live ? 'background:#efecfb;color:#4a3aad' : w.pill === 'geplant' ? 'background:#f3f1ea;color:#7a6a45' : 'background:#f2f1ed;color:#8b8d97'),
+        avatars: w.av.map((a, i) => ({ i: a, st: this.avSt(i) })),
+        btn: w.live ? 'Einsteigen' : 'Öffnen',
+        btnSt: w.live ? 'padding:7px 13px;border-radius:8px;background:#5340c4;color:#fff;font-size:12.5px;font-weight:500'
+          : 'padding:7px 13px;border-radius:8px;border:1px solid #dcdbd5;font-size:12.5px;background:#fff'
+      })),
+      typeStats: P.types.map(ty => ({ label: ty.label, count: ty.count, mark: this.markSt(ty.color, 10) })),
+
+      meetingPill: modeIs('error') ? 'Verbindung unterbrochen' : 'läuft · ' + d.minutes + ' min',
+      meetingPillSt: 'display:inline-flex;align-items:center;gap:7px;padding:4px 11px;border-radius:999px;font-size:12px;' +
+        (modeIs('error') ? 'background:#fdf4f2;color:#8a3a27' : 'background:#efecfb;color:#4a3aad'),
+      meetingDotSt: 'width:6px;height:6px;border-radius:50%;background:' + (modeIs('error') ? '#c8553d' : '#5340c4') + ';animation:npulse 1.8s ease-in-out infinite',
+      visOptions: visDefs.filter(v => isLead || v[0] !== 'canon').map(v => ({
+        label: v[1], icon: v[2], help: v[0] === 'canon' ? 'Nur die Projektleitung kann ' + t.canonVerb : '',
+        pick: () => this.setState({ vis: v[0] }),
+        st: 'display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:7px;font-size:12.5px;' +
+          (vis === v[0] ? 'background:#fff;color:#16161a;font-weight:600;box-shadow:0 1px 2px rgba(22,22,26,.08)' : 'color:#7a7c86') +
+          (v[0] === 'canon' && !isLead ? ';opacity:.45' : '')
+      })),
+      saveStatus: modeIs('error') ? 'Lokal gesichert · Übertragung wartet' : 'Gespeichert · 14:32',
+      showSaveError: modeIs('error'),
+      editable: !modeIs('noperm'), editorLocked: false, lockNote: '',
+      feedAvatars: P.feed.map((f, i) => ({ i: f.initials, st: this.avSt(i) })),
+      hasUnread: !s.drawer, unread: 3,
+      shortcuts: [{ k: '@', label: 'Eintrag markieren' }, { k: '#', label: 'Typ einschränken' }, { k: '⌘S', label: 'sichern' }, { k: 'Esc', label: 'Schublade schließen' }],
+      hintOpen: s.hintOpen, hintTypes: P.hintTypes, closeHint: this.set('hintOpen', false), aiMode: s.aiMode,
+      privacyNote: P.leadPrivate
+        ? 'Hinweis: In diesem ' + t.project + ' kann die Projektleitung auch private Notizen lesen. Dieser Hinweis erscheint nur einmal.'
+        : 'Private Notizen bleiben privat — auch für die Projektleitung. Dieser Hinweis erscheint nur einmal.',
+
+      drawer: s.drawer, toggleDrawer: () => this.setState({ drawer: !s.drawer }),
+      feed: modeIs('error') || modeIs('empty') ? [] : P.feed.map(f => ({
+        author: f.author, initials: f.initials, time: f.time, text: f.text, vis: f.vis,
+        visSt: 'font-size:10.5px;padding:2px 7px;border-radius:6px;background:#eef4f6;color:#1d5f74',
+        hasChips: f.chips.length > 0,
+        chips: f.chips.map(c => {
+          const e = P.entities.find(x => x.label === c);
+          const ty = this.typeOf(e ? e.key : P.types[0].key);
+          return { label: c, st: this.chipSt(ty.color, false) };
+        })
+      })),
+      feedError: modeIs('error'), feedEmpty: modeIs('empty'),
+      privateFilterSt: 'display:flex;align-items:center;gap:9px;margin:12px 18px 0;padding:8px 11px;border:1px solid #e4e3de;border-radius:9px;background:#faf9f7',
+      privateKnobSt: 'width:26px;height:15px;border-radius:999px;background:#dcdbd5;position:relative;flex:none',
+      togglePrivateFilter: () => {},
+
+      treeModes: [['entry', 'Nach Eintrag'], ['time', 'Nach Zeitpunkt']].map(m => ({
+        label: m[1], pick: this.set('treeMode', m[0]),
+        st: 'flex:1;padding:6px 8px;border-radius:6px;font-size:12px;text-align:center;' +
+          (s.treeMode === m[0] ? 'background:#fff;color:#16161a;font-weight:600;box-shadow:0 1px 2px rgba(22,22,26,.07)' : 'color:#8b8d97')
+      })),
+      treeGroups: s.treeMode === 'entry' ? groups : timeGroups,
+      canEdit: isLead && !modeIs('noperm'),
+      art: {
+        title: art.title, typeLabel: artTy.label, typeSt: this.chipSt(artTy.color, false),
+        state: art.state, stateSt: 'font-size:11px;padding:3px 8px;border-radius:6px;background:#f1f0fb;color:#4a3aad',
+        hasAliases: true, aliases: art.aliases, originLine: art.originLine,
+        fields: art.fields.map(f => ({ label: f[0], value: f[1], hasChip: false, chip: '', chipSt: '' })),
+        body: art.body.map(x => ({ text: x })),
+        relGroups: art.rels.map(r => ({
+          label: r.label,
+          items: r.items.map(i => {
+            const e = P.entities.find(x => x.label === i);
+            const ty = this.typeOf(e ? e.key : P.types[0].key);
+            return { label: i, go: this.go('D2'), mark: this.markSt(ty.color, 8), st: 'display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;border:1px solid ' + this.tint(ty.color, .35) + ';background:' + this.tint(ty.color, .09) + ';font-size:12.5px' };
+          })
+        })),
+        backrefs: art.backrefs.map(b => ({ label: b, st: 'font-size:12px;padding:4px 10px;border-radius:999px;background:#f2f1ed;color:#5a5c66' }))
+      },
+      originOpen: s.origin, openOrigin: this.set('origin', true), closeOrigin: this.set('origin', false),
+      originTabs: [['origin', 'Herkunft · woher?'], ['history', 'Verlauf · wann?']].map(tb => ({
+        label: tb[1], pick: this.set('originTab', tb[0]),
+        st: 'padding:7px 2px 9px;font-size:12.5px;border-bottom:2px solid ' + (s.originTab === tb[0] ? '#5340c4' : 'transparent') +
+          ';color:' + (s.originTab === tb[0] ? '#16161a' : '#8b8d97') + ';font-weight:' + (s.originTab === tb[0] ? '600' : '400')
+      })),
+      originItems: originList,
+
+      leftPanel: s.leftPanel, toggleLeft: () => this.setState({ leftPanel: !s.leftPanel }),
+      leftPanelLabel: s.leftPanel ? 'Filter ausblenden' : 'Filter',
+      typeFilters: P.types.map(ty => {
+        const off = hidden.indexOf(ty.key) >= 0;
+        return {
+          label: ty.label, count: P.nodes.filter(n => n.key === ty.key).length,
+          d: this.shapeD(ty.shape, 6.6), fill: off ? '#fff' : this.tint(ty.color, .3), stroke: off ? '#c9c8c2' : ty.color,
+          toggle: () => this.setState({ hidden: off ? hidden.filter(x => x !== ty.key) : hidden.concat([ty.key]) }),
+          st: 'display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:7px;width:100%;' + (off ? 'color:#a3a3ab' : 'color:#3f4048')
+        };
+      }),
+      graphCounts: visNodes.length + ' Einträge · ' + edges.length + ' Verbindungen',
+      graphHint: building ? 'Karte wird aufgebaut — die Filter links sind schon bedienbar'
+        : focus ? 'Fokus: Nachbarn hervorgehoben · Doppelklick öffnet die Detailseite · Esc verlässt'
+        : 'Knoten anklicken für Fokus · Beschriftungen ab Zoom 1,4',
+      graphTransform: 'translate(' + (450 - 450 * s.zoom) + ',' + (280 - 280 * s.zoom) + ') scale(' + s.zoom + ')',
+      zoomLabel: s.zoom.toFixed(1).replace('.', ','),
+      zoomIn: () => this.setState({ zoom: Math.min(2.4, +(s.zoom + 0.2).toFixed(2)) }),
+      zoomOut: () => this.setState({ zoom: Math.max(0.6, +(s.zoom - 0.2).toFixed(2)) }),
+      resetView: () => this.setState({ zoom: 1, focus: null }),
+      clearFocus: () => this.setState({ focus: null }),
+      nodes, edges, hasFocus: !!focus, focusNode,
+      onlyCanon: s.onlyCanon, toggleCanon: () => this.setState({ onlyCanon: !s.onlyCanon }),
+      canonToggleSt: 'display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid ' + (s.onlyCanon ? '#c9c3ec' : '#e4e3de') + ';border-radius:9px;background:' + (s.onlyCanon ? '#f6f4fd' : '#fff'),
+      canonKnobSt: 'width:26px;height:15px;border-radius:999px;flex:none;position:relative;background:' + (s.onlyCanon ? '#5340c4' : '#dcdbd5') +
+        ';box-shadow:inset ' + (s.onlyCanon ? '11px' : '0') + ' 0 0 0 transparent',
+
+      review, showActions: !modeIs('noperm'),
+      undoOpen: !!s.undo, undoText: s.undo || '', undoAction: () => this.undoLast(),
+      aiOptions: [[false, 'aus'], [true, 'an']].map(o => ({
+        label: o[1], pick: () => this.setState({ aiMode: o[0], aiSug: null }), st: this.seg(s.aiMode === o[0])
+      })),
+      aiSugOpen: !!s.aiSug && s.screen === 'C1', aiSugX: s.aiSug ? s.aiSug.x : 0, aiSugY: s.aiSug ? s.aiSug.y : 0,
+      aiSugText: s.aiSug ? s.aiSug.text : '', aiSugKind: s.aiSug ? s.aiSug.kind : '',
+      aiSugMark: s.aiSug ? this.markSt(s.aiSug.color, 8) : '',
+      aiSugAccept: () => this.acceptAi(), aiSugDismiss: () => this.setState({ aiSug: null }),
+
+      presetMeta: [{ label: 'Preset', value: P.name }, { label: 'Version', value: 'v' + P.version }, { label: 'Bindung', value: P.bound }, { label: 'Eintragstypen', value: P.types.length + ' Typen · ' + P.relations.length + ' Beziehungstypen' }],
+      termRows: [
+        { key: 'project', singular: t.project, plural: t.projects },
+        { key: 'workgroup', singular: t.wg, plural: t.wgs },
+        { key: 'meeting', singular: t.meeting, plural: t.meetings },
+        { key: 'participant', singular: t.part, plural: t.parts },
+        { key: 'canon', singular: t.canonVerb, plural: t.canonNoun }
+      ],
+      typeRows: P.types.map(ty => ({
+        label: ty.label, key: ty.key, count: ty.count + ' Einträge',
+        d: this.shapeD(ty.shape, 6.6), fill: this.tint(ty.color, .3), stroke: ty.color,
+        fields: ty.fields.map(f => ({ label: f[0], type: f[1], st: 'display:inline-flex;align-items:center;padding:4px 10px;border-radius:7px;background:#f6f5f2;font-size:12px' }))
+      })),
+      relRows: P.relations.map(r => ({ label: r.label, source: r.source, target: r.target, inverse: r.inverse })),
+      flagRows: [
+        { label: 'Standard-Sichtbarkeit neuer Notizen', value: P.defaultVis === 'shared' ? 'geteilt' : 'privat', st: 'font-size:12.5px;padding:4px 10px;border-radius:7px;background:#f1f0fb;color:#4a3aad' },
+        { label: 'Die Projektleitung kann private Notizen einsehen', value: P.leadPrivate ? 'Ja — mit Hinweis an alle' : 'Nein', st: 'font-size:12.5px;padding:4px 10px;border-radius:7px;background:' + (P.leadPrivate ? '#fdf3e6;color:#8a6a2f' : '#eaf3ec;color:#2c6b45') },
+        { label: 'Kanonisierung delegierbar (Kuratoren)', value: P.delegation ? 'Ja' : 'Nein', st: 'font-size:12.5px;padding:4px 10px;border-radius:7px;background:#f6f5f2;color:#5a5c66' }
+      ],
+
+      mentionOpen: !!men, mentionX: men ? men.x : 0, mentionY: men ? men.y : 0,
+      mentionQuery: q, mentionHead: q ? 'Treffer für „' + q + '"' : 'Eintrag markieren — tippe weiter zum Filtern',
+      mentionHits, mentionNew, mentionEmpty: !!men && hits.length === 0,
+      editorRef: (el) => { this._ed = el; },
+      onEditorInput: () => { this.checkMention(); this.analyzeAi(); },
+      onEditorKey: (e) => {
+        if (!this.state.mention) {
+          if (this.state.aiSug) {
+            if (e.key === 'Tab') { e.preventDefault(); this.acceptAi(); }
+            else if (e.key === 'Escape') { e.preventDefault(); this.setState({ aiSug: null }); }
+          }
+          return;
+        }
+        const n = mentionHits.length;
+        if (e.key === 'ArrowDown') { e.preventDefault(); this.setState({ mentionIdx: n ? (this.state.mentionIdx + 1) % n : 0 }); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); this.setState({ mentionIdx: n ? (this.state.mentionIdx - 1 + n) % n : 0 }); }
+        else if (e.key === 'Enter') {
+          e.preventDefault();
+          const pick = hits[this.state.mentionIdx];
+          if (pick) this.insertMention(pick.label, this.typeOf(pick.key).color);
+          else this.insertMention(q, P.types[0].color);
+        } else if (e.key === 'Escape') { e.preventDefault(); this.setState({ mention: null }); }
+      }
+    };
+  }
+
+  flipY(r, h) {
+    const below = r.bottom + 8;
+    return (below + h > window.innerHeight - 8) ? Math.max(8, r.top - h - 8) : below;
+  }
+
+  analyzeAi() {
+    if (!this.state.aiMode || this.state.mention) { if (this.state.aiSug) this.setState({ aiSug: null }); return; }
+    const sel = document.getSelection();
+    if (!sel || !sel.anchorNode) return;
+    const full = sel.anchorNode.textContent || '';
+    const before = full.slice(0, sel.anchorOffset);
+    const m = before.match(/([A-ZÄÖÜ][A-Za-zÄÖÜäöüß\-]{2,})$/);
+    if (!m) { if (this.state.aiSug) this.setState({ aiSug: null }); return; }
+    const word = m[1], P = this.p();
+    const hit = P.entities.find(e => e.label.toLowerCase().indexOf(word.toLowerCase()) === 0);
+    const r = sel.getRangeAt(0).getBoundingClientRect();
+    const pos = { x: Math.max(8, Math.min(r.left, window.innerWidth - 360)), y: this.flipY(r, 92) };
+    if (hit) {
+      const ty = this.typeOf(hit.key);
+      // Beziehungsvorschlag, wenn im Satz davor ein Verb aus dem Preset steht
+      const rel = P.relations.find(rr => before.toLowerCase().indexOf(' ' + rr.label.toLowerCase() + ' ') >= 0);
+      const other = rel ? P.entities.find(e => e.label !== hit.label && before.toLowerCase().indexOf(e.label.toLowerCase()) >= 0) : null;
+      if (rel && other) {
+        this.setState({ aiSug: Object.assign(pos, {
+          kind: 'relation', word: word, insert: hit.label, color: ty.color,
+          text: 'Beziehung erkannt: ' + other.label + ' ' + rel.label + ' ' + hit.label,
+          sub: 'markiert ' + hit.label + ' als ' + ty.label + ' und legt die Beziehung als Vorschlag an'
+        }) });
+        return;
+      }
+      this.setState({ aiSug: Object.assign(pos, {
+        kind: 'known', word: word, insert: hit.label, color: ty.color,
+        text: '„' + hit.label + '" als ' + ty.label + ' markieren',
+        sub: hit.tag ? 'vorhandener Vorschlag' : 'vorhandener Eintrag im ' + P.t.canonNoun
+      }) });
+      return;
+    }
+    if (word.length >= 4) {
+      const ty = P.types.find(x => x.key !== 'teammember' && x.key !== 'character') || P.types[0];
+      this.setState({ aiSug: Object.assign(pos, {
+        kind: 'new', word: word, insert: word, color: ty.color,
+        text: '„' + word + "\" neu als " + ty.label + ' anlegen',
+        sub: 'noch kein Eintrag mit diesem Namen'
+      }) });
+      return;
+    }
+    if (this.state.aiSug) this.setState({ aiSug: null });
+  }
+
+  acceptAi() {
+    const a = this.state.aiSug;
+    if (!a) return;
+    for (let i = 0; i < a.word.length; i++) document.execCommand('delete', false);
+    const html = '<span contenteditable="false" style="display:inline-flex;align-items:center;gap:5px;padding:1px 8px 2px;border-radius:999px;background:' +
+      this.tint(a.color, .14) + ';color:' + a.color + ';font-size:14px;font-weight:500;white-space:nowrap">' +
+      '<span style="width:5px;height:5px;border-radius:50%;background:' + a.color + '"></span>' + a.insert + '</span>&nbsp;';
+    document.execCommand('insertHTML', false, html);
+    clearTimeout(this._ut);
+    this._ut = setTimeout(() => this.setState({ undo: null }), 8000);
+    this.setState({ aiSug: null, undo: a.kind === 'relation' ? 'Beziehung als Vorschlag angelegt' : 'Als Vorschlag markiert: ' + a.insert });
+  }
+
+  checkMention() {
+    const sel = document.getSelection();
+    if (!sel || !sel.anchorNode) return this.setState({ mention: null });
+    const txt = (sel.anchorNode.textContent || '').slice(0, sel.anchorOffset);
+    const m = txt.match(/@([\wÄÖÜäöüß\- ]{0,24})$/);
+    if (!m) { if (this.state.mention) this.setState({ mention: null }); return; }
+    const r = sel.getRangeAt(0).getBoundingClientRect();
+    this.setState({ mention: { q: m[1], x: Math.max(8, Math.min(r.left, window.innerWidth - 340)), y: this.flipY(r, 268) }, mentionIdx: 0 });
+  }
+
+  insertMention(label, color) {
+    const q = this.state.mention ? this.state.mention.q : '';
+    for (let i = 0; i < q.length + 1; i++) document.execCommand('delete', false);
+    const html = '<span contenteditable="false" style="display:inline-flex;align-items:center;gap:5px;padding:1px 8px 2px;border-radius:999px;background:' +
+      this.tint(color, .14) + ';color:' + color + ';font-size:14px;font-weight:500;white-space:nowrap">' +
+      '<span style="width:5px;height:5px;border-radius:50%;background:' + color + '"></span>' + label + '</span>&nbsp;';
+    document.execCommand('insertHTML', false, html);
+    this.setState({ mention: null });
+  }
+}
+
+</script>
+</body>
+</html>

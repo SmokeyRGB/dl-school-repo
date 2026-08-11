@@ -1,0 +1,111 @@
+/* Global resets and base styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f4f4f2;
+  font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+  color: #16161a;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: #5340c4;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #3b2b9e;
+}
+
+::selection {
+  background: #ded8fb;
+}
+
+[contenteditable]:focus {
+  outline: none;
+}
+
+/* Animations */
+@keyframes npulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes nslide {
+  from {
+    transform: translateX(22px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes nfade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Wie nfade, aber ohne transform. Für Elemente, die absolut oder fixiert
+   positionierte Kinder haben: ein transform — auch translateY(0), das per
+   animation-fill-mode: both dauerhaft stehen bleibt — macht das Element zum
+   Bezugsrahmen dieser Kinder. Genau daran ist die Leinwand in D5 gescheitert. */
+@keyframes nfadeflat {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nsvgin {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nshim {
+  0% {
+    background-position: -360px 0;
+  }
+  100% {
+    background-position: 360px 0;
+  }
+}

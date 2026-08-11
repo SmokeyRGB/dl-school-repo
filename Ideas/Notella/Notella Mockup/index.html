@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notella Mockup — Phase 2</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./styles/global.css">
+  <link rel="stylesheet" href="./styles/layout.css">
+  <link rel="stylesheet" href="./styles/nav.css">
+  <link rel="stylesheet" href="./styles/devbar.css">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Entwickler-Leiste: Preset, Demo-Modus und Rolle umschalten -->
+    <div class="dev-bar">
+      <span class="title">Notella — Phase 2</span>
+      <span class="label">Screen <span id="screen-id">B1</span></span>
+      <span class="label">Mode: <span id="mode-id">normal</span></span>
+      <span class="spacer"></span>
+
+      <span class="label">PRESET</span>
+      <div class="dev-controls">
+        <button class="preset-btn active" data-preset="software">Software</button>
+        <button class="preset-btn" data-preset="tabletop">TableTop</button>
+      </div>
+
+      <span class="label">MODE</span>
+      <div class="dev-controls">
+        <button class="mode-btn active" data-mode="normal">normal</button>
+        <button class="mode-btn" data-mode="loading">laden</button>
+        <button class="mode-btn" data-mode="empty">leer</button>
+        <button class="mode-btn" data-mode="error">Fehler</button>
+      </div>
+
+      <span class="label">ROLE</span>
+      <div class="dev-controls">
+        <button class="role-btn active" data-role="lead">Lead</button>
+        <button class="role-btn" data-role="member">Member</button>
+      </div>
+
+      <span class="label">KI</span>
+      <div class="dev-controls">
+        <button class="ai-btn active" data-ai="on">an</button>
+        <button class="ai-btn" data-ai="off">aus</button>
+      </div>
+    </div>
+
+    <!-- Kopfzeile -->
+    <div class="app-header">
+      <button class="app-brand" onclick="app.go('B1')">
+        <span class="app-brand-mark">n</span>
+        <span class="app-brand-name">Notella</span>
+      </button>
+      <div class="app-breadcrumbs" id="breadcrumbs"></div>
+      <div class="app-user">
+        <span class="app-user-label" id="user-label">Sam Ritter · Lead</span>
+        <span class="app-user-avatar" id="user-initials">SR</span>
+      </div>
+    </div>
+
+    <!-- Arbeitsbereich: Navigation und Screen-Bühne werden zur Laufzeit gefüllt -->
+    <div class="app-main">
+      <div class="app-nav" id="nav-sidebar"></div>
+      <div class="app-content" id="content-area"></div>
+    </div>
+
+    <!-- Popover-Ziele (Position und Inhalt kommen aus den Komponenten) -->
+    <div class="popover" id="mention-popup"></div>
+    <div class="popover" id="ai-popup"></div>
+
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

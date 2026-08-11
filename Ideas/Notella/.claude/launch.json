@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "notella-mockup",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["Notella Mockup/server.py"],
+      "port": 8000,
+      "autoPort": false
+    }
+  ]
+}
