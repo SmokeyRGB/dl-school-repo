@@ -47,8 +47,10 @@ export function renderScreenB1(preset, state) {
       `<span style="${avSt(i)}">${a}</span>`
     ).join('');
 
+    const cardPresetId = isSoftware ? 'software' : 'tabletop';
+
     return `
-      <button onclick="app.go('B3')" style="display:block;width:100%;text-align:left;padding:18px;background:#fff;border:1px solid #e6e5e0;border-radius:13px;cursor:pointer;transition:border-color 160ms ease,transform 160ms ease;" onmouseover="this.style.borderColor='#c9c3ec';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e6e5e0';this.style.transform='none'">
+      <button onclick="app.setState({presetId:'${cardPresetId}', screen:'B3'})" style="display:block;width:100%;text-align:left;padding:18px;background:#fff;border:1px solid #e6e5e0;border-radius:13px;cursor:pointer;transition:border-color 160ms ease,transform 160ms ease;" onmouseover="this.style.borderColor='#c9c3ec';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e6e5e0';this.style.transform='none'">
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="${badgeSt}">${p.preset}</span>
           <span style="flex:1;"></span>
