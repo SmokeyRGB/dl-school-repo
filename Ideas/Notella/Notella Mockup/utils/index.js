@@ -32,6 +32,9 @@ export {
   tintColor
 } from './editorLogic.js';
 
+// Artikel-Auflösung des Wikis (D2)
+export { resolveArticle } from './wikiArticle.js';
+
 // Ablauf- und Strukturlogik
 export {
   ReviewManager,

@@ -3,14 +3,40 @@
 // rechts über den Inhalt ein (dasselbe Muster wie die Schublade in C1).
 // PRD §4.4.3 / Screen-Inventar D1/D2.
 
-import { tint, chipSt, markSt } from '../utils/index.js';
+import { tint, chipSt, markSt, resolveArticle } from '../utils/index.js';
+import { noticeView, errorView, skeletonBar } from './stateViews.js';
+
+/** Baum und Artikel in ihrer eigenen Form — die Spalten springen nicht. */
+function renderLoading() {
+  const treeRows = [70, 90, 60, 80, 50].map(w => skeletonBar(w + '%', 12, 'margin-bottom:12px')).join('');
+  const bodyRows = [95, 88, 92, 60].map(w => skeletonBar(w + '%', 14, 'margin-bottom:14px')).join('');
+  return `
+    <div style="display:flex;min-height:100%;align-items:stretch;animation:nshim 1.6s infinite">
+      <div style="width:262px;flex:none;border-right:1px solid #e6e5e0;background:#fbfaf8;padding:18px 14px">
+        ${skeletonBar('100%', 32, 'margin-bottom:18px')}${treeRows}
+      </div>
+      <div style="flex:1;min-width:0;display:flex;justify-content:center">
+        <div style="width:100%;max-width:760px;padding:34px 40px">
+          ${skeletonBar('120px', 20, 'margin-bottom:16px')}
+          ${skeletonBar('58%', 32, 'margin-bottom:28px')}
+          ${bodyRows}
+        </div>
+      </div>
+    </div>
+  `;
+}
 
 function typeOf(key, preset) {
   return preset.types.find(ty => ty.key === key) || preset.types[0];
 }
 
-function renderTree(preset, state) {
-  const { t, d, types, entities, article } = preset;
+/** Titel für einen Inline-Handler: Anführungszeichen dürfen nicht ausbrechen. */
+function jsStr(text) {
+  return String(text).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+function renderTree(preset, state, article) {
+  const { t, d, types, entities } = preset;
   const modeBtn = (key, label) => {
     const on = (state.treeMode || 'entry') === key;
     return `
@@ -27,7 +53,7 @@ function renderTree(preset, state) {
       const itemsHtml = items.map(e => {
         const on = e.label === article.title;
         return `
-          <button onclick="app.go('D2')" style="display:flex;align-items:center;gap:6px;width:100%;padding:6px 8px;border-radius:7px;font-size:13px;border:none;background:${on ? '#f2f0fc' : 'transparent'};color:${on ? '#16161a' : (e.tag ? '#8b8d97' : '#3f4048')};font-weight:${on ? '600' : '400'};cursor:pointer;text-align:left">
+          <button onclick="app.openEntry('${jsStr(e.label)}')" style="display:flex;align-items:center;gap:6px;width:100%;padding:6px 8px;border-radius:7px;font-size:13px;border:none;background:${on ? '#f2f0fc' : 'transparent'};color:${on ? '#16161a' : (e.tag ? '#8b8d97' : '#3f4048')};font-weight:${on ? '600' : '400'};cursor:pointer;text-align:left">
             <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${e.label}</span>
             ${e.tag ? `<span style="font-size:10px;padding:1px 6px;border-radius:5px;background:#f3f1ea;color:#8b8d97;flex:none">${e.tag}</span>` : ''}
           </button>
@@ -58,7 +84,7 @@ function renderTree(preset, state) {
         </div>
         <div style="display:grid;gap:1px">
           ${items.map((e, i) => `
-            <button onclick="app.go('D2')" style="display:flex;align-items:center;gap:6px;width:100%;padding:6px 8px;border-radius:7px;font-size:13px;border:none;background:transparent;color:#3f4048;cursor:pointer;text-align:left">
+            <button onclick="app.openEntry('${jsStr(e.label)}')" style="display:flex;align-items:center;gap:6px;width:100%;padding:6px 8px;border-radius:7px;font-size:13px;border:none;background:${e.label === article.title ? '#f2f0fc' : 'transparent'};color:#3f4048;cursor:pointer;text-align:left">
               <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${e.label}</span>
               <span style="font-size:10px;padding:1px 6px;border-radius:5px;background:#f3f1ea;color:#8b8d97;flex:none">${tags[i]}</span>
             </button>
@@ -81,8 +107,8 @@ function renderTree(preset, state) {
   `;
 }
 
-function renderArticle(preset, state) {
-  const { t, d, article, entities } = preset;
+function renderArticle(preset, state, article) {
+  const { t, d, entities } = preset;
   const artTy = typeOf(article.typeKey, preset);
   const isLead = state.role === 'lead';
 
@@ -100,7 +126,7 @@ function renderArticle(preset, state) {
       const e = entities.find(x => x.label === label);
       const ty = typeOf(e ? e.key : preset.types[0].key, preset);
       return `
-        <button onclick="app.go('D2')" style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;border:1px solid ${tint(ty.color, .35)};background:${tint(ty.color, .09)};font-size:12.5px;cursor:pointer">
+        <button onclick="app.openEntry('${jsStr(label)}')" style="display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;border:1px solid ${tint(ty.color, .35)};background:${tint(ty.color, .09)};font-size:12.5px;cursor:pointer">
           <span style="${markSt(ty.color, 8)}"></span>${label}
         </button>
       `;
@@ -138,8 +164,11 @@ function renderArticle(preset, state) {
         <h2 style="margin:32px 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8b8d97">Beschreibung</h2>
         ${bodyHtml}
 
-        <h2 style="margin:30px 0 12px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8b8d97">Beziehungen</h2>
-        <div style="display:grid;gap:12px">${relGroupsHtml}</div>
+        <!-- Ohne Beziehungen entfällt der Abschnitt ganz (Screen-Inventar D2) -->
+        ${article.rels.length ? `
+          <h2 style="margin:30px 0 12px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8b8d97">Beziehungen</h2>
+          <div style="display:grid;gap:12px">${relGroupsHtml}</div>
+        ` : ''}
         <div style="display:flex;gap:10px;margin-top:16px">
           <button onclick="app.go('D5')" style="padding:8px 13px;border:1px solid #dcdbd5;border-radius:8px;background:#fff;font-size:12.5px;cursor:pointer">Umgebung im Netz ansehen</button>
           ${isLead ? `<button style="padding:8px 13px;border:1px solid #dcdbd5;border-radius:8px;background:#fff;font-size:12.5px;cursor:pointer">Beziehung hinzufügen</button>` : ''}
@@ -153,8 +182,7 @@ function renderArticle(preset, state) {
   `;
 }
 
-function renderOriginPanel(preset, state) {
-  const { article } = preset;
+function renderOriginPanel(preset, state, article) {
   const tab = state.originTab || 'origin';
   const items = tab === 'origin' ? article.origin : article.history;
 
@@ -198,11 +226,37 @@ function renderOriginPanel(preset, state) {
 }
 
 export function renderScreenD2(preset, state) {
+  const { t } = preset;
+
+  if (state.mode === 'error') {
+    return errorView({
+      icon: '📖',
+      title: `Das ${t.canonNoun} konnte nicht geladen werden`,
+      text: `Die Einträge ließen sich nicht abrufen. Geschrieben ist alles — es fehlt nur die Ansicht.`,
+      fallback: { label: 'Zum Beziehungs-Graph', onclick: "app.go('D5')" }
+    });
+  }
+
+  if (state.mode === 'loading') return renderLoading();
+
+  if (state.mode === 'empty' || !(preset.entities || []).length) {
+    return noticeView({
+      icon: '📖',
+      title: `Hier entsteht euer ${t.canonNoun}`,
+      text: `Aus dem, was ihr in ${t.meetings} schreibt. Markiere im ${t.meeting} einen Eintrag mit @ — er steht dann hier.`,
+      actions: [{ label: `Ins ${t.meeting}`, onclick: "app.go('C1')", primary: true }]
+    });
+  }
+
+  // Ein Artikel je Aufruf: der ausgewählte Eintrag (state.entry) oder der
+  // ausgeschriebene Artikel des Presets — siehe utils/wikiArticle.js.
+  const article = resolveArticle(preset, state.entry);
+
   return `
     <div style="display:flex;min-height:100%;align-items:stretch;position:relative">
-      ${renderTree(preset, state)}
-      ${renderArticle(preset, state)}
-      ${renderOriginPanel(preset, state)}
+      ${renderTree(preset, state, article)}
+      ${renderArticle(preset, state, article)}
+      ${renderOriginPanel(preset, state, article)}
     </div>
   `;
 }

@@ -5,6 +5,11 @@
 import { tint, chipSt, shapePath } from '../utils/index.js';
 import { typeOf } from '../utils/editorLogic.js';
 
+/** Knotentitel für einen Inline-Handler absichern. */
+function jsStr(text) {
+  return String(text).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
 const VIEW_W = 900, VIEW_H = 560;
 const CENTER_X = VIEW_W / 2, CENTER_Y = VIEW_H / 2;
 const CIRCLE_R = 190;
@@ -130,7 +135,7 @@ export function renderScreenD5(preset, state) {
          tabindex="0" role="button" aria-label="${ty.label}: ${n.label}"
          style="cursor:grab;${animSt}"
          onclick="event.stopPropagation();app.setGraphFocus('${n.id}')"
-         ondblclick="event.stopPropagation();app.go('D2')"
+         ondblclick="event.stopPropagation();app.openEntry('${jsStr(n.label)}')"
          onkeydown="if(event.key==='Enter'){event.stopPropagation();app.setGraphFocus('${n.id}')}"
          onpointerdown="app.startNodeDrag(event,'${n.id}')">
         <path d="${path}" fill="${fill}" stroke="${ty.color}" stroke-width="${isFocused ? 2.6 : 1.6}" stroke-dasharray="${dash}"></path>
@@ -238,7 +243,7 @@ export function renderScreenD5(preset, state) {
       </div>
       <p style="margin:14px 0 0;font-size:12px;color:#8b8d97">${fNode.canon ? 'Aus 2 Notizen · kanonisch' : `Vorschlag aus 1 Notiz · noch nicht ${t.canonVerb}`}</p>
       <div style="display:grid;gap:8px;margin-top:16px">
-        <button onclick="app.go('D2')" style="padding:8px 12px;border:1px solid #dcdbd5;border-radius:8px;font-size:12.5px;background:#fff">Detailseite öffnen</button>
+        <button onclick="app.openEntry('${jsStr(fNode.label)}')" style="padding:8px 12px;border:1px solid #dcdbd5;border-radius:8px;font-size:12.5px;background:#fff">Detailseite öffnen</button>
         <button onclick="app.expandNeighborhood()" ${state.expand ? 'disabled' : ''} style="padding:8px 12px;border:1px solid #dcdbd5;border-radius:8px;font-size:12.5px;background:${state.expand ? '#f4f4f2' : '#fff'};color:${state.expand ? '#a3a3ab' : '#16161a'}">${state.expand ? 'Nachbarschaft erweitert' : 'Nachbarschaft erweitern'}</button>
       </div>
       <div style="margin-top:18px;padding-top:14px;border-top:1px solid #efeee9">
