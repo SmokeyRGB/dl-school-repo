@@ -34,7 +34,7 @@ A typical project folder contains documents such as:
 | Project | Description | Documents |
 |---------|-------------|-----------|
 | [DoctorCrawler](Ideas/DoctorCrawler/) | Non-profit middleware platform to simplify finding and contacting specialist doctors (Fachärzte) in Germany | Problem Framing, PRD, SRD |
-| [TableTop-WorldBuilder](Ideas/TableTop-WorldBuilder/) | AI-powered world management & consistency tracker for tabletop RPGs — converts session notes into a persistent, DM-approved knowledge graph | Problem Framing, Name Ideas |
+| [Notella](Ideas/Notella/) | Domain-agnostic note-taking engine for collaborative groups — converts session notes into a persistent, shared knowledge graph. Evolved from the original TableTop-WorldBuilder concept (see its `Legacy (TableTop-Worldbuilder)/` subfolder); now includes a working, modular HTML/JS mockup | Problem Framing, PRD, SRD, Screen Inventory, Mockup |
 
 ## Tasks
 
