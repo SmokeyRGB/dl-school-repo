@@ -203,8 +203,10 @@ export function renderScreenC1(preset, state) {
       `}
     </div>
 
-    <!-- Schublade: geteilte Notizen -->
-    <div id="c1-drawer" style="position:fixed;top:53px;right:0;bottom:0;width:340px;background:#fff;border-left:1px solid #e6e5e0;box-shadow:-16px 0 40px -24px rgba(22,22,26,.3);
+    <!-- Schublade: geteilte Notizen. Absolut im Arbeitsbereich (.app-content),
+         nicht am Viewport fixiert — sonst schiebt die Dev-Leiste sie unter die
+         Kopfzeile, sobald sie mehr als eine Zeile braucht. -->
+    <div id="c1-drawer" style="position:absolute;top:0;right:0;bottom:0;width:340px;background:#fff;border-left:1px solid #e6e5e0;box-shadow:-16px 0 40px -24px rgba(22,22,26,.3);
                 transform:translateX(${state.drawer ? '0' : '100%'});transition:transform 260ms cubic-bezier(.22,.7,.25,1);z-index:70;display:flex;flex-direction:column">
       <div style="display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid #efeee9">
         <span style="font-size:14px;font-weight:600;flex:1">Geteilte Notizen</span>

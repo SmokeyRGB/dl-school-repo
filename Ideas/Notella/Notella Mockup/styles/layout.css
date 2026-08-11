@@ -102,9 +102,14 @@
 
 .app-screen {
   display: none;
-  animation: nfade 200ms ease both;
+  animation: nfadeflat 200ms ease both;
 }
 
+/* Die Bühne braucht eine echte Höhe: D5 legt seine Leinwand mit
+   position: absolute; inset: 0 auf, und die Screens mit min-height: 100%
+   (B3, D2, E1) messen sich an dieser Höhe. Ohne sie bleibt der Screen
+   0 px hoch — der Graph war deshalb unsichtbar. */
 .app-screen.active {
   display: block;
+  height: 100%;
 }

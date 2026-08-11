@@ -79,6 +79,19 @@ a:hover {
   }
 }
 
+/* Wie nfade, aber ohne transform. Für Elemente, die absolut oder fixiert
+   positionierte Kinder haben: ein transform — auch translateY(0), das per
+   animation-fill-mode: both dauerhaft stehen bleibt — macht das Element zum
+   Bezugsrahmen dieser Kinder. Genau daran ist die Leinwand in D5 gescheitert. */
+@keyframes nfadeflat {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes nsvgin {
   from {
     opacity: 0;
