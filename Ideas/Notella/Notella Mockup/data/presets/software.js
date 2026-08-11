@@ -30,7 +30,21 @@ export const softwarePreset = {
     leadName: 'Sam',
     leadFull: 'Sam Ritter',
     me: 'Mira Kant',
-    open: 5
+    open: 5,
+    // Notizen des laufenden Meetings (C1). Ein Absatz = eine Liste aus
+    // Textstücken; { ref } zeigt auf eine Entität und wird als Chip in der
+    // Farbe ihres Typs gezeichnet.
+    notes: [
+      [{ t: 'Runde zum ' }, { ref: 'Preset-Loader' }, { t: ': das Laden der YAML-Datei ist fertig, die Validierung fehlt noch.' }],
+      [{ t: 'Wir haben festgelegt, dass wir ' }, { ref: 'Postgres statt SQLite' }, { t: ' nehmen — Begründung: wir brauchen JSONB für die Preset-Bindung.' }],
+      [{ t: 'Offen: wer den Validator schreibt. ' }, { ref: 'Schema-Validator schreiben' }, { t: ' hängt am ' }, { ref: 'Preset-Loader' }, { t: '.' }]
+    ],
+    // Geteilte Notizen der anderen (Schublade in C1)
+    shared: [
+      { initials: 'SR', name: 'Sam Ritter', text: 'Postgres statt SQLite steht fest — JSONB für die Preset-Bindung.', ago: '2 Min' },
+      { initials: 'MK', name: 'Mira Kant', text: 'Wer übernimmt den Schema-Validator? Ich kann das nächste Woche machen.', ago: '5 Min' },
+      { initials: 'JH', name: 'Jo Halász', text: 'Erwähnungs-Auswahl per @ läuft schon lokal, muss noch an die Presets angebunden werden.', ago: '11 Min' }
+    ]
   },
   types: [
     { key: 'component', label: 'Komponente', color: '#2fb8a0', shape: 'roundrect', count: 7 },
@@ -38,6 +52,15 @@ export const softwarePreset = {
     { key: 'risk', label: 'Risiko', color: '#c8553d', shape: 'star', count: 3 },
     { key: 'task', label: 'Aufgabe', color: '#3f7fd0', shape: 'pentagon', count: 6 },
     { key: 'teammember', label: 'Teammitglied', color: '#7a7f8c', shape: 'circle', count: 5 }
+  ],
+  // Beziehungswörter, an denen der KI-Vorschlag eine Beziehung erkennt
+  // (dieselben Bezeichnungen wie in edges).
+  relations: [
+    { label: 'hängt ab von' },
+    { label: 'verantwortet' },
+    { label: 'betrifft' },
+    { label: 'gefährdet' },
+    { label: 'setzt um' }
   ],
   wgs: [
     {

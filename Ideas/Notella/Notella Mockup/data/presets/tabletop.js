@@ -28,7 +28,18 @@ export const tabletopPreset = {
     leadName: 'Nils',
     leadFull: 'Nils Vogt',
     me: 'Timo Beck',
-    open: 8
+    open: 8,
+    // Aufbau wie im Software-Preset (siehe ./software.js)
+    notes: [
+      [{ t: 'Ankunft in ' }, { ref: 'Falkenstein' }, { t: ' bei Regen — der Hafen ist gesperrt, niemand kommt raus.' }],
+      [{ t: 'Beim Schmied: ' }, { ref: 'Gorm Eisenfaust' }, { t: ' rückt die ' }, { ref: 'Sturmklinge' }, { t: ' nicht heraus, nennt aber den Namen Vandermeer.' }],
+      [{ t: 'Offen: warum der ' }, { ref: 'Rat der Sieben' }, { t: ' erst nach Sonnenuntergang tagt. ' }, { ref: 'Der Rat tagt' }, { t: ' steht noch als Vorschlag.' }]
+    ],
+    shared: [
+      { initials: 'NV', name: 'Nils Vogt', text: 'Der Rat empfängt euch erst nach Sonnenuntergang — bis dahin habt ihr freie Hand in der Stadt.', ago: '4 Min' },
+      { initials: 'TB', name: 'Timo Beck', text: 'Wer redet mit dem Wirt? Ich würde vorher den Keller ansehen.', ago: '9 Min' },
+      { initials: 'RK', name: 'Ronja Kern', text: 'Gorm weicht aus, nennt aber „Vandermeer" — das gehört ins Weltwissen.', ago: '15 Min' }
+    ]
   },
   types: [
     { key: 'npc', label: 'NSC', color: '#ff6b6b', shape: 'circle', count: 12 },
@@ -36,6 +47,15 @@ export const tabletopPreset = {
     { key: 'faction', label: 'Fraktion', color: '#ffd93d', shape: 'hexagon', count: 5 },
     { key: 'item', label: 'Gegenstand', color: '#a8e6cf', shape: 'diamond', count: 15 },
     { key: 'event', label: 'Ereignis', color: '#ff8c94', shape: 'star', count: 6 }
+  ],
+  // Beziehungswörter, an denen der KI-Vorschlag eine Beziehung erkennt
+  // (dieselben Bezeichnungen wie in edges).
+  relations: [
+    { label: 'lebt in' },
+    { label: 'kennt' },
+    { label: 'Mitglied von' },
+    { label: 'besitzt' },
+    { label: 'geschah bei' }
   ],
   wgs: [
     {
