@@ -53,7 +53,12 @@ export class NotellaMockupApp {
   }
 
   setState(updates) {
-    this.state = { ...this.state, ...updates };
+    const presetChanged = 'presetId' in updates && updates.presetId !== this.state.presetId;
+    this.state = {
+      ...this.state,
+      ...updates,
+      ...(presetChanged ? this.reviewMgr.resetReview() : {})
+    };
     this.render();
   }
 
