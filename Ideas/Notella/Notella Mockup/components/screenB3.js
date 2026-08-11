@@ -3,10 +3,34 @@
 // Chrome: Orient — sidebar always expanded
 
 import { tint, avSt } from '../utils/index.js';
+import { noticeView, errorView, skeletonBar, skeletonBox } from './stateViews.js';
+
+/** Karten in der Form der erwarteten Arbeitsgruppen — kein Vollbild-Spinner. */
+function renderLoading() {
+  return `
+    <div style="display:grid;gap:12px">
+      ${[1, 2, 3].map(() => skeletonBox(`
+        ${skeletonBar('42%', 14, 'margin-bottom:12px')}
+        ${skeletonBar('64%', 11, 'margin-bottom:16px')}
+        ${skeletonBar('28%', 11)}
+      `)).join('')}
+    </div>
+  `;
+}
 
 export function renderScreenB3(preset, state) {
   const { t, d, wgs, types } = preset;
   const isLead = state.role === 'lead';
+
+  // ---- Fehler: nichts ist verloren, der Weg zurück bleibt offen ----
+  if (state.mode === 'error') {
+    return errorView({
+      icon: '📋',
+      title: `${d.projectName} konnte nicht geladen werden`,
+      text: `Die Übersicht ließ sich nicht abrufen. Eure ${t.wgs} und Notizen sind davon nicht betroffen — nichts ist verloren gegangen.`,
+      fallback: { label: `Zu allen ${t.projects}`, onclick: "app.go('B1')" }
+    });
+  }
 
   const activeWg = wgs.find(w => w.live) || wgs[0];
 
@@ -38,6 +62,19 @@ export function renderScreenB3(preset, state) {
       </div>
     `;
   }).join('');
+
+  // Leer: für den Lead ein Weg, für Mitglieder kein toter Knopf
+  // (Screen-Inventar B3).
+  const emptyHtml = isLead
+    ? noticeView({
+        title: `Noch keine ${t.wgs}`,
+        text: `Die erste ${t.wg} ist schnell angelegt — danach entsteht das ${t.canonNoun} von selbst.`,
+        actions: [{ label: `${t.wg} anlegen`, onclick: "app.setState({mode:'normal'})", primary: true }]
+      })
+    : noticeView({
+        title: `Deine Projektleitung hat noch keine ${t.wg} angelegt`,
+        text: `Sobald ${d.leadName} loslegt, stehen hier eure ${t.meetings}.`
+      });
 
   const typeStats = types.map(ty => `
     <div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #f4f4f2;">
@@ -73,6 +110,7 @@ export function renderScreenB3(preset, state) {
       <div style="padding:28px 40px;display:grid;grid-template-columns:1fr 260px;gap:28px;align-items:start;max-width:1100px;">
         <!-- Left: Work groups -->
         <div>
+          ${state.mode === 'loading' ? renderLoading() : state.mode === 'empty' ? emptyHtml : `
           ${activeWg ? `
             <div style="margin-bottom:24px;">
               <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8b8d97;margin-bottom:10px;">Aktive ${t.wg}</div>
@@ -93,6 +131,7 @@ export function renderScreenB3(preset, state) {
           <div style="display:grid;gap:12px;">
             ${wgCards}
           </div>
+          `}
         </div>
 
         <!-- Right: Wissen summary -->

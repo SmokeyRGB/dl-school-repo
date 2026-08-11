@@ -3,12 +3,21 @@
 // Chrome: Start — no sidebar
 
 import { tint, avSt } from '../utils/index.js';
+import { errorView } from './stateViews.js';
 
 export function renderScreenB1(preset, state) {
   const { t, d } = preset;
   const projects = preset.projects || [];
   const isEmpty = state.mode === 'empty';
   const isLoading = state.mode === 'loading';
+
+  if (state.mode === 'error') {
+    return errorView({
+      icon: '📋',
+      title: `Deine ${t.projects} konnten nicht geladen werden`,
+      text: 'Die Liste ließ sich nicht abrufen. Es ist nichts verloren gegangen — beim nächsten Versuch ist alles wieder da.'
+    });
+  }
 
   // "Läuft gerade" banner — shows if a live meeting is active
   const liveProject = projects.find(p => p.live);

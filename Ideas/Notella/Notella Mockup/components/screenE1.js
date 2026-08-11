@@ -3,6 +3,28 @@
 // Kein Listen-plus-Detail-Bildschirm und bewusst kein Stapelweg.
 
 import { chipSt } from '../utils/index.js';
+import { errorView, skeletonBar, skeletonBox } from './stateViews.js';
+
+/** Belegstelle und Vorschlagskarte als Umriss — die Karte springt nicht. */
+function renderLoading() {
+  return `
+    <div style="min-height:100%;display:flex;justify-content:center;padding:30px 26px;background:#fbfaf8">
+      <div style="width:100%;max-width:720px">
+        ${skeletonBar('180px', 14, 'margin-bottom:16px')}
+        ${skeletonBox(`
+          ${skeletonBar('40%', 10, 'margin-bottom:14px')}
+          ${skeletonBar('100%', 14, 'margin-bottom:8px')}
+          ${skeletonBar('86%', 14)}
+        `, 'margin-bottom:16px')}
+        ${skeletonBox(`
+          ${skeletonBar('30%', 12, 'margin-bottom:14px')}
+          ${skeletonBar('62%', 22, 'margin-bottom:18px')}
+          ${skeletonBar('44%', 34)}
+        `)}
+      </div>
+    </div>
+  `;
+}
 
 function segmentBar(cards, idx) {
   return cards.map((c, i) => {
@@ -84,9 +106,22 @@ function renderDoneState(preset, state, isLead) {
 export function renderScreenE1(preset, state, reviewMgr) {
   const { t, types } = preset;
   const isLead = state.role === 'lead';
+
+  if (state.mode === 'error') {
+    return errorView({
+      icon: '📥',
+      title: 'Die Vorschläge konnten nicht geladen werden',
+      text: `Nichts ist verloren gegangen: bereits getroffene Entscheidungen stehen im ${t.canonNoun}, die offenen Vorschläge warten weiter.`,
+      fallback: { label: `Zum ${t.canonNoun}`, onclick: "app.go('D2')" }
+    });
+  }
+
+  if (state.mode === 'loading') return renderLoading();
+
   const cards = preset.review || [];
   const idx = Math.min(state.reviewIdx, cards.length);
-  const done = idx >= cards.length;
+  // „Leer" ist hier der Abschluss-Bildschirm: Bilanz statt kahler Fläche.
+  const done = idx >= cards.length || state.mode === 'empty';
 
   const undoToast = state.undo ? `
     <div style="position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:80;display:flex;align-items:center;gap:14px;padding:11px 16px;background:#16161a;color:#f4f4f2;border-radius:11px;box-shadow:0 12px 30px -14px rgba(22,22,26,.5)">
@@ -98,7 +133,7 @@ export function renderScreenE1(preset, state, reviewMgr) {
   if (done) {
     return `
       <div style="min-height:100%;display:flex;flex-direction:column;background:#fbfaf8">
-        ${renderHeader(preset, state, cards, idx)}
+        ${renderHeader(preset, state, cards, cards.length)}
         ${renderDoneState(preset, state, isLead)}
       </div>
       ${undoToast}
