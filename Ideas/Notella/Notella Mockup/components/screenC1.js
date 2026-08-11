@@ -28,11 +28,15 @@ export function renderScreenC1(preset, state) {
   ).join('');
 
   // Visibility segment options
-  const vis = [
-    { label: 'Privat', icon: '🔒', active: state.vis === 'privat' || !state.vis },
-    { label: 'Geteilt', icon: '👥', active: state.vis === 'geteilt' },
-    { label: 'Kanonisch', icon: '📖', active: state.vis === 'kanonisch' },
+  const isLead = state.role === 'lead';
+  const visOptions = [
+    { label: 'Privat', icon: '🔒' },
+    { label: 'Geteilt', icon: '👥' },
+    ...(isLead ? [{ label: 'Kanonisch', icon: '📖' }] : []),
   ];
+  const visKeys = visOptions.map(v => v.label.toLowerCase());
+  const activeVis = visKeys.includes(state.vis) ? state.vis : 'privat';
+  const vis = visOptions.map(v => ({ ...v, active: v.label.toLowerCase() === activeVis }));
   const segHtml = vis.map(v => `
     <button onclick="app.setState({ vis: '${v.label.toLowerCase()}' })"
       style="display:flex;align-items:center;gap:5px;padding:4px 10px;border:none;border-radius:7px;font-size:12px;cursor:pointer;
