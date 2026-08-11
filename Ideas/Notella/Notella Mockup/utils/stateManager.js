@@ -23,7 +23,7 @@ export class ReviewManager {
     if (reviewIdx >= cards.length) return state;
 
     const c = cards[reviewIdx];
-    if (which !== 'later' && !this.ready(c, state)) return state;
+    if (which === 'primary' && !this.ready(c, state)) return state;
 
     const txt =
       which === 'later'
