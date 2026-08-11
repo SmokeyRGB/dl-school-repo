@@ -57,11 +57,25 @@
   padding-bottom: 6px;
 }
 
-/* Eingeklappt: Icons zentriert, offen: linksbündig */
+/* Eingeklappt: Icons zentriert, offen: linksbündig.
+
+   Beschriftung und Zähler sind eingeklappt nur durchsichtig (opacity: 0) —
+   sie belegen sonst weiter die volle Textbreite. Die Zeile läuft dann über
+   die 52 px hinaus, es bleibt kein freier Platz, und justify-content: center
+   hat nichts zu verteilen: das Icon bliebe links kleben. Deshalb hier
+   zusätzlich die Breite (und den Abstand) auf 0 setzen. */
 .app-nav:not(.open):not(:hover) .nav-item {
   justify-content: center;
   padding-left: 0;
   padding-right: 0;
+  gap: 0;
+}
+
+.app-nav:not(.open):not(:hover) .nav-label,
+.app-nav:not(.open):not(:hover) .nav-badge {
+  max-width: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .app-nav:not(.open):not(:hover) .nav-item-nested {
@@ -70,9 +84,12 @@
 
 /* -------- Gruppen und Einträge -------- */
 
+/* Eine Spalte über die volle Leistenbreite — ohne die Angabe würde die
+   implizite Spalte an den Beschriftungen hängen statt an der Leiste. */
 .nav-group {
   padding: 10px 0 0 0;
   display: grid;
+  grid-template-columns: 1fr;
   gap: 0;
 }
 
