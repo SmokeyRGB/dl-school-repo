@@ -59,7 +59,7 @@ export function analyzeAi(state, preset) {
     const ty = typeOf(hit.key, preset);
 
     // Check for relation suggestion
-    const rel = preset.relations.find(
+    const rel = (preset.relations || []).find(
       (rr) =>
         before.toLowerCase().indexOf(' ' + rr.label.toLowerCase() + ' ') >= 0
     );

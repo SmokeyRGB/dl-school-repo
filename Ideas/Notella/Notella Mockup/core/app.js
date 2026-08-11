@@ -57,14 +57,22 @@ export class NotellaMockupApp {
     this.state = {
       ...this.state,
       ...updates,
-      ...(presetChanged ? this.reviewMgr.resetReview() : {})
+      // Beim Presetwechsel gibt es den gewählten Wiki-Eintrag nicht mehr.
+      ...(presetChanged ? { ...this.reviewMgr.resetReview(), entry: null } : {})
     };
+    // Der KI-Schalter darf keinen bereits offenen Vorschlag stehen lassen —
+    // das Popover hängt nicht am Screen-Render (siehe actions/editor.js).
+    if (!this.state.aiMode && this.state.aiSug) this.dismissAi();
     this.render();
   }
 
   /** Screen wechseln; offene Overlays des alten Screens schließen. */
   go(screen) {
-    this.setState({ screen, mention: null, drawer: false });
+    // Die beiden Editor-Popover hängen an festen Elementen außerhalb der
+    // Screen-Bühne — ein Screen-Render allein räumt sie nicht weg.
+    this.closeMention();
+    this.dismissAi();
+    this.setState({ screen, drawer: false });
   }
 
   toggleCollapsible(label, event) {

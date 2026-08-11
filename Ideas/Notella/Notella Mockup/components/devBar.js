@@ -5,11 +5,16 @@
  * State-Feld), deshalb datengetrieben statt dreimal derselbe Listener.
  */
 
-/** [CSS-Klasse der Knöpfe, State-Feld, data-Attribut] */
+/**
+ * Eine Zeile je Umschaltergruppe. `parse` übersetzt den data-Wert in das
+ * State-Feld — nötig, weil data-Attribute immer Text sind, aiMode aber ein
+ * Schalter ist.
+ */
 const TOGGLE_GROUPS = [
-  ['preset-btn', 'presetId', 'preset'],
-  ['mode-btn', 'mode', 'mode'],
-  ['role-btn', 'role', 'role']
+  { className: 'preset-btn', stateKey: 'presetId', dataKey: 'preset' },
+  { className: 'mode-btn', stateKey: 'mode', dataKey: 'mode' },
+  { className: 'role-btn', stateKey: 'role', dataKey: 'role' },
+  { className: 'ai-btn', stateKey: 'aiMode', dataKey: 'ai', parse: (value) => value === 'on' }
 ];
 
 /**
@@ -17,13 +22,14 @@ const TOGGLE_GROUPS = [
  * @param {object} app  App-Instanz mit setState()
  */
 export function bindDevBar(app) {
-  TOGGLE_GROUPS.forEach(([className, stateKey, dataKey]) => {
+  TOGGLE_GROUPS.forEach(({ className, stateKey, dataKey, parse }) => {
     const buttons = document.querySelectorAll(`.${className}`);
     buttons.forEach((button) => {
       button.addEventListener('click', () => {
         buttons.forEach((b) => b.classList.remove('active'));
         button.classList.add('active');
-        app.setState({ [stateKey]: button.dataset[dataKey] });
+        const raw = button.dataset[dataKey];
+        app.setState({ [stateKey]: parse ? parse(raw) : raw });
       });
     });
   });

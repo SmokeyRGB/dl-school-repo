@@ -11,6 +11,7 @@ function handleEscape(app) {
   const state = app.state;
 
   if (state.mention) app.closeMention();
+  if (state.aiSug) app.dismissAi();
   if (state.drawer) app.toggleDrawer();
   if (state.origin) app.closeOrigin();
   if (state.screen === 'D5' && (state.focus || state.edgeFocus)) app.clearGraphFocus();

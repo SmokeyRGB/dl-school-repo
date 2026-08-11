@@ -21,6 +21,7 @@ export function createInitialState() {
     // Meeting-Raum (C1): @-Erwähnung, KI-Vorschlag, Notiz-Schublade
     mention: null,
     mentionIdx: 0,
+    aiMode: true,
     aiSug: null,
     drawer: false,
     hintOpen: true,
@@ -31,7 +32,9 @@ export function createInitialState() {
     log: [],
     undo: null,
 
-    // Wiki-Artikel (D2): Baum-Modus und Herkunfts-Panel
+    // Wiki-Artikel (D2): ausgewählter Eintrag, Baum-Modus, Herkunfts-Panel
+    // entry: null = der ausgeschriebene Artikel des Presets
+    entry: null,
     treeMode: 'entry',
     origin: false,
     originTab: 'origin',

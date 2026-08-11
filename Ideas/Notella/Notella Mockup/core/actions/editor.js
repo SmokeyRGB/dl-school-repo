@@ -9,8 +9,50 @@
  * Wird per Object.assign in NotellaMockupApp.prototype gemischt (core/app.js),
  * damit die Inline-Handler der Screens weiter app.<methode>() aufrufen können.
  */
-import { checkMention, insertMention } from '../../utils/editorLogic.js';
+import { checkMention, insertMention, analyzeAi, acceptAi, typeOf } from '../../utils/editorLogic.js';
 import { showMentionPopup, hideMentionPopup } from '../../components/mentionPopup.js';
+import { showAiPopup, hideAiPopup } from '../../components/aiPopup.js';
+
+/** Screen-Inventar C2: höchstens 8 Treffer, sonst wird die Liste zur Wand. */
+const MAX_ENTITY_HITS = 8;
+
+/**
+ * Trefferliste der @-Erwähnung — Reihenfolge nach Screen-Inventar C2:
+ * vorhandene Einträge zuerst, darunter abgetrennt „Neu anlegen als …".
+ *
+ * Die Anlage-Optionen bleiben bewusst ungefiltert: wer „@Auth-Gateway"
+ * tippt, meint den Namen des Eintrags, nicht den Namen eines Typs — die
+ * Liste darf deshalb nie leer sein (keine Sackgasse).
+ *
+ * @param {object} preset  Aktuelles Preset
+ * @param {string} query   Text hinter dem @
+ * @returns {Array<{kind: 'entity'|'type', label: string, color: string, meta: string}>}
+ */
+function buildMentionItems(preset, query) {
+  const q = (query || '').trim().toLowerCase();
+
+  const hits = (preset.entities || [])
+    .filter((entity) => !q || entity.label.toLowerCase().includes(q))
+    .slice(0, MAX_ENTITY_HITS)
+    .map((entity) => {
+      const type = typeOf(entity.key, preset);
+      return {
+        kind: 'entity',
+        label: entity.label,
+        color: type.color,
+        meta: entity.tag ? `${type.label} · ${entity.tag}` : type.label
+      };
+    });
+
+  const creates = preset.types.map((type) => ({
+    kind: 'type',
+    label: type.label,
+    color: type.color,
+    meta: ''
+  }));
+
+  return hits.concat(creates);
+}
 
 export const editorActions = {
   // -------- @-Erwähnung --------
@@ -19,10 +61,28 @@ export const editorActions = {
     this.state.mention = checkMention(this.state, this.preset);
     this.state.mentionIdx = 0;
     this.refreshMentionPopup();
+
+    // Erst danach: analyzeAi() hält sich zurück, solange eine Erwähnung offen ist.
+    this.state.aiSug = analyzeAi(this.state, this.preset);
+    this.refreshAiPopup();
   },
 
   onEditorKeyDown(event) {
-    if (!this.state.mention) return;
+    // Tab gehört dem KI-Vorschlag und muss vor der Erwähnung geprüft werden —
+    // sonst käme man bei geschlossenem Popover nie hierher.
+    if (event.key === 'Tab' && this.state.aiSug) {
+      event.preventDefault();
+      this.acceptAiSuggestion();
+      return;
+    }
+
+    if (!this.state.mention) {
+      if (event.key === 'Escape' && this.state.aiSug) {
+        event.preventDefault();
+        this.dismissAi();
+      }
+      return;
+    }
     const items = this._mentionItems || [];
 
     switch (event.key) {
@@ -47,16 +107,50 @@ export const editorActions = {
     }
   },
 
+  /**
+   * Übernimmt einen Treffer. Bei einem vorhandenen Eintrag wird dessen Titel
+   * eingesetzt, bei „Neu anlegen als …" der getippte Text — sonst stünde im
+   * Editor der Typname statt des gemeinten Eintrags.
+   */
   selectMention(index) {
-    const type = (this._mentionItems || [])[index];
-    if (!type) return;
-    insertMention(type.label, type.color, this.state);
+    const item = (this._mentionItems || [])[index];
+    if (!item) return;
+
+    const typed = ((this.state.mention || {}).q || '').trim();
+    const label = item.kind === 'entity' ? item.label : typed || item.label;
+
+    insertMention(label, item.color, this.state);
     this.closeMention();
   },
 
   closeMention() {
     this.state.mention = null;
     this.refreshMentionPopup();
+  },
+
+  // -------- KI-Vorschlag --------
+
+  /** Übernimmt den offenen Vorschlag als Auszeichnung im Text. */
+  acceptAiSuggestion() {
+    acceptAi(this.state.aiSug);
+    this.dismissAi();
+  },
+
+  dismissAi() {
+    this.state.aiSug = null;
+    this.refreshAiPopup();
+  },
+
+  /** Zeichnet nur das Vorschlags-Popover neu (kein Screen-Render). */
+  refreshAiPopup() {
+    const el = document.getElementById('ai-popup');
+    if (!el) return;
+
+    if (!this.state.aiSug) {
+      hideAiPopup(el);
+      return;
+    }
+    showAiPopup(el, this.state.aiSug);
   },
 
   /** Berechnet die Trefferliste neu und aktualisiert nur das Popover. */
@@ -71,10 +165,7 @@ export const editorActions = {
       return;
     }
 
-    const query = (mention.q || '').trim().toLowerCase();
-    const items = this.preset.types.filter(
-      (type) => !query || type.label.toLowerCase().includes(query)
-    );
+    const items = buildMentionItems(this.preset, mention.q);
     const idx = Math.min(Math.max(0, mentionIdx || 0), Math.max(0, items.length - 1));
 
     this._mentionItems = items;
