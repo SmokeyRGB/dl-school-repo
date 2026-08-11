@@ -114,9 +114,10 @@ export function renderScreenE1(preset, state, reviewMgr) {
     const key = card.title + '|' + f.label;
     const optsHtml = f.options.map((o, oi) => {
       const on = state.rf[key] === o;
+      const onclick = isLead ? `onclick="app.pickReviewField(this)"` : '';
       return `
-        <button data-card="${idx}" data-field="${fi}" data-opt="${oi}" onclick="app.pickReviewField(this)"
-          style="display:inline-flex;align-items:center;padding:7px 12px;border-radius:8px;font-size:13px;border:1px solid ${on ? '#5340c4' : '#dcdbd5'};background:${on ? '#f2f0fc' : '#fff'};color:#16161a;font-weight:${on ? '600' : '400'};cursor:pointer">
+        <button data-card="${idx}" data-field="${fi}" data-opt="${oi}" ${onclick}
+          style="display:inline-flex;align-items:center;padding:7px 12px;border-radius:8px;font-size:13px;border:1px solid ${on ? '#5340c4' : '#dcdbd5'};background:${on ? '#f2f0fc' : '#fff'};color:#16161a;font-weight:${on ? '600' : '400'};cursor:${isLead ? 'pointer' : 'default'}">
           <span style="font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#8b8d97;margin-right:6px">${oi + 1}</span>${o}
         </button>
       `;
