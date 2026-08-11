@@ -35,15 +35,18 @@ core/
 components/
   appHeader.js                Kopfzeile + Dev-Leisten-Status (nur Textknoten)
   navSidebar.js               Sidebar-Markup, chrome-Verhalten
-  devBar.js                   Verdrahtung der 3 Umschaltergruppen
+  devBar.js                   Verdrahtung der 4 Umschaltergruppen
   screenStage.js              Screen-Registry: Container + Umschaltung
   mentionPopup.js             Popover-Markup der @-Erwähnung
+  aiPopup.js                  Popover-Markup des KI-Vorschlags
+  stateViews.js               Laden · Leer · Fehler (gemeinsame Form)
   screenB1.js … screenE1.js   Ein Screen = eine Datei
 
 utils/
   index.js                    Sammelexport (reine Weiterleitung)
   renderHelpers.js            tint, chipSt, markSt, avSt, segSt, createIcon, shapePath
   editorLogic.js              checkMention, analyzeAi, insertMention, acceptAi, …
+  wikiArticle.js              resolveArticle() — Artikel des gewählten Eintrags
   stateManager.js             ReviewManager, NavBuilder, ScreenManager
   icons.js                    navIcon() — Icon-Set der Navigation
 
@@ -169,9 +172,9 @@ Screen wovon abhängt:
 |---|---|
 | Rahmen | `screen`, `presetId`, `role`, `mode` |
 | Navigation | `navOpen`, `railOpen`, `navExp` |
-| Meeting-Raum (C1) | `mention`, `mentionIdx`, `aiSug`, `drawer`, `hintOpen` |
+| Meeting-Raum (C1) | `mention`, `mentionIdx`, `aiMode`, `aiSug`, `drawer`, `hintOpen` |
 | Review-Inbox (E1) | `reviewIdx`, `rf`, `log`, `undo` |
-| Wiki (D2) | `treeMode`, `origin`, `originTab` |
+| Wiki (D2) | `entry`, `treeMode`, `origin`, `originTab` |
 | Graph (D5) | `zoom`, `focus`, `edgeFocus`, `expand`, `hidden`, `onlyCanon`, `graphPanel`, `graphLayout`, `nodePos` |
 
 ---
@@ -198,7 +201,5 @@ DOM brauchen `utils/editorLogic.js` (Selection-API), `core/actions/*` und
 
 - **B2** und **F3** stehen im Screen-Register, haben aber noch keinen
   Renderer — sie zeigen den Platzhalter aus `screenStage.js`
-- `#breadcrumbs` und `#ai-popup` sind im Gerüst angelegt, aber unbefüllt
+- `#breadcrumbs` ist im Gerüst angelegt, aber unbefüllt
 - `#user-initials` wird nicht auf die Rolle aktualisiert (zeigt immer „SR")
-- `utils/editorLogic.js` `analyzeAi`/`acceptAi` sind implementiert, aber
-  noch nicht an C1 angebunden
