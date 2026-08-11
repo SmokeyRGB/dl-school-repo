@@ -82,6 +82,14 @@ export const editorActions = {
     showMentionPopup(el, mention, items, idx);
   },
 
+  // -------- @-Hinweis --------
+
+  closeHint() {
+    this.state.hintOpen = false;
+    const hint = document.getElementById('c1-hint');
+    if (hint) hint.remove();
+  },
+
   // -------- Geteilte-Notizen-Schublade --------
 
   toggleDrawer() {

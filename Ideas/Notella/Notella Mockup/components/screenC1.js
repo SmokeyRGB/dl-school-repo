@@ -129,15 +129,17 @@ export function renderScreenC1(preset, state) {
       </div>
 
       <!-- @ hint panel -->
-      <div style="margin-top:14px;padding:14px 16px;border:1px solid #e6e5e0;background:#fff;border-radius:11px;display:flex;gap:12px;align-items:flex-start">
+      ${state.hintOpen === false ? '' : `
+      <div id="c1-hint" style="margin-top:14px;padding:14px 16px;border:1px solid #e6e5e0;background:#fff;border-radius:11px;display:flex;gap:12px;align-items:flex-start">
         <span style="font-size:14px;color:#5340c4;flex:none;margin-top:1px">@</span>
         <div style="min-width:0">
           <p style="margin:0;font-size:13px;line-height:1.6;color:#3f4048">Tipp <strong style="font-weight:600">@</strong>, um Personen, Orte, Konzepte oder Entscheidungen zu markieren. Oder Text markieren und den Typ zuweisen — beides erzeugt denselben Eintrag.</p>
           <p style="margin:6px 0 0;font-size:12.5px;color:#8b8d97;line-height:1.6">Private Einträge bleiben nur dir sichtbar. Geteilte gehen ans Team. Kanonische Einträge kommen in das Projektwissen.</p>
         </div>
-        <button style="flex:none;font-size:12.5px;color:#8b8d97;padding:2px 6px;border:none;background:transparent;cursor:pointer;border-radius:5px"
+        <button onclick="app.closeHint()" style="flex:none;font-size:12.5px;color:#8b8d97;padding:2px 6px;border:none;background:transparent;cursor:pointer;border-radius:5px"
           onmouseover="this.style.color='#16161a'" onmouseout="this.style.color='#8b8d97'">Verstanden</button>
       </div>
+      `}
     </div>
 
     <!-- Geteilte-Notizen-Schublade -->
