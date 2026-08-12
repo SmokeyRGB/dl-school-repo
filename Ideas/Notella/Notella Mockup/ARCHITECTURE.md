@@ -62,7 +62,26 @@ styles/
   layout.css                  App-Shell, Kopfzeile, Screen-Bühne
   nav.css                     Sidebar (Ein-/Ausklappen rein per CSS)
   devbar.css                  Dev-Leiste, Popover-Rahmen
+
+server.py                     Entwicklungsserver (Python, Port 8000)
+support.js                    Fremdbibliothek, unverändert übernommen
+Notella Mockup.dc.html        Stand vor dem Refactoring (2013 Zeilen) — Archiv,
+                              nicht eingebunden, wird nicht mitgepflegt
 ```
+
+---
+
+## Starten
+
+Die Dateien laden einander per `import`. Das verlangt HTTP — über `file://`
+verweigert der Browser die Module. Deshalb der kleine Server:
+
+```bash
+python "Notella Mockup/server.py"
+```
+
+Danach `http://localhost:8000/`. Dieselbe Zeile steckt in
+`Ideas/Notella/.claude/launch.json` unter dem Namen `notella-mockup`.
 
 ---
 
