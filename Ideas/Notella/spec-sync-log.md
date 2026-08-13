@@ -14,7 +14,24 @@
 
 ---
 
+> **Stand 2026-08-13 — alle Einträge geschlossen.**
+> Mit der Überarbeitung auf `01-Problem-Framing.md` v0.3, `02-PRD.md` V0.9, `03-SRD.md` V0.4
+> und `04-Screen-Inventar.md` V0.2 sind SL-01…SL-05 erledigt. Zwei Wege: Die inhaltlich
+> relevanten Fragen wurden entschieden und in die Spec-Dokumente übernommen; die rein
+> mockup-bezogenen Einträge sind gegenstandslos geworden, weil die betroffenen Bildschirme
+> neu geschrieben wurden.
+>
+> **Wichtige Klarstellung für künftige Einträge:** Das Mockup ist ein Werkzeug zur frühen
+> Anforderungsfindung, **keine Implementierungsgrundlage**. Ein Unterschied zwischen Mockup
+> und Spezifikation ist deshalb kein Fehler, der behoben werden muss — er ist nur dann
+> festzuhalten, wenn im Mockup eine **Produktentscheidung** sichtbar wurde, die in der
+> Spezifikation fehlt. Genau das war bei SL-02 der Fall.
+
 ## Offene Einträge
+
+_(keine)_
+
+## Frühere Einträge (alle geschlossen)
 
 | ID | Datum | Quelle | Entscheidung / Änderung | Betrifft | Status |
 |----|-------|--------|--------------------------|----------|--------|
@@ -26,26 +43,18 @@
 
 ---
 
-## Entscheidungsvorschläge (zur Klärung mit dem Autor)
+## Auflösung (2026-08-13)
 
-**Zu SL-01:** Regel „keine inaktiven Handlungsschaltflächen für unprivilegierte Rollen"
-existierte bisher nur explizit für E1 (`04-Screen-Inventar.md:748`). Vorschlag: als
-generelle UI-Regel in ein neues Teilkapitel „Rollenabhängige Sichtbarkeit von Steuerelementen"
-heben (statt sie screen-für-screen zu wiederholen), C1 und E1 beide darauf verweisen.
-
-**Zu SL-02:** Zwei Wege, keiner davon "automatisch richtig":
-- **(a)** Kurator als dritten Rollenwert im Dev-Toggle und in allen Rollen-Checks nachziehen,
-  damit der Mockup das PRD-Rollenmodell vollständig abbildet.
-- **(b)** Bewusst dokumentieren, dass der Mockup-Prototyp Kurator und Lead aus
-  Aufwandsgründen zusammenfasst, und das explizit als Scope-Einschränkung in
-  `04-Screen-Inventar.md` (Kopfbereich, analog zum Hinweis „Mobil ist Nutzbarkeit, nicht
-  Optimierung") vermerken.
-
-Beides ist einmal zu entscheiden, dann aber **konsistent für alle Screens** anzuwenden —
-aktuell ist es weder das eine noch das andere, sondern eine stillschweigende Lücke.
+| ID | Auflösung | Wo nachlesbar |
+|----|-----------|---------------|
+| **SL-01** | ✅ **übernommen.** Die Regel „keine inaktiven Handlungsschaltflächen für unprivilegierte Rollen" gilt jetzt allgemein, nicht mehr nur für E1 — und ist ausdrücklich als **Darstellungsregel** gekennzeichnet, **nicht** als Berechtigungsprüfung. Der Fallback-Teil ist gegenstandslos: Es gibt nur noch zwei Sichtbarkeiten, „Kanonisch" ist keine davon, und beide stehen jeder Rolle offen | `02-PRD.md` §4.2.2 und §4.4.2.11 · `03-SRD.md` §11.2a · `04-Screen-Inventar.md` E1 |
+| **SL-02** | ✅ **entschieden — mit einem dritten Weg.** Weder (a) noch (b): Die **Kurator-Rolle ist ganz entfallen** und steht im Backlog (E-24). Damit ist das binäre Rollenmodell keine Vereinfachung des Mockups mehr, sondern die Spezifikation. Der eigentliche Befund war ohnehin ein **Widerspruch in den Spec-Dokumenten selbst**: `01-Problem-Framing.md` E-04 sagte „ausschließlich der Lead", `02-PRD.md` §4.2 nannte Lead **und** Kurator. Zusätzlich festgelegt: Berechtigungen werden als **Fähigkeiten** geprüft, nicht als Rollenvergleiche — dann kostet ein Nachrüsten der Rolle eine Zeile | `01-Problem-Framing.md` E-24 · `02-PRD.md` §4.2 · `03-SRD.md` §11.2a |
+| **SL-03** | ⚪ **gegenstandslos.** Die beiden D2-Regeln (Richtungspfeile statt erfundener Umkehrverben; abgeleitete Artikel ohne Aliasse) betrafen die Darstellung im Mockup. Das Preset-Format führt `inverse_label` je Beziehungstyp, die Darstellungsfrage gehört in die Feature-Spezifikation zum Wiki | `02-PRD.md` §4.1.3 (`inverse_label`) |
+| **SL-04** | ⚪ **gegenstandslos, Kern übernommen.** Der KI-Vorschlag im Mockup war eine Vorwegnahme. Die KI ist jetzt eine eigene, terminierte Ausbaustufe **V1.3** mit beschriebener Schnittstelle. Die Regel dahinter — *ein Kürzel, das nichts auslöst, wird nicht angezeigt* — ist als allgemeines Verhalten übernommen: Ohne hinterlegten Zugang existiert die Aktion nicht, statt deaktiviert zu erscheinen | `01-Problem-Framing.md` E-09 · `03-SRD.md` §11.9 · `02-PRD.md` §6.2 |
+| **SL-05** | ✅ **übernommen — als Regeländerung.** Der Befund war richtig: Zustände wurden für Bildschirme gebaut, für die das Inventar keine vorschrieb. Die Konsequenz ist nicht, 27 × 4 Fälle nachzudokumentieren, sondern das Verhalten **einmal zentral** festzulegen und je Bildschirm nur die Abweichung zu beschreiben. Der Qualitätsanspruch bleibt, die Dokumentationslast fällt | `04-Screen-Inventar.md` (Legende) · `02-PRD.md` §4.4.4 |
 
 ---
 
 ## Erledigte Einträge
 
-_(noch keine)_
+SL-01 · SL-02 · SL-03 · SL-04 · SL-05 — siehe Auflösungstabelle oben.
