@@ -44,6 +44,16 @@ a:hover {
   outline: none;
 }
 
+/* Platzhalter im Verfasser (C1). Ein leeres contenteditable hat keinen
+   eigenen Platzhalter — :empty greift nur, solange der Browser noch kein
+   <br> hineingesetzt hat, deshalb zusätzlich der :has()-Fall. */
+[data-placeholder]:empty::before,
+[data-placeholder]:has(> br:only-child)::before {
+  content: attr(data-placeholder);
+  color: #a3a3ab;
+  pointer-events: none;
+}
+
 /* Animations */
 @keyframes npulse {
   0%,

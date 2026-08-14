@@ -12,6 +12,7 @@ import { renderScreenC1 } from './screenC1.js';
 import { renderScreenD2 } from './screenD2.js';
 import { renderScreenD5 } from './screenD5.js';
 import { renderScreenE1 } from './screenE1.js';
+import { renderScreenE2 } from './screenE2.js';
 
 /**
  * Render-Funktion je Screen-ID. Einheitliche Signatur (preset, state, app),
@@ -23,7 +24,8 @@ const SCREEN_RENDERERS = {
   C1: (preset, state) => renderScreenC1(preset, state),
   D2: (preset, state) => renderScreenD2(preset, state),
   D5: (preset, state) => renderScreenD5(preset, state),
-  E1: (preset, state, app) => renderScreenE1(preset, state, app.reviewMgr)
+  E1: (preset, state, app) => renderScreenE1(preset, state, app.reviewMgr),
+  E2: (preset, state, app) => renderScreenE2(preset, state, app.curationMgr)
 };
 
 /** Platzhalter für Screens, die im Inventar stehen, aber noch fehlen. */

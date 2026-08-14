@@ -5,6 +5,10 @@
  *   'start'  — ohne Sidebar (Einstiegsseiten)
  *   'orient' — Sidebar dauerhaft offen (Überblicksseiten)
  *   'focus'  — Sidebar eingeklappt, öffnet bei Hover (Arbeitsseiten)
+ *
+ * Die Namen folgen dem Screen-Inventar V0.2. „Review-Inbox" heißt der
+ * Bildschirm dort nicht mehr: Kuration hat seit E-18 zwei Phasen, und
+ * beide gehören zu einem Fluss (E1 ⇄ E2).
  */
 export const SCREENS = {
   B1: { name: 'Alle Projekte', chrome: 'start' },
@@ -13,6 +17,7 @@ export const SCREENS = {
   C1: { name: 'Meeting-Raum', chrome: 'focus' },
   D2: { name: 'Wiki-Artikel', chrome: 'focus' },
   D5: { name: 'Beziehungs-Graph', chrome: 'focus' },
-  E1: { name: 'Review-Inbox', chrome: 'focus' },
+  E1: { name: 'Kuration · Vorschläge', chrome: 'focus' },
+  E2: { name: 'Kuration · Durchsicht', chrome: 'focus' },
   F3: { name: 'Preset-Ansicht', chrome: 'focus' }
 };

@@ -11,16 +11,18 @@
  * brauchen also eine flache API auf einem globalen `app` — Delegations-
  * methoden pro Aktion wären reines Rauschen.
  */
-import { createInitialState } from './state.js';
+import { createInitialState, seedNotes } from './state.js';
 import { bindKeyboard } from './keyboard.js';
 import { editorActions } from './actions/editor.js';
+import { noteActions } from './actions/notes.js';
 import { reviewActions } from './actions/review.js';
+import { curationActions } from './actions/curation.js';
 import { wikiActions } from './actions/wiki.js';
 import { graphActions } from './actions/graph.js';
 
 import { PRESETS, getPreset } from '../data/presets/index.js';
 import { SCREENS } from '../data/screens.js';
-import { ReviewManager, ScreenManager } from '../utils/stateManager.js';
+import { ReviewManager, CurationManager, ScreenManager } from '../utils/stateManager.js';
 import { renderAppHeader } from '../components/appHeader.js';
 import { renderNavSidebar } from '../components/navSidebar.js';
 import { bindDevBar } from '../components/devBar.js';
@@ -30,6 +32,7 @@ export class NotellaMockupApp {
   constructor() {
     this.state = createInitialState();
     this.reviewMgr = new ReviewManager(PRESETS);
+    this.curationMgr = new CurationManager();
 
     this.el = {
       nav: document.getElementById('nav-sidebar'),
@@ -57,8 +60,21 @@ export class NotellaMockupApp {
     this.state = {
       ...this.state,
       ...updates,
-      // Beim Presetwechsel gibt es den gewählten Wiki-Eintrag nicht mehr.
-      ...(presetChanged ? { ...this.reviewMgr.resetReview(), entry: null } : {})
+      // Beim Presetwechsel gehören die alten Notizen, der Kurationsstand
+      // und der gewählte Wiki-Eintrag zu einem anderen Projekt. Der
+      // Sichtbarkeits-Umschalter fällt auf den Default des neuen Presets
+      // zurück (composerVis: null) — genau das macht E-04 sichtbar.
+      ...(presetChanged
+        ? {
+            ...this.reviewMgr.resetReview(),
+            ...this.curationMgr.reset(),
+            notes: seedNotes(updates.presetId),
+            meeting: null,
+            composerVis: null,
+            editingId: null,
+            entry: null
+          }
+        : {})
     };
     // Der KI-Schalter darf keinen bereits offenen Vorschlag stehen lassen —
     // das Popover hängt nicht am Screen-Render (siehe actions/editor.js).
@@ -72,7 +88,7 @@ export class NotellaMockupApp {
     // Screen-Bühne — ein Screen-Render allein räumt sie nicht weg.
     this.closeMention();
     this.dismissAi();
-    this.setState({ screen, drawer: false });
+    this.setState({ screen, drawer: false, editingId: null });
   }
 
   toggleCollapsible(label, event) {
@@ -87,6 +103,12 @@ export class NotellaMockupApp {
     renderAppHeader(preset, this.state);
     renderNavSidebar(this.el.nav, preset, this.state, this.chrome);
     renderActiveScreen(this.el.stage, this.state.screen, preset, this.state, this);
+
+    // Der Verfasser in C1 ist das einzige nicht persistierte Eingabefeld:
+    // was dort halb getippt steht, ist noch keine Notiz und liegt deshalb
+    // nicht im State. Ohne diese Zeile würde jeder State-Wechsel ihn leeren
+    // (siehe actions/notes.js:restoreComposer).
+    if (this.state.screen === 'C1') this.restoreComposer();
   }
 }
 
@@ -94,7 +116,9 @@ export class NotellaMockupApp {
 Object.assign(
   NotellaMockupApp.prototype,
   editorActions,
+  noteActions,
   reviewActions,
+  curationActions,
   wikiActions,
   graphActions
 );

@@ -1,10 +1,14 @@
 /**
- * Aktionen im Meeting-Raum (C1): @-Erwähnung und Notiz-Schublade.
+ * Erwähnungs-Auswahl und KI-Vorschlag (C1, C2).
+ *
+ * Zuständig nur noch für die beiden Popover; Notizen selbst liegen in
+ * ./notes.js. Diese Trennung folgt der Sache: eine Auswahl an der
+ * Cursorposition ist etwas anderes als eine abgeschickte Notiz.
  *
  * WICHTIG: Diese Aktionen laufen absichtlich NICHT über setState()/render().
- * Ein voller Re-Render würde den Editor-Inhalt (im Mockup nicht persistiert)
- * bei jedem Tastendruck zurücksetzen. Stattdessen wird nur das betroffene
- * Element aktualisiert.
+ * Die Popover hängen an festen Elementen außerhalb der Screen-Bühne, und ein
+ * Re-Render pro Tastendruck würde die Cursorposition zerstören. Stattdessen
+ * wird nur das betroffene Element aktualisiert.
  *
  * Wird per Object.assign in NotellaMockupApp.prototype gemischt (core/app.js),
  * damit die Inline-Handler der Screens weiter app.<methode>() aufrufen können.
@@ -58,6 +62,9 @@ export const editorActions = {
   // -------- @-Erwähnung --------
 
   onEditorInput() {
+    // Halb getippten Text sichern, bevor irgendetwas neu zeichnet.
+    this.cacheComposer();
+
     this.state.mention = checkMention(this.state, this.preset);
     this.state.mentionIdx = 0;
     this.refreshMentionPopup();
@@ -67,21 +74,29 @@ export const editorActions = {
     this.refreshAiPopup();
   },
 
+  /**
+   * Tastatur der beiden Popover.
+   *
+   * @returns {boolean} true, wenn die Taste verbraucht wurde. Verfasser und
+   *   Notiz-Bearbeitung fragen das ab, bevor sie Enter als „abschicken"
+   *   deuten — solange eine Auswahl offen steht, gehört Enter ihr.
+   */
   onEditorKeyDown(event) {
     // Tab gehört dem KI-Vorschlag und muss vor der Erwähnung geprüft werden —
     // sonst käme man bei geschlossenem Popover nie hierher.
     if (event.key === 'Tab' && this.state.aiSug) {
       event.preventDefault();
       this.acceptAiSuggestion();
-      return;
+      return true;
     }
 
     if (!this.state.mention) {
       if (event.key === 'Escape' && this.state.aiSug) {
         event.preventDefault();
         this.dismissAi();
+        return true;
       }
-      return;
+      return false;
     }
     const items = this._mentionItems || [];
 
@@ -90,20 +105,22 @@ export const editorActions = {
         event.preventDefault();
         this.state.mentionIdx = Math.min(items.length - 1, (this.state.mentionIdx || 0) + 1);
         this.refreshMentionPopup();
-        break;
+        return true;
       case 'ArrowUp':
         event.preventDefault();
         this.state.mentionIdx = Math.max(0, (this.state.mentionIdx || 0) - 1);
         this.refreshMentionPopup();
-        break;
+        return true;
       case 'Enter':
         event.preventDefault();
         this.selectMention(this.state.mentionIdx || 0);
-        break;
+        return true;
       case 'Escape':
         event.preventDefault();
         this.closeMention();
-        break;
+        return true;
+      default:
+        return false;
     }
   },
 
@@ -121,6 +138,7 @@ export const editorActions = {
 
     insertMention(label, item.color, this.state);
     this.closeMention();
+    this.cacheComposer();
   },
 
   closeMention() {
@@ -134,6 +152,7 @@ export const editorActions = {
   acceptAiSuggestion() {
     acceptAi(this.state.aiSug);
     this.dismissAi();
+    this.cacheComposer();
   },
 
   dismissAi() {
@@ -171,29 +190,5 @@ export const editorActions = {
     this._mentionItems = items;
     this.state.mentionIdx = idx;
     showMentionPopup(el, mention, items, idx);
-  },
-
-  // -------- @-Hinweis --------
-
-  closeHint() {
-    this.state.hintOpen = false;
-    const hint = document.getElementById('c1-hint');
-    if (hint) hint.remove();
-  },
-
-  // -------- Geteilte-Notizen-Schublade --------
-
-  toggleDrawer() {
-    this.state.drawer = !this.state.drawer;
-    const isOpen = this.state.drawer;
-
-    const drawer = document.getElementById('c1-drawer');
-    if (drawer) drawer.style.transform = isOpen ? 'translateX(0)' : 'translateX(100%)';
-
-    const button = document.getElementById('c1-drawer-btn');
-    if (button) {
-      button.style.borderColor = isOpen ? '#c9c3ec' : '#e4e3de';
-      button.style.background = isOpen ? '#faf9fd' : '#fff';
-    }
   }
 };

@@ -35,9 +35,22 @@ export {
 // Artikel-Auflösung des Wikis (D2)
 export { resolveArticle } from './wikiArticle.js';
 
+// Notizen: Erwähnungs-Chips, Sichtbarkeit, Bilanz (C1 und E2 gemeinsam)
+export {
+  VISIBILITIES,
+  visLabel,
+  composerVis,
+  entityChip,
+  renderNoteText,
+  markCount,
+  noteBalance,
+  notePlain
+} from './noteText.js';
+
 // Ablauf- und Strukturlogik
 export {
   ReviewManager,
+  CurationManager,
   NavBuilder,
   ScreenManager
 } from './stateManager.js';

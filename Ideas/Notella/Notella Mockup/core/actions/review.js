@@ -1,9 +1,11 @@
 /**
- * Aktionen der Review-Inbox (E1).
+ * Aktionen der Vorschlagsliste (E1, Kuration Phase 1).
  *
  * Die Entscheidungsregeln selbst liegen in utils/stateManager.js
  * (ReviewManager); hier steht nur die Anbindung an State und Tastatur.
- * Tastaturbedienung nach PRD §4.4.2.
+ * Tastaturbedienung nach PRD §4.4.2.9 — da es keinen Stapelweg gibt, ist
+ * die Tastatur der einzige Hebel auf die Zielmarke von unter 6 Sekunden
+ * je Vorschlag.
  *
  * Wird per Object.assign in NotellaMockupApp.prototype gemischt (core/app.js).
  */
@@ -52,9 +54,26 @@ export const reviewActions = {
     this.setState(this.reviewMgr.resetReview());
   },
 
+  /** Eine Karte zurück, ohne die Entscheidung zurückzunehmen (←). */
+  reviewBack() {
+    if (this.state.reviewIdx > 0) this.setState({ reviewIdx: this.state.reviewIdx - 1 });
+  },
+
   /**
-   * Tastenkürzel der Inbox: Ziffern wählen Pflichtfeld-Optionen,
-   * Enter/A/S entscheiden, U macht die letzte Entscheidung rückgängig.
+   * Tastenkürzel der Phase 1 (PRD §4.4.2.9):
+   *
+   *   A · Enter  Übernehmen (bzw. Zusammenführen bei Kartenart B)
+   *   X          Ablehnen
+   *   N          nur bei Art B: „Ist etwas anderes → neu anlegen"
+   *   S          Später
+   *   1–9        Chip des ersten offenen Pflichtfelds
+   *   Z          Letzte Handlung rückgängig
+   *   ←          Einen Vorschlag zurück
+   *
+   * `X` und `N` liegen beide auf der Sekundärhandlung — bei Art B *ist*
+   * „neu anlegen" die sekundäre Antwort, bei A und C ist es „ablehnen".
+   * Eine Taste, die auf der aktuellen Karte nichts auslöst, steht auch
+   * nicht in der Fußleiste.
    *
    * @returns {boolean} true, wenn die Taste verarbeitet wurde
    */
@@ -67,9 +86,15 @@ export const reviewActions = {
 
     const key = event.key.toLowerCase();
 
-    if (key === 'u' && state.log.length) {
+    if (key === 'z' && state.log.length) {
       event.preventDefault();
       this.reviewUndo();
+      return true;
+    }
+
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      this.reviewBack();
       return true;
     }
 
@@ -85,7 +110,9 @@ export const reviewActions = {
       return true;
     }
 
-    const decision = { enter: 'primary', a: 'secondary', s: 'later' }[key];
+    if (key === 'n' && card.kind !== 'B') return false;
+
+    const decision = { enter: 'primary', a: 'primary', x: 'secondary', n: 'secondary', s: 'later' }[key];
     if (decision) {
       event.preventDefault();
       this.reviewDecide(decision);

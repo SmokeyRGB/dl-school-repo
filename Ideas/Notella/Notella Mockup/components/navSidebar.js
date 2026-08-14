@@ -37,12 +37,23 @@ function renderCollapsible(item) {
   `;
 }
 
-/** Meeting unterhalb einer Arbeitsgruppe. */
+/** Titel für einen Inline-Handler: Anführungszeichen dürfen nicht ausbrechen. */
+function jsStr(text) {
+  return String(text).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+/**
+ * Meeting unterhalb einer Arbeitsgruppe.
+ *
+ * Öffnet das *gewählte* Treffen, nicht immer dasselbe. Erst dadurch sind
+ * die Zustände `geplant` und `beendet` im Meeting-Raum überhaupt erreichbar
+ * — C1 verhält sich in allen dreien unterschiedlich (PRD §4.3.2/§4.4.1).
+ */
 function renderNestedItem(item) {
   const dot = navIcon('stateDot', { dotColor: meetingDotColor(item.state) });
   const color = item.muted ? '#8b8d97' : (item.on ? '#16161a' : '#5a5c66');
   return `
-    <button class="nav-item nav-item-nested ${item.on ? 'active' : ''}" onclick="app.go('${item.screen}')" title="${item.label}" style="font-size:12.5px;color:${color}">
+    <button class="nav-item nav-item-nested ${item.on ? 'active' : ''}" onclick="app.openMeeting('${jsStr(item.label)}')" title="${item.label}" style="font-size:12.5px;color:${color}">
       <span class="nav-icon">${dot}</span>
       <span class="nav-label">${item.label}</span>
     </button>

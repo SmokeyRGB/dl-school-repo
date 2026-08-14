@@ -1,10 +1,12 @@
 // Screen D2: Projektwissen — Wiki (Baum + Artikel)
 // Zweispaltig: Wissensbaum links, Artikel rechts. Herkunfts-Panel fährt von
-// rechts über den Inhalt ein (dasselbe Muster wie die Schublade in C1).
+// rechts über den Inhalt ein — buchstäblich dieselbe Komponente wie die
+// Team-Notizen-Schublade in C1 (components/drawer.js).
 // PRD §4.4.3 / Screen-Inventar D1/D2.
 
 import { tint, chipSt, markSt, resolveArticle } from '../utils/index.js';
 import { noticeView, errorView, skeletonBar } from './stateViews.js';
+import { renderDrawer } from './drawer.js';
 
 /** Baum und Artikel in ihrer eigenen Form — die Spalten springen nicht. */
 function renderLoading() {
@@ -186,13 +188,6 @@ function renderOriginPanel(preset, state, article) {
   const tab = state.originTab || 'origin';
   const items = tab === 'origin' ? article.origin : article.history;
 
-  const tabBtn = (key, label) => {
-    const on = tab === key;
-    return `
-      <button onclick="app.setOriginTab('${key}')" style="font-size:12.5px;border:none;background:transparent;cursor:pointer;padding:0 0 8px;border-bottom:2px solid ${on ? '#5340c4' : 'transparent'};color:${on ? '#16161a' : '#8b8d97'};font-weight:${on ? '600' : '400'}">${label}</button>
-    `;
-  };
-
   const itemsHtml = items.map(o => `
     <div style="padding:13px 15px;border:1px solid #ecebe6;border-radius:11px;background:#fdfdfc">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -204,25 +199,18 @@ function renderOriginPanel(preset, state, article) {
     </div>
   `).join('');
 
-  return `
-    <div style="position:absolute;inset:0;z-index:70;display:flex;justify-content:flex-end;${state.origin ? '' : 'pointer-events:none'}">
-      <div onclick="app.closeOrigin()" style="position:absolute;inset:0;background:rgba(22,22,26,.14);opacity:${state.origin ? '1' : '0'};transition:opacity 240ms ease"></div>
-      <div style="position:relative;width:430px;max-width:92%;height:100%;background:#fff;border-left:1px solid #e2e1dc;box-shadow:-18px 0 44px -30px rgba(22,22,26,.4);
-                  transform:translateX(${state.origin ? '0' : '100%'});transition:transform 260ms cubic-bezier(.22,.7,.25,1);display:flex;flex-direction:column">
-        <div style="flex:none;padding:15px 18px 0">
-          <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:14px;font-weight:600">${article.title}</span>
-            <span style="flex:1"></span>
-            <button onclick="app.closeOrigin()" style="font-size:12px;color:#8b8d97;border:none;background:transparent;cursor:pointer">Esc</button>
-          </div>
-          <div style="display:flex;gap:16px;margin-top:14px">
-            ${tabBtn('origin', 'Herkunft · woher?')}${tabBtn('history', 'Verlauf · wann?')}
-          </div>
-        </div>
-        <div style="flex:1;overflow:auto;padding:18px;display:grid;gap:14px;align-content:start">${itemsHtml}</div>
-      </div>
-    </div>
-  `;
+  return renderDrawer({
+    title: article.title,
+    open: state.origin,
+    onClose: 'app.closeOrigin()',
+    tabs: [
+      { key: 'origin', label: 'Herkunft · woher?' },
+      { key: 'history', label: 'Verlauf · wann?' }
+    ],
+    activeTab: tab,
+    onTab: "app.setOriginTab('{key}')",
+    body: itemsHtml
+  });
 }
 
 export function renderScreenD2(preset, state) {

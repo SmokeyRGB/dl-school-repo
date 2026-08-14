@@ -91,7 +91,7 @@ function historyOf(preset, node, isCanon) {
     meta: `${d.leadFull} · ${d.meetingDate}`,
     text: isCanon
       ? `Aus einem Vorschlag ins ${t.canonNoun} übernommen.`
-      : `Als Vorschlag angelegt — noch nicht ${t.canonVerb}. Die Entscheidung steht in der Review-Inbox an.`,
+      : `Als Vorschlag angelegt — noch nicht ${t.canonVerb}. Die Entscheidung steht in der Kuration an.`,
     link: node ? 'Auslösende Notiz' : ''
   }];
 }

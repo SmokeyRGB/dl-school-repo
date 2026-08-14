@@ -2,7 +2,9 @@
  * Preset „Software-Projekt" — reine Mockup-Daten, keine Logik.
  *
  * t = Terminologie (Vokabular des Presets), d = Demo-Werte,
- * types/entities/nodes/edges = Wissensmodell, article = D2, review = E1.
+ * types/entities/nodes/edges = Wissensmodell, article = D2,
+ * review = Kuration Phase 1 (E1). Die Notizen in d.notes speisen den
+ * Notizblock (C1) und die Durchsicht (E2) — dieselben Daten, zwei Ansichten.
  */
 export const softwarePreset = {
   id: 'software-project',
@@ -31,20 +33,55 @@ export const softwarePreset = {
     leadFull: 'Sam Ritter',
     me: 'Mira Kant',
     open: 5,
-    // Notizen des laufenden Meetings (C1). Ein Absatz = eine Liste aus
-    // Textstücken; { ref } zeigt auf eine Entität und wird als Chip in der
-    // Farbe ihres Typs gezeichnet.
+
+    // PRD §4.1.3, behavior.default_note_visibility — 'team' | 'mine'.
+    // Im Software-Preset schreibt man fürs Team, im TableTop-Preset erst mal
+    // für sich. Der Umschalter im Verfasser (C1) startet auf diesem Wert;
+    // beim Presetwechsel kippt er sichtbar mit.
+    defaultVisibility: 'team',
+
+    // Eigene Notizen des laufenden Meetings — ein Eintrag je Notiz, älteste
+    // zuerst (E-14). `parts` ist eine Liste aus Textstücken; { ref } zeigt
+    // auf eine Entität und wird als Chip in ihrer Typfarbe gezeichnet.
+    // `vis` = Sichtbarkeit je Notiz (E-04), `edited` = neue Version vorhanden
+    // (E-15), `late` = nach dem Ende des Treffens ergänzt.
+    // Notizen ohne { ref } sind Absicht: sie zeigen in E2, was ohne die
+    // Durchsicht nie ins Projektwissen käme.
     notes: [
-      [{ t: 'Runde zum ' }, { ref: 'Preset-Loader' }, { t: ': das Laden der YAML-Datei ist fertig, die Validierung fehlt noch.' }],
-      [{ t: 'Wir haben festgelegt, dass wir ' }, { ref: 'Postgres statt SQLite' }, { t: ' nehmen — Begründung: wir brauchen JSONB für die Preset-Bindung.' }],
-      [{ t: 'Offen: wer den Validator schreibt. ' }, { ref: 'Schema-Validator schreiben' }, { t: ' hängt am ' }, { ref: 'Preset-Loader' }, { t: '.' }]
+      { id: 'n1', at: '10:04', vis: 'team', parts: [
+        { t: 'Runde zum ' }, { ref: 'Preset-Loader' }, { t: ': das Laden der YAML-Datei ist fertig, die Validierung fehlt noch.' }] },
+      { id: 'n2', at: '10:07', vis: 'team', parts: [
+        { t: 'Kurz zur Reihenfolge: erst Ladepfad stabil, dann Fehlerausgabe. Sonst debuggen wir zweimal dasselbe.' }] },
+      { id: 'n3', at: '10:12', vis: 'team', parts: [
+        { t: 'Wir haben festgelegt, dass wir ' }, { ref: 'Postgres statt SQLite' }, { t: ' nehmen — Begründung: wir brauchen JSONB für die Preset-Bindung.' }] },
+      { id: 'n4', at: '10:15', vis: 'mine', parts: [
+        { t: 'Notiz an mich: vor dem Review nochmal prüfen, ob die Migration auch ohne Docker durchläuft.' }] },
+      { id: 'n5', at: '10:19', vis: 'team', edited: true, parts: [
+        { t: 'Offen: wer den Validator schreibt. ' }, { ref: 'Schema-Validator schreiben' }, { t: ' hängt am ' }, { ref: 'Preset-Loader' }, { t: '.' }] },
+      { id: 'n6', at: '10:24', vis: 'team', by: 'Jo Halász', parts: [
+        { t: 'Zum Deployment: Auth Gateway läuft auf Staging, Token-Refresh fehlt noch. Ich prüfe morgen die Logs.' }] },
+      { id: 'n7', at: '10:29', vis: 'team', by: 'Jo Halász', parts: [
+        { t: 'Staging läuft, aber nach einer Stunde fliegen alle raus. Der Token-Refresh fehlt im ' }, { ref: 'Auth-Gateway' }, { t: ' — bis das drin ist, können wir niemanden zum Testen einladen.' }] },
+      { id: 'n8', at: '10:33', vis: 'team', parts: [
+        { t: 'Lea fragt, wie die Kuration gruppiert wird. Antwort steht noch aus.' }] },
+      { id: 'n9', at: '10:36', vis: 'team', by: 'Sam Ritter', parts: [
+        { t: 'Zur Frage von Lea: Wir gruppieren die Kuration nach ' }, { ref: 'Notiz-Editor' }, { t: '-Meeting, nicht nach Sprint — dann bleibt die Trennkarte ein sinnvoller Ausstiegspunkt.' }] },
+      { id: 'n10', at: '10:41', vis: 'team', parts: [
+        { t: 'Nächstes Mal: Retro-Format kürzen, wir sind wieder überzogen.' }] },
+      { id: 'n11', at: '10:44', vis: 'team', parts: [
+        { t: 'Risiko festhalten: ' }, { ref: 'Kanonisierung als Flaschenhals' }, { t: ' — wenn nur Sam kuriert, staut es sich nach jedem Sprint.' }] },
+      { id: 'n12', at: '10:47', vis: 'team', parts: [
+        { t: 'Kaffee ist alle. Jemand muss nachbestellen.' }] }
     ],
-    // Geteilte Notizen der anderen (Schublade in C1)
-    shared: [
-      { initials: 'SR', name: 'Sam Ritter', text: 'Postgres statt SQLite steht fest — JSONB für die Preset-Bindung.', ago: '2 Min' },
-      { initials: 'MK', name: 'Mira Kant', text: 'Wer übernimmt den Schema-Validator? Ich kann das nächste Woche machen.', ago: '5 Min' },
-      { initials: 'JH', name: 'Jo Halász', text: 'Erwähnungs-Auswahl per @ läuft schon lokal, muss noch an die Presets angebunden werden.', ago: '11 Min' }
-    ]
+
+    // Team-Notizen der anderen (Schublade C4). Wird abgerufen, nicht
+    // gepusht (E-27) — deshalb ein fester Stand statt laufender Zeitangaben.
+    teamNotes: [
+      { initials: 'SR', name: 'Sam Ritter', at: '10:12', text: 'Postgres statt SQLite steht fest — JSONB für die Preset-Bindung.' },
+      { initials: 'MK', name: 'Mira Kant', at: '10:21', text: 'Wer übernimmt den Schema-Validator? Ich kann das nächste Woche machen.' },
+      { initials: 'JH', name: 'Jo Halász', at: '10:35', text: 'Erwähnungs-Auswahl per @ läuft schon lokal, muss noch an die Presets angebunden werden.' }
+    ],
+    feedStamp: '10:38'
   },
   types: [
     { key: 'component', label: 'Komponente', color: '#2fb8a0', shape: 'roundrect', count: 7 },
@@ -133,10 +170,10 @@ export const softwarePreset = {
     fields: [['Ebene', 'Backend'], ['Status', 'In Arbeit'], ['Verantwortlich', 'Sam Ritter'], ['Angelegt', '22. Juli 2026 aus Sprint-Planung KW 30']],
     body: [
       'Lädt Preset-Dateien, validiert sie gegen das JSON-Schema und bindet eine Kopie an das Projekt. Der Loader ist die einzige Stelle, an der Preset-Dateien gelesen werden — alle anderen Bausteine fragen die gebundene Kopie.',
-      'Offen ist die Validierung: derzeit werden Fehler gesammelt, aber nicht zeilengenau gemeldet. Die zeilengenaue Ausgabe ist Voraussetzung für den Import-Bildschirm.'
+      'Offen ist die Validierung: derzeit werden Fehler gesammelt, aber nicht gegen das JSON-Schema geprüft. Solange das fehlt, fällt eine kaputte Preset-Datei erst beim Start auf.'
     ],
     rels: [
-      { label: 'wird benötigt von', items: ['Notiz-Editor', 'Review-Inbox'] },
+      { label: 'wird benötigt von', items: ['Notiz-Editor', 'Kanonisierungs-Dienst'] },
       { label: 'betroffen von', items: ['Postgres statt SQLite'] },
       { label: 'gefährdet durch', items: ['Kanonisierung als Flaschenhals'] },
       { label: 'umgesetzt durch', items: ['Schema-Validator schreiben'] }
@@ -144,23 +181,23 @@ export const softwarePreset = {
     backrefs: ['Sprint-Planung KW 30', 'Daily Mi 30.07.', 'Notiz von Jo Halász'],
     origin: [
       { tag: 'Notiz', meta: 'Sprint 14 › Sprint-Planung KW 30 · Sam Ritter · 22. Juli', text: 'Wir brauchen einen Loader, der das YAML liest und gegen ein Schema prüft — sonst fällt jede kaputte Preset-Datei erst zur Laufzeit auf.', link: 'An die Textstelle springen' },
-      { tag: 'Notiz', meta: 'Sprint 14 › Daily Mi · Jo Halász · 30. Juli', text: 'Loader lädt jetzt, Validierung fehlt. Fehler kommen als Sammelmeldung, das reicht für F5 nicht.', link: 'An die Textstelle springen' },
+      { tag: 'Notiz', meta: 'Sprint 14 › Daily Mi · Jo Halász · 30. Juli', text: 'Loader lädt jetzt, Validierung fehlt. Fehler kommen als Sammelmeldung, das reicht beim Start nicht.', link: 'An die Textstelle springen' },
       { tag: 'Notiz · nachträglich geändert', meta: 'Sprint 14 › Sprint-Planung KW 32 · Sam Ritter · heute', text: 'Preset-Bindung wird als Kopie am Projekt gespeichert.', link: 'An die Textstelle springen' }
     ],
     history: [
       { tag: 'Kanonisierung', meta: 'Sam Ritter · 22. Juli, 10:41', text: 'Aus Vorschlag übernommen. Ebene: leer → Backend. Status: leer → Idee.', link: 'Auslösende Notiz' },
       { tag: 'Bearbeitung', meta: 'Jo Halász · 30. Juli, 09:12', text: 'Status: Idee → In Arbeit.', link: '' },
-      { tag: 'Zusammenführung', meta: 'Sam Ritter · heute, 10:18', text: '„Schema-Loader" zusammengeführt, Titel als Alias übernommen. Umkehrbar innerhalb von 30 Tagen.', link: 'Zusammenführung ansehen' }
+      { tag: 'Zusammenführung', meta: 'Sam Ritter · heute, 10:18', text: '„Schema-Loader" zusammengeführt, Titel als Alias übernommen. Bleibt in der Historie nachvollziehbar — Zurücknehmen ist eine neue Änderung, kein Löschen.', link: 'Zusammenführung ansehen' }
     ]
   },
   review: [
     { kind: 'A', kindLabel: 'Neu', typeKey: 'task', title: 'Schema-Validator schreiben',
       question: 'Gehört das ins Projektwissen?', freq: '3 Erwähnungen · 2 Meetings',
-      pre: 'Loader lädt jetzt, aber die Validierung fehlt. ', hit: 'Jemand muss den Schema-Validator schreiben, sonst blockiert F5',
-      post: ' — ich würde das noch in diesem Sprint einplanen, sonst zieht sich der Import-Bildschirm.',
+      pre: 'Loader lädt jetzt, aber die Validierung fehlt. ', hit: 'Jemand muss den Schema-Validator schreiben, sonst startet die Anwendung mit kaputten Presets',
+      post: ' — ich würde das noch in diesem Sprint einplanen, sonst fällt es uns beim ersten fremden Preset auf die Füße.',
       author: 'Jo Halász', authorInitials: 'JH', when: '30. Juli, 09:12',
       fields: [{ label: 'Status', options: ['Offen', 'In Arbeit', 'Erledigt'] }],
-      existing: ['Token-Refresh nachziehen', 'Fehlerseiten bauen', 'Preset-Import testen'],
+      existing: ['Token-Refresh nachziehen', 'Fehlerseiten bauen', 'Preset-Prüfung testen'],
       spread: ['3 Erwähnungen in 2 Meetings', 'zuletzt heute in Sprint-Planung KW 32'],
       primary: 'Übernehmen', secondary: 'Ablehnen' },
     { kind: 'B', kindLabel: 'Duplikat', typeKey: 'component', title: 'Auth Gateway',
@@ -168,7 +205,7 @@ export const softwarePreset = {
       pre: 'Zum Deployment: ', hit: 'Auth Gateway läuft auf Staging', post: ', Token-Refresh fehlt noch. Ich prüfe morgen die Logs.',
       author: 'Jo Halász', authorInitials: 'JH', when: 'heute, 10:24',
       fields: [], existing: ['Auth-Gateway', 'Notiz-Editor', 'Preset-Loader'],
-      spread: ['1 Erwähnung · beiläufig', 'Titel zu 92 % ähnlich zu Auth-Gateway'],
+      spread: ['1 Erwähnung · beiläufig', 'Titel stimmt normalisiert mit „Auth-Gateway" überein'],
       primary: 'Ist dasselbe → zusammenführen', secondary: 'Ist etwas anderes → neu anlegen' },
     { kind: 'C', kindLabel: 'Ergänzung', typeKey: 'decision', title: 'Begründung: JSONB für die Preset-Bindung',
       target: 'Postgres statt SQLite', question: 'Soll das zum vorhandenen Eintrag hinzukommen?', freq: '2 Erwähnungen · 1 Meeting',
@@ -188,9 +225,9 @@ export const softwarePreset = {
       existing: ['Kanonisierung als Flaschenhals', 'Preset-Fehldesign'],
       spread: ['2 Erwähnungen in 2 Meetings', 'blockiert 1 Aufgabe'],
       primary: 'Übernehmen', secondary: 'Ablehnen' },
-    { kind: 'A', kindLabel: 'Neu', typeKey: 'decision', title: 'Review-Inbox gruppiert nach Meeting',
+    { kind: 'A', kindLabel: 'Neu', typeKey: 'decision', title: 'Kuration gruppiert nach Meeting',
       question: 'Gehört das ins Projektwissen?', freq: '1 Erwähnung · 1 Meeting', confidence: '0,61',
-      pre: 'Zur Frage von Lea: ', hit: 'Wir gruppieren die Review-Inbox nach Meeting, nicht nach Sprint',
+      pre: 'Zur Frage von Lea: ', hit: 'Wir gruppieren die Kuration nach Meeting, nicht nach Sprint',
       post: ' — dann bleibt die Trennkarte ein sinnvoller Ausstiegspunkt.',
       author: 'Sam Ritter', authorInitials: 'SR', when: 'heute, 10:36',
       fields: [{ label: 'Status', options: ['Gültig', 'Überholt', 'Zurückgenommen'] }],

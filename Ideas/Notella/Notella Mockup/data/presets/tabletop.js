@@ -29,17 +29,47 @@ export const tabletopPreset = {
     leadFull: 'Nils Vogt',
     me: 'Timo Beck',
     open: 8,
-    // Aufbau wie im Software-Preset (siehe ./software.js)
+
+    // Anders als im Software-Preset: im Spiel schreibt man erst mal für sich
+    // (PRD §4.1.4, behavior.default_note_visibility: mine). Der Umschalter
+    // im Verfasser kippt beim Presetwechsel sichtbar mit — das ist der
+    // billigste Beweis der Preset-Neutralität im ganzen Mockup.
+    defaultVisibility: 'mine',
+
+    // Aufbau wie im Software-Preset (siehe ./software.js): ein Eintrag je
+    // Notiz, älteste zuerst, `parts` mit Text und { ref } im Wechsel.
     notes: [
-      [{ t: 'Ankunft in ' }, { ref: 'Falkenstein' }, { t: ' bei Regen — der Hafen ist gesperrt, niemand kommt raus.' }],
-      [{ t: 'Beim Schmied: ' }, { ref: 'Gorm Eisenfaust' }, { t: ' rückt die ' }, { ref: 'Sturmklinge' }, { t: ' nicht heraus, nennt aber den Namen Vandermeer.' }],
-      [{ t: 'Offen: warum der ' }, { ref: 'Rat der Sieben' }, { t: ' erst nach Sonnenuntergang tagt. ' }, { ref: 'Der Rat tagt' }, { t: ' steht noch als Vorschlag.' }]
+      { id: 'n1', at: '20:12', vis: 'mine', parts: [
+        { t: 'Ankunft in ' }, { ref: 'Falkenstein' }, { t: ' bei Regen — der Hafen ist gesperrt, niemand kommt raus.' }] },
+      { id: 'n2', at: '20:19', vis: 'mine', parts: [
+        { t: 'Die Stadtwache wirkt nervös. Zwei Mann am Tor, die uns nicht aus den Augen lassen.' }] },
+      { id: 'n3', at: '20:26', vis: 'team', parts: [
+        { t: 'Beim Schmied: ' }, { ref: 'Gorm Eisenfaust' }, { t: ' rückt die ' }, { ref: 'Sturmklinge' }, { t: ' nicht heraus, nennt aber den Namen Vandermeer.' }] },
+      { id: 'n4', at: '20:34', vis: 'mine', parts: [
+        { t: 'Für mich: Thalia traut Gorm nicht. Ich spiele das nächste Runde aus, ohne es der Gruppe zu sagen.' }] },
+      { id: 'n5', at: '20:41', vis: 'team', edited: true, parts: [
+        { t: 'Offen: warum der ' }, { ref: 'Rat der Sieben' }, { t: ' erst nach Sonnenuntergang tagt. ' }, { ref: 'Der Rat tagt' }, { t: ' steht noch als Vorschlag.' }] },
+      { id: 'n6', at: '20:52', vis: 'team', by: 'Nils Vogt', parts: [
+        { t: 'Im Wirtshaus erzählt man sich, dass seit drei Wochen niemand mehr aus dem Nordviertel zurückkam.' }] },
+      { id: 'n7', at: '21:05', vis: 'team', parts: [
+        { t: 'Der Wirt will Gold sehen, bevor er redet. ' }, { ref: 'Der tanzende Pony' }, { t: ' ist offenbar der einzige Ort, an dem noch geredet wird.' }] },
+      { id: 'n8', at: '21:18', vis: 'team', by: 'Ronja Kern', parts: [
+        { t: 'Kampf am Kai: drei Schmuggler, einer entkommt. Wir haben eine Truhe mit Siegel erbeutet.' }] },
+      { id: 'n9', at: '21:31', vis: 'team', parts: [
+        { t: 'Das Siegel auf der Truhe führt zu ' }, { ref: 'Lyra Vandermeer' }, { t: ' — damit hängt der Schmied mit drin.' }] },
+      { id: 'n10', at: '21:44', vis: 'team', parts: [
+        { t: 'Regelfrage geklärt: Sturmangriff geht nicht mit einer Einhandwaffe im Nahkampf.' }] },
+      { id: 'n11', at: '21:58', vis: 'team', parts: [
+        { t: 'Nächste Session steigen wir direkt vor der Ratskammer ein.' }] }
     ],
-    shared: [
-      { initials: 'NV', name: 'Nils Vogt', text: 'Der Rat empfängt euch erst nach Sonnenuntergang — bis dahin habt ihr freie Hand in der Stadt.', ago: '4 Min' },
-      { initials: 'TB', name: 'Timo Beck', text: 'Wer redet mit dem Wirt? Ich würde vorher den Keller ansehen.', ago: '9 Min' },
-      { initials: 'RK', name: 'Ronja Kern', text: 'Gorm weicht aus, nennt aber „Vandermeer" — das gehört ins Weltwissen.', ago: '15 Min' }
-    ]
+
+    // Team-Notizen der anderen (Schublade C4) — Stand beim Öffnen (E-27).
+    teamNotes: [
+      { initials: 'NV', name: 'Nils Vogt', at: '20:44', text: 'Der Rat empfängt euch erst nach Sonnenuntergang — bis dahin habt ihr freie Hand in der Stadt.' },
+      { initials: 'TB', name: 'Timo Beck', at: '21:02', text: 'Wer redet mit dem Wirt? Ich würde vorher den Keller ansehen.' },
+      { initials: 'RK', name: 'Ronja Kern', at: '21:33', text: 'Gorm weicht aus, nennt aber „Vandermeer" — das gehört ins Weltwissen.' }
+    ],
+    feedStamp: '21:36'
   },
   types: [
     { key: 'npc', label: 'NSC', color: '#ff6b6b', shape: 'circle', count: 12 },
@@ -142,7 +172,7 @@ export const tabletopPreset = {
     history: [
       { tag: 'Kanonisierung', meta: 'Nils · 14. Juni, 20:15', text: 'Aus Vorschlag übernommen. Status: leer → Lebendig.', link: 'Auslösende Notiz' },
       { tag: 'Bearbeitung', meta: 'Nils · 12. Juli, 21:40', text: 'Gesinnung: Unbekannt → Neutral.', link: '' },
-      { tag: 'Zusammenführung', meta: 'Nils · heute, 19:22', text: '„Gorm der Schmied" zusammengeführt, Titel als Alias übernommen. Umkehrbar innerhalb von 30 Tagen.', link: 'Zusammenführung ansehen' }
+      { tag: 'Zusammenführung', meta: 'Nils · heute, 19:22', text: '„Gorm der Schmied" zusammengeführt, Titel als Alias übernommen. Bleibt in der Historie nachvollziehbar — Zurücknehmen ist eine neue Änderung, kein Löschen.', link: 'Zusammenführung ansehen' }
     ]
   },
   review: [
@@ -160,7 +190,7 @@ export const tabletopPreset = {
       pre: 'Wir nehmen Quartier. ', hit: 'The Dancing Pony hat einen Keller', post: ', und der Wirt kennt Lyra offenbar seit Jahren.',
       author: 'Timo', authorInitials: 'TB', when: 'heute, 19:26',
       fields: [], existing: ['Der tanzende Pony', 'Falkenstein', 'Möwenbucht'],
-      spread: ['1 Erwähnung · beiläufig', 'Titel zu 86 % ähnlich zu Der tanzende Pony'],
+      spread: ['1 Erwähnung · beiläufig', 'Titel stimmt normalisiert mit „Der tanzende Pony" überein'],
       primary: 'Ist dasselbe → zusammenführen', secondary: 'Ist etwas anderes → neu anlegen' },
     { kind: 'C', kindLabel: 'Ergänzung', typeKey: 'npc', title: 'Gesinnung: Neutral',
       target: 'Gorm Eisenfaust', question: 'Soll das zum vorhandenen Eintrag hinzukommen?', freq: '2 Erwähnungen · 2 Sessions',
