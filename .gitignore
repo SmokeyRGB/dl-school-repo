@@ -1,1 +1,5 @@
 *.zip
+Ideas/Notella/.claude/*
+Ideas/Notella/.cline/*
+Ideas/Notella/.clinerules/*
+Ideas/Notella/openspec/*
