@@ -14,7 +14,12 @@
 
 ---
 
-> **Stand 2026-08-13 — alle Einträge geschlossen.**
+> **Stand 2026-08-13, nachmittags — drei neue Einträge (SL-06…SL-08)** aus dem Nachziehen
+> des Mockups auf v0.3. Der Vormittagsstand darunter bleibt unverändert gültig.
+
+---
+
+> **Stand 2026-08-13, vormittags — SL-01…SL-05 geschlossen.**
 > Mit der Überarbeitung auf `01-Problem-Framing.md` v0.3, `02-PRD.md` V0.9, `03-SRD.md` V0.4
 > und `04-Screen-Inventar.md` V0.2 sind SL-01…SL-05 erledigt. Zwei Wege: Die inhaltlich
 > relevanten Fragen wurden entschieden und in die Spec-Dokumente übernommen; die rein
@@ -29,7 +34,16 @@
 
 ## Offene Einträge
 
-_(keine)_
+> **Herkunft:** Beim Nachziehen des Mockups auf v0.3 (Notizblock C1, zweiphasige
+> Kuration E1/E2) am 2026-08-13. Aufgenommen sind ausdrücklich **nur** Fragen, bei denen im
+> Bau eine Produktentscheidung sichtbar wurde, die in der Spezifikation fehlt — nicht jede
+> Abweichung des Mockups (siehe Klarstellung oben).
+
+| ID | Datum | Quelle | Befund / offene Frage | Betrifft | Status |
+|----|-------|--------|------------------------|----------|--------|
+| SL-06 | 2026-08-13 | `Notella Mockup/core/actions/notes.js` (`cycleNoteVis`) | **Erzeugt das Ändern der Sichtbarkeit an einer abgeschickten Notiz eine neue Version?** PRD §4.4.1 sagt beides, ohne es zu verbinden: eine abgeschickte Notiz ist unveränderlich und Bearbeiten erzeugt eine Version (E-15) — *und* „an einer bereits abgeschickten Notiz ist die Sichtbarkeit weiterhin änderbar". Sichtbarkeit ist kein Textinhalt; eine Version dafür anzulegen würde die Historie mit Nicht-Inhalt füllen und den Herkunftsnachweis verwässern. Das Mockup ändert sie **ohne** Version und **ohne** „bearbeitet"-Markierung. Die Frage ist echt, weil sie den Datenschnitt betrifft: hängt `visibility` an der Notiz oder an der Notiz-*Version*? | `02-PRD.md` §4.4.1 · `03-SRD.md` (Speicherformat der Notiz) | 🔍 zu klären |
+| SL-07 | 2026-08-13 | `Notella Mockup/components/curationHeader.js` | **Was zeigt der Phasenumschalter, wenn eine Phase leer ist?** PRD §4.4.2.2 stellt den Einstieg frei („Der Lead kann Phase 1 überspringen"), sagt aber nichts über den Rückweg aus einer bereits leeren Phase. Das Mockup zeigt beide Reiter immer, mit Zähler — auch bei `0`, weil ein verschwindender Reiter die Orientierung kostet und ein Zähler `0` die Aussage „hier ist nichts mehr offen" selbst trägt. Gegenposition: ein Reiter, der zu einem Leerzustand führt, ist eine Sackgasse | `02-PRD.md` §4.4.2.2 · `04-Screen-Inventar.md` E1/E2 | 🆕 neu erfasst |
+| SL-08 | 2026-08-13 | `Notella Mockup/components/screenE2.js` | **Woran erkennt Phase 2 einen „offenen" Vorschlag?** Das Screen-Inventar verlangt „bestätigte Stellen als Chip in Typfarbe, offene Vorschläge als Chip mit Umriss" — die Unterscheidung hängt also am **Vorschlag**, nicht an der Notiz. Im Mockup gibt es diese Verknüpfung nicht: Erwähnungen in `d.notes` und Karten in `review` sind zwei getrennte Datensätze, deshalb zeichnet E2 alle Chips einheitlich als offen, solange Phase 1 nicht durch ist. Für die Umsetzung heißt das: **eine Erwähnung braucht einen Zustand** (`offen` / `übernommen` / `abgelehnt`), und der Kanonisierungs-Dienst muss ihn setzen — sonst ist das Kriterium nicht erfüllbar | `03-SRD.md` §11.7 (Kanonisierungs-Dienst) · `02-PRD.md` §4.4.2.4b | 🆕 neu erfasst |
 
 ## Frühere Einträge (alle geschlossen)
 
@@ -58,3 +72,5 @@ _(keine)_
 ## Erledigte Einträge
 
 SL-01 · SL-02 · SL-03 · SL-04 · SL-05 — siehe Auflösungstabelle oben.
+
+**Offen:** SL-06 · SL-07 · SL-08 — siehe „Offene Einträge".
