@@ -6,36 +6,35 @@
 **[Login page]**
 Hi everyone. Today I'm showing my MVP of Flatmate.io.
 It's a casting app for bigger households. Think shared apartments with five or more people, or living projects.
-It makes finding a new flatmate easier.
+It makes finding a new flatmate easier and fairer for everyone involved.
 
-I'm on the login page. You can log in as the household, or as a resident.
-The household sets everything up: it manages residents, round settings and so on.
-But for the demo I'll be a resident - A new flatmate who just moved in and has to vote in a new round.
+Right now, I'm on the login page. You can log in as the household, or as a resident.
+The household account is for setting everything up: it manages residents, round settings and so on.
+But for the demo this is already done and I'll be a new flatmate who never used the app before and has to vote in a casting round in progress.
 
 **[Join link]**
-For that I get a join link from the household.
-You can see my name already, because the household prepared my profile.
-So I only need a password. [type password]
-Email is optional. I joined through the link, so I don't need it - I decided against mail verification to maximize streamlined onboarding.
+For that I alredy got a join link from my flatmates, that I'll just paste here.
+You can see my name already, because the household prepared my profile for me - otherwise it would just inform me what household i'm joining.
+I only need a password. [type password] Email is optional. I joined through the link, so I don't need it - 
+I decided against mail verification to maximize streamlined onboarding.
 Providing an email is just handy later, to reset my password, or log in without the household code.
 
 **[Dashboard → screening]**
 Now I'm on the dashboard. It says: please vote in the current round, the autumn round.
-Five applications are waiting for me.
+There are applications waiting for me to vote for.
 This is the core screen. For every applicant I say how I feel:
 definitely, good, rather not, or absolutely not.
 [rate the cards, keep talking short]
-Important: I can only see the ranking after I voted. That's on purpose. It's the reward for taking part.
+Important: I can only see the ranking after I voted. That's on purpose. It's the reward for taking part - also to avoid being group pressured on my decision.
 
 **[Ranking]**
 And here's the ranking. Every applicant has a score.
 Two rooms are free, so the top two are highlighted. Those are the people who could move in.
 [click "(?)"]
-Here I can see how a score is calculated.
-What my own vote counted for, and how many votes are needed before a score shows up at all.
+Here I can see how a score is calculated to understand how my voting is weighted in & what the rules of the household are.
 Down here: not enough people voted for Ahmed, so he has no score yet.
 Otherwise one single vote of "definitely" would give him 100 percent. That would be misleading.
-The household can set how many votes are needed.
+The household can set in their settings how many votes are needed.
 
 **[Moderator view]**
 For the demo, I'll make myself a moderator now.
@@ -60,36 +59,22 @@ And one rule from day one: no AI decides about people. AI may only help to struc
 
 So, that's the application. Let me briefly explain how I built it.
 
-I started with a specification and then worked my way through the project in vertical slices, using OpenSpec together with Claude Code.
+I worked from specifications in vertical slices, using OpenSpec. Opus handles planning, Sonnet subagents implement, and I review the results with Copilot and my own checks.
 
-Opus handles the planning, Sonnet subagents implement parts of it, and then I go through the code with additional reviews, including Copilot.
+Before every push, I ran `npm run verify`. It checks types, tests and custom lints, and caught quite a few things that both the AI and I missed.
 
-Before every push i ran a pre push gate with npm run verify that caught quite a few things that both the AI and I had missed.
+Where I lost the most time was the specification process.
 
-There were also two main things where I lost a lot of time.
+I wrote around 146,000 words before my first line of code. Some decisions turned out to be impractical, and changing them meant updating a lot of documentation.
 
-### The first was the way I handled my specifications.
+I also kept old specs as legacy. The AI sometimes followed those even when newer decisions contradicted them, and tried to combine both versions.
 
-I started with a very rigid spec process and wrote about 146,000 words of documentation before I had my first line of code.
-Looking back, I would have started with less and worked my way forward with living specifications.
-Some decisions turned out to be impractical once I actually implemented them. Changing those decisions then meant going back through a lot of documentation.
-I also kept older specifications around as legacy documents and wrote newer decisions on top of them.
-The problem was that the AI could still find the old versions and sometimes followed them, even when a newer decision contradicted them.
-It would then try to combine both versions, which created even more complexity and back and forth.
-Next time, I'd rather refactor the specifications themselves and keep them as the current source of truth. I'd use a separate document to log what changed, while Git keeps the actual history.
+Next time, I'd keep one current source of truth and let Git handle the history.
 
-### The second problem was how I handled bugs found during reviews at the first days of implementation.
-If a reviewer found one specific bug, I usually fixed that bug. I didn't always stop and ask how that bug came to live and how to avoid it in the future.
-I eventually created an implementation-hazards file that the AI reads at the start of every session, and where it logs findings.
-That helped a lot.
+I also learned to document recurring bugs and their causes in hazard files, rather than just fixing individual instances.
 
-### The third problem was my specifications.
-I kept older specifications around as legacy documents and wrote newer decisions on top of them.
-The problem was that the AI could still find the old version and sometimes followed it, even when a newer decision contradicted it.
-It would then try to combine both versions, which created even more complexity and back and forth.
-Next time, I'd rather refactor old specifications, keeping them as source of truth and logging my changes in a different document.
+If you have any additional questions i'm happy to answer them / show you more of the app.
 
-Thank you. Questions?
 
 ---
 
