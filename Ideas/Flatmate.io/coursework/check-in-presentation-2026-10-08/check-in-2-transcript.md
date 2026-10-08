@@ -61,7 +61,7 @@ So, that's the application. Let me briefly explain how I built it.
 
 I worked from specifications in vertical slices, using OpenSpec. Opus handles planning, Sonnet subagents implement, and I review the results with Copilot and my own checks.
 
-Before every push, I ran `npm run verify`. It checks types, tests and custom lints, and caught quite a few things that both the AI and I missed.
+Before every push, I ran `npm run verify`. It checks types, tests and custom lints.
 
 Where I lost the most time was the specification process.
 
